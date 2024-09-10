@@ -69,10 +69,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "angular-piano:build:production"
+              "buildTarget": "angular-piano:build:production"
             },
             "development": {
-              "browserTarget": "angular-piano:build:development"
+              "buildTarget": "angular-piano:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -80,7 +80,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "angular-piano:build"
+            "buildTarget": "angular-piano:build"
           }
         },
         "test": {
