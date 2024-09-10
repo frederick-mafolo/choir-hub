@@ -1,0 +1,19 @@
+<div>
+  <input type="text" [(ngModel)]="sessionId" placeholder="Enter Session ID" />
+  <button (click)="joinSession()">Join Session</button>
+</div>
+
+<div class="piano">
+  <div class="key-group" *ngFor="let keyGroup of keys">
+    <div class="white-key" [class.active]="keyGroup.white.active" (mousedown)="playSound(keyGroup.white.note)">
+      <div class="key-label">{{ keyGroup.white.note }}</div>
+    </div>
+    <div class="black-key" *ngIf="keyGroup.black" [class.active]="keyGroup.black.active" (mousedown)="playSound(keyGroup.black.note)">
+      <div class="key-label">{{ keyGroup.black.note }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="pressed-key">
+  <p>Key Pressed: {{ pressedKey || 'None' }}</p>
+</div>
