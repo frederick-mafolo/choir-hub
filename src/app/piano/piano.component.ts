@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { PianoService } from '../services/piano.service';
 
 interface Key {
@@ -16,7 +16,7 @@ interface KeyGroup {
   templateUrl: './piano.component.html',
   styleUrls: ['./piano.component.scss']
 })
-export class PianoComponent {
+export class PianoComponent implements AfterViewInit  {
   @ViewChild('audioPlayer') audioPlayerRef!: ElementRef;
   sessionId: string = ''; // Session ID for different groups
   pressedKey: string | null = null; // Currently pressed key
@@ -33,6 +33,12 @@ export class PianoComponent {
 
   constructor(private pianoService: PianoService) {}
 
+  ngAfterViewInit() {
+    // Make sure audioPlayerRef is initialized here
+    if (!this.audioPlayerRef) {
+      console.error("Audio player element reference is not available");
+    }
+  }
   // Join a session and listen for keypress events
   joinSession() {
     if (this.sessionId) {
@@ -46,10 +52,10 @@ export class PianoComponent {
   }
 
   playSound(note: string, broadcast: boolean = true) {
-    const audioPlayer = this.audioPlayerRef.nativeElement as HTMLAudioElement;
-    audioPlayer.src = `assets/sounds/${note}.mp3`;
-    audioPlayer.load();
-    audioPlayer.play();
+    const audioPlayer = this.audioPlayerRef?.nativeElement as HTMLAudioElement;
+    // audioPlayer.src = `assets/sounds/${note}.mp3`;
+    // audioPlayer.load();
+    // audioPlayer.play();
 
     this.pressedKey = note;
 

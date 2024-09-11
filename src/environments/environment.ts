@@ -8,6 +8,7 @@ export const environment = {
     apiKey: "AIzaSyC6AMfAiViyWtYXQ7uFVysTxccCy142uBw",
     authDomain: "piano-notes-c51b8.firebaseapp.com",
     projectId: "piano-notes-c51b8",
+    databaseURL:"https://piano-notes-c51b8-default-rtdb.firebaseio.com",
     storageBucket: "piano-notes-c51b8.appspot.com",
     messagingSenderId: "955665129829",
     appId: "1:955665129829:web:9cbaa52e31119b1765418c"
