@@ -1,0 +1,74 @@
+[debug] [2024-09-11T13:57:13.157Z] ----------------------------------------------------------------------
+[debug] [2024-09-11T13:57:13.160Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\mfmaf\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2024-09-11T13:57:13.161Z] CLI Version:   13.16.0
+[debug] [2024-09-11T13:57:13.161Z] Platform:      win32
+[debug] [2024-09-11T13:57:13.161Z] Node Version:  v18.20.2
+[debug] [2024-09-11T13:57:13.171Z] Time:          Wed Sep 11 2024 15:57:13 GMT+0200 (South Africa Standard Time)
+[debug] [2024-09-11T13:57:13.172Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2024-09-11T13:57:13.290Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-09-11T13:57:13.291Z] > authorizing via signed-in user (mafolo.mf@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\mfmaf\OneDrive\Desktop\practice\angular-piano
+
+Before we get started, keep in mind:
+
+  * You are initializing within an existing Firebase project directory
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[debug] [2024-09-11T13:57:37.276Z] Using project from CLI flag: piano-notes-c51b8
+[debug] [2024-09-11T13:57:37.278Z] > refreshing access token with scopes: []
+[debug] [2024-09-11T13:57:37.280Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2024-09-11T13:57:37.280Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2024-09-11T13:57:37.799Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2024-09-11T13:57:37.799Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2024-09-11T13:57:37.808Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/piano-notes-c51b8 [none]
+[debug] [2024-09-11T13:57:38.372Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/piano-notes-c51b8 200
+[debug] [2024-09-11T13:57:38.373Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/piano-notes-c51b8 {"projectId":"piano-notes-c51b8","projectNumber":"955665129829","displayName":"piano-notes","name":"projects/piano-notes-c51b8","resources":{"hostingSite":"piano-notes-c51b8","realtimeDatabaseInstance":"piano-notes-c51b8-default-rtdb"},"state":"ACTIVE","etag":"1_4447ce96-89a1-4f24-b21e-2e5ba1477912"}
+[info] i  Using project piano-notes-c51b8 (piano-notes) 
+[info] 
+=== Hosting Setup
+[debug] [2024-09-11T13:57:38.378Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/piano-notes-c51b8 [none]
+[debug] [2024-09-11T13:57:38.906Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/piano-notes-c51b8 200
+[debug] [2024-09-11T13:57:38.906Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/piano-notes-c51b8 {"projectId":"piano-notes-c51b8","projectNumber":"955665129829","displayName":"piano-notes","name":"projects/piano-notes-c51b8","resources":{"hostingSite":"piano-notes-c51b8","realtimeDatabaseInstance":"piano-notes-c51b8-default-rtdb"},"state":"ACTIVE","etag":"1_4447ce96-89a1-4f24-b21e-2e5ba1477912"}
+[info] 
+[info] Your public directory is the folder (relative to your project directory) that
+[info] will contain Hosting assets to be uploaded with firebase deploy. If you
+[info] have a build process for your assets, use your build's output directory.
+[info] 
+[debug] [2024-09-11T13:57:53.267Z] >>> [apiv2][query] GET https://www.gstatic.com/firebasejs/releases.json [none]
+[debug] [2024-09-11T13:57:53.686Z] <<< [apiv2][status] GET https://www.gstatic.com/firebasejs/releases.json 200
+[debug] [2024-09-11T13:57:53.686Z] <<< [apiv2][body] GET https://www.gstatic.com/firebasejs/releases.json {"current":{"version":"10.13.1","browserURL":"https://www.gstatic.com/firebasejs/10.13.1/firebase.js","packageURL":"https://www.gstatic.com/firebasejs/10.13.1/firebase.tgz"},"live":{"version":"10.13","browserURL":"https://www.gstatic.com/firebasejs/live/10.13/firebase.js","packageURL":"https://www.gstatic.com/firebasejs/live/10.13/firebase.tgz"},"components":{"analytics":"https://www.gstatic.com/firebasejs/10.13.1/firebase-analytics.js","app":"https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js","app-check":"https://www.gstatic.com/firebasejs/10.13.1/firebase-app-check.js","auth":"https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js","auth/cordova":"https://www.gstatic.com/firebasejs/10.13.1/firebase-auth/cordova.js","auth/web-extension":"https://www.gstatic.com/firebasejs/10.13.1/firebase-auth/web-extension.js","functions":"https://www.gstatic.com/firebasejs/10.13.1/firebase-functions.js","firestore":"https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js","firestore/lite":"https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore/lite.js","installations":"https://www.gstatic.com/firebasejs/10.13.1/firebase-installations.js","storage":"https://www.gstatic.com/firebasejs/10.13.1/firebase-storage.js","performance":"https://www.gstatic.com/firebasejs/10.13.1/firebase-performance.js","remote-config":"https://www.gstatic.com/firebasejs/10.13.1/firebase-remote-config.js","messaging":"https://www.gstatic.com/firebasejs/10.13.1/firebase-messaging.js","messaging/sw":"https://www.gstatic.com/firebasejs/10.13.1/firebase-messaging/sw.js","database":"https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js","vertexai-preview":"https://www.gstatic.com/firebasejs/10.13.1/firebase-vertexai-preview.js","firestore.memory":"https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.memory.js"}}
+[info] +  Wrote public/index.html 
+[info] 
+[info] i  Detected a .git folder at C:\Users\mfmaf\OneDrive\Desktop\practice\angular-piano 
+[info] i  Authorizing with GitHub to upload your service account to a GitHub repository's secrets store. 
+[info] 
+[info] Visit this URL on this device to log in:
+[info] https://github.com/login/oauth/authorize?client_id=89cf50f02ac6aaed3484&state=83184467&redirect_uri=http%3A%2F%2Flocalhost%3A9005&scope=read%3Auser%20repo%20public_repo
+[info] 
+[info] Waiting for authentication...
+[debug] [2024-09-11T13:58:08.532Z] >>> [apiv2][query] POST https://github.com/login/oauth/access_token [none]
+[debug] [2024-09-11T13:58:08.533Z] >>> [apiv2][body] POST https://github.com/login/oauth/access_token [stream]
+[debug] [2024-09-11T13:58:08.896Z] <<< [apiv2][status] POST https://github.com/login/oauth/access_token 200
+[debug] [2024-09-11T13:58:08.897Z] <<< [apiv2][body] POST https://github.com/login/oauth/access_token {"access_token":"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","token_type":"bearer","scope":"read:user,repo"}
+[debug] [2024-09-11T13:58:08.901Z] >>> [apiv2][query] GET https://api.github.com/user [none]
+[debug] [2024-09-11T13:58:09.330Z] <<< [apiv2][status] GET https://api.github.com/user 200
+[debug] [2024-09-11T13:58:09.330Z] <<< [apiv2][body] GET https://api.github.com/user {"login":"frederick-mafolo","id":39151379,"node_id":"MDQ6VXNlcjM5MTUxMzc5","avatar_url":"https://avatars.githubusercontent.com/u/39151379?v=4","gravatar_id":"","url":"https://api.github.com/users/frederick-mafolo","html_url":"https://github.com/frederick-mafolo","followers_url":"https://api.github.com/users/frederick-mafolo/followers","following_url":"https://api.github.com/users/frederick-mafolo/following{/other_user}","gists_url":"https://api.github.com/users/frederick-mafolo/gists{/gist_id}","starred_url":"https://api.github.com/users/frederick-mafolo/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/frederick-mafolo/subscriptions","organizations_url":"https://api.github.com/users/frederick-mafolo/orgs","repos_url":"https://api.github.com/users/frederick-mafolo/repos","events_url":"https://api.github.com/users/frederick-mafolo/events{/privacy}","received_events_url":"https://api.github.com/users/frederick-mafolo/received_events","type":"User","site_admin":false,"name":"Fred MT","company":null,"blog":"","location":null,"email":null,"hireable":true,"bio":"I am developing Hybrid Mobile and Web applications. Good in JavaScript and(Angular), Ionic, and No-SQL (Firebase and MongoDB)","twitter_username":null,"notification_email":null,"public_repos":15,"public_gists":0,"followers":0,"following":0,"created_at":"2018-05-10T07:36:24Z","updated_at":"2024-09-05T11:40:59Z","private_gists":0,"total_private_repos":3,"owned_private_repos":3,"disk_usage":9289,"collaborators":1,"two_factor_authentication":false,"plan":{"name":"free","space":976562499,"collaborators":0,"private_repos":10000}}
+[info] 
+[info] +  Success! Logged into GitHub as frederick-mafolo 
+[info] 
