@@ -60,10 +60,10 @@
   font-size: 24px;
   font-weight: bold;
   color: #ffffff;
-  background-color: #007bff; /* Blue background */
+  background-color: #3c8bc6; /* Blue background */
   border-radius: 10px; /* Rounded corners */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
-  width: 50%; /* Set width for a balanced look */
+  width: 22%; /* Set width for a balanced look */
   margin-left: auto; /* Center horizontally */
   margin-right: auto; /* Center horizontally */
   transition: background-color 0.3s ease;
@@ -78,5 +78,12 @@
 }
 
 .session-input{
-  margin-bottom: 20px;
+  display: flex;
+    flex-direction: row; 
+    justify-content: center; 
+    align-items: flex-start; 
+    gap: 20px;
+    flex-wrap: wrap; 
+    padding-top: 20px;
+    padding-bottom: 20px;
 }

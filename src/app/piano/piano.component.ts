@@ -1,5 +1,6 @@
 import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { PianoService } from '../services/piano.service';
+import { ToastService } from '../services/toast.service';
 
 interface Key {
   note: string;
@@ -31,7 +32,7 @@ export class PianoComponent implements AfterViewInit  {
     { white: { note: 'B', active: false } }
   ];
 
-  constructor(private pianoService: PianoService) {}
+  constructor(private pianoService: PianoService, private toastService: ToastService) {}
 
   ngAfterViewInit() {
     // Make sure audioPlayerRef is initialized here
@@ -43,11 +44,16 @@ export class PianoComponent implements AfterViewInit  {
   joinSession() {
     if (this.sessionId) {
       this.pianoService.getPressedKey(this.sessionId).subscribe((data:any) => {
+        this.toastService.showToast('Successfully joined the session', 'success');
+
         if (data && data.note) {
+          
           this.pressedKey = data.note;
           this.playSound(data.note, false); // Play sound but don't broadcast again
         }
-      });
+      }),(err:any)=>{ 
+        this.toastService.showToast('Unable to join the session', 'error');
+      };
     }
   }
 

@@ -10,11 +10,14 @@ import { FormsModule } from '@angular/forms';
 // import { provideDatabase, getDatabase } from '@angular/fire/database';
 // import { environment } from '../environments/environment';
 import { FirebaseModule } from './firebase/firebase.module';
+import { ToastComponent } from './shared/toast/toast.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    PianoComponent
+    PianoComponent,
+    ToastComponent,
+
   ],
   imports: [
     BrowserModule,

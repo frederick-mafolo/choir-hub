@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "public",
+    "public": "dist/angular-piano",
     "ignore": [
       "firebase.json",
       "**/.*",
