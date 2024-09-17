@@ -1,0 +1,21 @@
+<div class="edit-song-modal">
+    <div class="modal-header">
+      <h2>Edit Song</h2>
+      <button class="close-btn" (click)="onNoClick()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="songName">Song Name</label>
+        <input id="songName" [(ngModel)]="data.song.name" />
+      </div>
+      <div class="form-group">
+        <label for="songKey">Song Key</label>
+        <input id="songKey" [(ngModel)]="data.song.key" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button (click)="onNoClick()">Cancel</button>
+      <button (click)="save()">Save</button>
+    </div>
+  </div>
+  

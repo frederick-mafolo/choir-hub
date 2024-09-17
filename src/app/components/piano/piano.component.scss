@@ -1,0 +1,292 @@
+.piano-room-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.piano {
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+.key-group {
+  position: relative;
+}
+
+.white-key, .black-key {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.white-key {
+  width: 60px;
+  height: 200px;
+  background-color: white;
+  border: 1px solid black;
+  cursor: pointer;
+  position: relative;
+}
+
+.black-key {
+  width: 40px;
+  height: 120px;
+  background-color: rgb(0, 0, 0);
+  position: absolute;
+  left: 40px; 
+  top: 0;
+  z-index: 1;
+  border: 1px solid black;
+  cursor: pointer;
+}
+
+.key-label {
+  position: relative;
+  top: 5px; 
+  font-size: 15px;
+  font-weight: bold;
+  color: black;
+}
+
+.black-key .key-label {
+  color: white; 
+}
+
+.white-key.active {
+  background-color: #ffcc00; 
+}
+
+.black-key.active {
+  background-color: #ff6600; 
+}
+
+.pressed-key {
+  text-align: center;
+  margin-top: 20px;
+  padding: 10px;
+  font-size: 20px;
+  font-weight: normal;
+  color: #333; /* Darker text for simplicity */
+  background-color: #e0e0e0; /* Subtle gray background */
+  border-radius: 8px;
+  width: 20%;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: none; /* Removed shadow for simplicity */
+}
+
+.pressed-key p {
+  margin: 0;
+}
+
+.pressed-key:hover {
+  background-color: #d0d0d0; /* Slight hover effect */
+}
+
+
+
+.song-list {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.song-list div {
+  margin: 3px 0;
+  // padding: 3px 8px; /* Reduced padding */
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Vertical alignment */
+  font-size: 14px; /* Smaller font */
+}
+
+.song-list .song-actions {
+  display: flex;
+  gap: 10px; /* Space between the icons */
+}
+
+.song-list > div:first-child .song-actions {
+  background-color: #d1e7dd; /* Light green highlight for the first song action */
+}
+
+
+.song-list button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333; /* Match the button color with the text */
+}
+
+.song-list mat-icon {
+ /* Default icon color */
+  font-size: 20px; /* Adjust size if needed */
+  cursor: pointer;
+}
+
+
+
+.song-list div.highlight {
+  background-color: #d1e7dd; /* Light green highlight */
+  border: 2px solid #4caf50; /* Border to emphasize the highlight */
+}
+
+.song-form {
+  display: flex;
+  justify-content: center;
+  margin: 5px;
+}
+
+.song-form input {
+  margin-right: 10px;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+
+/* General Styles */
+.progression-btn {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.progression-btn:hover {
+  background-color: #45a049;
+}
+
+/* Progression Actions */
+.progression-actions {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+// .progression-actions .progression-btn {
+//   padding: 12px 30px;
+//   font-size: 18px;
+//   font-weight: bold;
+//   background-color: #2196f3;
+//   border-radius: 8px;
+// }
+
+// .progression-actions .progression-btn:hover {
+//   background-color: #1e88e5;
+// }
+
+/* Current Progression */
+.current-progression {
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  text-align: center;
+  margin-top: 20px;
+  width: 95%; /* Occupy 95% of the screen */
+  max-width: 1200px; /* Optional: Set a max width for larger screens */
+  margin-left: auto; /* Center the div horizontally */
+  margin-right: auto; /* Center the div horizontally */
+}
+
+.current-progression h3 {
+  font-size: 24px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.current-progression p {
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: #666;
+  font-weight: bold;
+  background-color: #f1f1f1;
+  padding: 10px 20px;
+  border-radius: 8px;
+}
+
+.current-room {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.current-room p {
+  font-size: 15px;
+  font-weight: bold;
+  color: #4caf50;
+  background-color: #f1f1f1;
+  padding: 15px 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+.current-room p:hover {
+  background-color: #e0e0e0;
+}
+
+.clear-progression-btn {
+  padding: 10px 20px;
+  background-color: #f44336;
+  border-radius: 8px;
+  font-size: 16px;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.clear-progression-btn:hover {
+  background-color: #e53935;
+}
+
+
+/* Style for the button */
+button.select-room-btn {
+  background-color: #4caf50; /* Green background */
+  color: white; /* Text color */
+  border: none; /* Remove default border */
+  border-radius: 8px; /* Rounded corners */
+  padding: 10px 20px; /* Adjust padding for button and icon */
+  font-size: 16px; /* Font size */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: all 0.3s ease; /* Smooth transition for hover effect */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect */
+  display: flex; /* Flexbox for aligning icon and text */
+  align-items: center; /* Center items vertically */
+  gap: 8px; /* Space between icon and text */
+  outline: none; /* Remove focus outline */
+  margin-bottom: 20px;
+}
+
+/* Hover effect for button */
+button.select-room-btn:hover {
+  background-color: #45a049; /* Slightly darker green on hover */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Deepen shadow on hover */
+  transform: scale(1.05); /* Slight scaling on hover */
+}
+
+/* Active effect when the button is clicked */
+button.select-room-btn:active {
+  background-color: #388e3c; /* Darker green when clicked */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Smaller shadow on click */
+  transform: scale(0.98); /* Slight shrink on click */
+}
+
+/* Material icon styling */
+.mat-icon {
+  vertical-align: middle;
+  padding: 5px;
+}

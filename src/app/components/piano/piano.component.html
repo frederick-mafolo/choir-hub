@@ -1,0 +1,76 @@
+
+<div class="piano-room-container">
+  <div class="current-room">
+    <p>Current Room: {{ currentRoomId || "None" }}</p>
+  </div>
+  
+  <button mat-raised-button class="select-room-btn" (click)="openRooms()">
+    <mat-icon>launch</mat-icon>
+    Select a room
+  </button>
+  
+<div class="piano">
+  <div class="key-group" *ngFor="let keyGroup of keys">
+    <div class="white-key" [class.active]="keyGroup.white.active" (mousedown)="playSound(keyGroup.white.note)">
+      <div class="key-label">{{ keyGroup.white.note }}</div>
+    </div>
+    <div class="black-key" *ngIf="keyGroup.black" [class.active]="keyGroup.black.active" (mousedown)="playSound(keyGroup.black.note)">
+      <div class="key-label">{{ keyGroup.black.note }}</div>
+    </div>
+  </div>
+</div>
+
+<audio #audioPlayer></audio>
+
+<div class="pressed-key">
+  <p>Key : {{ pressedKey || 'None' }}</p>
+</div>
+
+<div class="song-form">
+  <input [(ngModel)]="newSong.name" placeholder="Song Name" />
+  <input [(ngModel)]="newSong.key" placeholder="Song Key" />
+  <button (click)="addSong()">	<mat-icon>playlist_add</mat-icon> Add</button>
+</div>
+
+<div cdkDropList class="song-list" (cdkDropListDropped)="drop($event)">
+  <div *ngFor="let song of songs; let i = index" cdkDrag  [ngClass]="{'highlight': i === 0}">
+    <mat-icon>music_note</mat-icon>
+    <span>{{ song.name }} - Key: {{ song.key }}</span>
+    <div class="song-actions">
+      <button mat-icon-button (click)="editSong(i)">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button (click)="deleteSong(song.id)">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Progression Editor -->
+<div class="progression-actions">
+  <button class="progression-btn" (click)="openProgressionEditor()">Add Progression</button>
+</div>
+
+<div class="current-progression">
+  <h3>Current Progression</h3>
+  <p>{{ currentProgression }}</p>
+  <button class="clear-progression-btn"  (click)="clearCurrentProgression()">Clear Progression</button>
+</div>
+
+
+</div>
+
+<!-- This will show the pop-up only when showProgressionEditor is true -->
+<app-progression-editor 
+  *ngIf="showProgressionEditor" 
+  (progressionConfirmed)="updateProgression($event)"
+  (cancel)="closeProgressionEditor()">
+</app-progression-editor>
+
+<app-rooms 
+ *ngIf="showRooms"  
+ (roomJoined)="onRoomJoined($event)"
+ (roomConfirmed)="updateRooom()">
+</app-rooms>
+

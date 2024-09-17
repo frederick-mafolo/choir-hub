@@ -1,0 +1,75 @@
+<div class="container">
+  <div class="progression-popup">
+    <div class="progression-container">
+      <button class="close-btn" (click)="closePopup()">✖</button>
+
+      <div class="chord-selection">
+        <h3>Select Key</h3>
+        <select [(ngModel)]="selectedKey" (change)="updateSolfegeMap()">
+          <option *ngFor="let key of baseSolfegeMap" [value]="key">{{ key }}</option>
+        </select>
+      </div>
+
+      <div class="piano-and-number-system">
+        <div class="button-selection">
+          <button [ngClass]="{'selected': leftSelected}" (click)="selectLeft()">Left</button>
+          <button [ngClass]="{'selected': rightSelected}" (click)="selectRight()">Right</button>
+          <button [ngClass]="{'selected': bothSelected}" (click)="selectBoth()">Both</button>
+        </div>
+
+        <div class="piano-container">
+          <div class="piano">
+            <div class="key-group" *ngFor="let keyGroup of keys">
+              <div class="white-key" (mousedown)="pressKey(keyGroup.white.note)">
+                <div class="key-label">{{ keyGroup.white.note }}</div>
+              </div>
+              <div class="black-key" *ngIf="keyGroup.black" (mousedown)="pressKey(keyGroup.black.note)">
+                <div class="key-label">{{ keyGroup.black.note }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="number-system">
+          <h3>Number System</h3>
+
+          <!-- Display for left hand only -->
+          <div *ngIf="leftSelected">
+            <p>Left: {{ leftInput }}</p>
+          </div>
+
+          <!-- Display for right hand only -->
+          <div *ngIf="rightSelected">
+            <p>Right: {{ rightInput }}</p>
+          </div>
+
+          <!-- Table for both hands input row by row -->
+          <div *ngIf="bothSelected"  class="table-container">
+            <table>
+              <tr>
+                <th>Left</th>
+                <th>Right</th>
+              </tr>
+              <tr *ngFor="let left of leftProgression; let i = index">
+                <td (click)="setActiveCell(i, 'left')">
+                  <input [(ngModel)]="leftProgression[i]" placeholder="Left progression" />
+                </td>
+                <td (click)="setActiveCell(i, 'right')">
+                  <input [(ngModel)]="rightProgression[i]" placeholder="Right progression" />
+                </td>
+              </tr>
+            </table>
+            <div class="add-row-button-container">
+            <button (click)="addProgressionRow()">Add Row</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button (click)="confirmProgression()">Confirm</button>
+        <button (click)="clearProgression()">Clear</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,1 +1,26 @@
-<app-piano></app-piano>
+<nav class="navbar">
+    <ul class="nav-list">
+      <li *ngIf="!authService.isLoggedIn()">
+        <a routerLink="/login" class="nav-link">Login</a>
+      </li>
+      <li *ngIf="!authService.isLoggedIn()">
+        <a routerLink="/register" class="nav-link">Register</a>
+      </li>
+      <li *ngIf="authService.isLoggedIn()">
+        <a routerLink="/rooms" class="nav-link">Rooms</a>
+      </li>
+      <li *ngIf="authService.isLoggedIn()">
+        <a routerLink="/piano" class="nav-link">Piano</a>
+      </li>
+      <li *ngIf="authService.isLoggedIn()">
+        <button mat-raised-button color="primary" (click)="logout()">Logout</button>
+      </li>
+    </ul>
+  </nav>
+  
+
+  <router-outlet></router-outlet>
+
+  <app-toast></app-toast>
+  
+ 

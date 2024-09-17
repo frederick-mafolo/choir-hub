@@ -14,6 +14,7 @@ export class ToastComponent implements OnInit {
   constructor(private toastService: ToastService) {}
 
   ngOnInit(): void {
+    console.log("Teststs")
     this.toastService.toastState$.subscribe(toast => {
       this.message = toast.message;
       this.type = toast.type;

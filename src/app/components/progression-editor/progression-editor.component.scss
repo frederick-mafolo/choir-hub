@@ -1,0 +1,213 @@
+* {
+    box-sizing: border-box;
+  }
+
+.progression-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+.progression-container {
+  background-color: white;
+  padding: 30px;
+  border-radius: 15px;
+  width: 95%;
+  height: 80%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  position: relative; /* Allows absolute positioning of child elements */
+}
+
+@media (min-width: 768px) {
+  .progression-container {
+    max-width: 75%;
+  }
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px; /* Position above the container */
+  right: 10px; /* Slightly outside the container for better aesthetics */
+  z-index: 1000;
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add slight shadow for depth */
+}
+
+  .piano-and-number-system {
+    display: flex;
+    flex-direction: column; /* Stack piano above number system */
+    margin-bottom: 20px;
+  }
+
+  .piano-container {
+    overflow-x: auto; /* Add horizontal scrollbar */
+    white-space: nowrap; /* Prevent line breaks */
+    display: flex; /* Display as flex container */
+  }
+  
+  // .piano {
+  //   display: flex; /* Display as flex item */
+  //   flex-wrap: nowrap; /* Prevent line breaks */
+  // }
+  .piano {
+    display: flex;
+    flex-wrap: nowrap;/* Center the piano horizontally */
+    margin-bottom: 20px; /* Add spacing below the piano */
+  }
+  .piano {
+ 
+    height: 200px; /* Adjust height of the piano */
+    width: 60%; /* Occupy 60% of the available width */
+  }
+  
+  .key-group {
+    position: relative;
+  }
+  
+  .white-key {
+    width: 40px;
+    height: 180px;
+    background-color: white;
+    border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1; /* Make sure white keys are below black keys */
+    margin-right: -3px; /* Overlap slightly with adjacent white keys */
+  }
+  
+  .black-key {
+    width: 20px;
+    height: 100px;
+    background-color: black;
+    border: 1px solid black;
+    position: absolute;
+    top: 0;
+    left: 29px; /* Position black keys between the white keys */
+    z-index: 2; /* Ensure black keys are above white keys */
+  }
+  
+  .key-label {
+    position: relative;
+    top: 45px; 
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+  }
+  
+  .black-key .key-label {
+    color: white; 
+  }
+  
+  .white-key:hover, .black-key:hover {
+    background-color: #ccc; /* Hover effect for keys */
+  }
+  
+  .number-system {
+    text-align: center; /* Center the number system content */
+  }
+  
+  
+  
+  .numbers {
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 24px;
+  }
+  
+  .numbers span {
+    margin-right: 15px;
+  }
+  
+  .actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: auto;
+  }
+  
+  .actions button {
+    padding: 15px 25px;
+    font-size: 16px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .actions button:hover {
+    background-color: #45a049;
+  }
+  
+  .actions button:last-child {
+    background-color: #f44336; /* Red color for clear button */
+  }
+  
+  .actions button:last-child:hover {
+    background-color: #e53935;
+  }
+  
+  .chord-selection {
+    display: flex;
+    align-items: center; /* Aligns the items vertically */
+    padding-top: 10px;
+    gap: 10px; /* Adds space between the h3 and select */
+    margin-bottom: 40px; 
+  }
+ 
+  .chord-selection h3 {
+    margin: 0; /* Remove any default margin from the h3 */
+  }
+  
+  .chord-selection select {
+    padding: 5px; /* Adds some padding to the select element for better appearance */
+    font-size: 16px; /* Adjust the font size if needed */
+  }
+
+  .button-selection button {
+    padding: 10px 20px;
+    margin: 0 5px;
+    border: none;
+    background-color: #e0e0e0;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .button-selection button.selected {
+    background-color: #4caf50;
+    color: white;
+  }
+
+  .table-container {
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    align-items: center;
+    justify-content: center; /* Centers the table and button horizontally */
+    margin-top: 20px;
+  }
+
+
+.add-row-button-container {
+  margin-top: 10px; /* Add some space between the table and button */
+}
