@@ -97,8 +97,9 @@ export class RoomsComponent {
       );
       set(userRoomsRef, true)
         .then(() => {
+          this.roomService.setCurrentRoom(this.currentRoomId);
           this.closePopup();
-          this.toastService.showToast(`Joined room and added to user's room list: ${this.currentRoomId}`, 'success');
+          this.toastService.showToast(`Joined room ${this.currentRoomId}`, 'success');
         })
         .catch((error) => {
         

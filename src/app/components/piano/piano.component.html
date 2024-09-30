@@ -1,12 +1,9 @@
 
 <div class="piano-room-container">
-  <div class="current-room">
-    <p>Current Room: {{ currentRoomId || "None" }}</p>
-  </div>
-  
+
   <button mat-raised-button class="select-room-btn" (click)="openRooms()">
     <mat-icon>launch</mat-icon>
-    Select a room
+    Current Room: {{ currentRoomId || "None" }}
   </button>
   
 <div class="piano">
@@ -47,17 +44,25 @@
   </div>
 </div>
 
-<!-- Progression Editor -->
-<div class="progression-actions">
-  <button class="progression-btn" (click)="openProgressionEditor()">Add Progression</button>
-</div>
-
-<div class="current-progression">
+<!-- Display current progression if available -->
+<div *ngIf="currentProgression.length > 0" class="current-progression">
   <h3>Current Progression</h3>
-  <p>{{ currentProgression }}</p>
-  <button class="clear-progression-btn"  (click)="clearCurrentProgression()">Clear Progression</button>
+  <p>{{ currentProgression.join(' | ') }}</p>
+  <button (click)="openProgressionEditor()">Edit Progression</button>
 </div>
 
+<!-- Add Progression Button if no progression exists -->
+<div *ngIf="currentProgression.length === 0" class="no-progression">
+  <button (click)="openProgressionEditor()">Add Progression</button>
+</div>
+
+<!-- Progression Editor -->
+<div *ngIf="showProgressionEditor">
+  <app-progression-editor
+    [selectedSongId]="selectedSongId"
+    (progressionConfirmed)="updateProgression($event)">
+  </app-progression-editor>
+</div>
 
 </div>
 

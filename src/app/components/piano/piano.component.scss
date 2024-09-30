@@ -214,29 +214,6 @@
   border-radius: 8px;
 }
 
-.current-room {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  margin-top: 20px;
-}
-
-.current-room p {
-  font-size: 15px;
-  font-weight: bold;
-  color: #4caf50;
-  background-color: #f1f1f1;
-  padding: 15px 30px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s ease;
-}
-
-.current-room p:hover {
-  background-color: #e0e0e0;
-}
-
 .clear-progression-btn {
   padding: 10px 20px;
   background-color: #f44336;
@@ -255,8 +232,8 @@
 
 /* Style for the button */
 button.select-room-btn {
-  background-color: #4caf50; /* Green background */
-  color: white; /* Text color */
+  background-color: #f1f1f1; /* Green background */
+  color: #393b39; /* Text color */
   border: none; /* Remove default border */
   border-radius: 8px; /* Rounded corners */
   padding: 10px 20px; /* Adjust padding for button and icon */
@@ -269,11 +246,13 @@ button.select-room-btn {
   gap: 8px; /* Space between icon and text */
   outline: none; /* Remove focus outline */
   margin-bottom: 20px;
+  margin-top: 20px;
 }
 
 /* Hover effect for button */
 button.select-room-btn:hover {
   background-color: #45a049; /* Slightly darker green on hover */
+  color:white;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Deepen shadow on hover */
   transform: scale(1.05); /* Slight scaling on hover */
 }
@@ -281,6 +260,7 @@ button.select-room-btn:hover {
 /* Active effect when the button is clicked */
 button.select-room-btn:active {
   background-color: #388e3c; /* Darker green when clicked */
+  color:white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Smaller shadow on click */
   transform: scale(0.98); /* Slight shrink on click */
 }

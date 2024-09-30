@@ -30,7 +30,7 @@ export class RoomService {
   }
 
   // Get the room ID from local storage
-  private getRoomFromLocalStorage(): string | null {
+  public getRoomFromLocalStorage(): string | null {
     return localStorage.getItem(this.roomIdKey);
   }
 }

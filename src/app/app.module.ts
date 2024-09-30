@@ -12,6 +12,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
+import { ReactiveFormsModule } from '@angular/forms';
 
 // Firebase imports
 // import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
@@ -42,6 +43,7 @@ import { DeleteConfirmationModalComponent } from './components/delete-confirmati
     BrowserModule,
     AppRoutingModule,
     FormsModule,
+    ReactiveFormsModule,
     DragDropModule,
     BrowserAnimationsModule,
     MatButtonModule,

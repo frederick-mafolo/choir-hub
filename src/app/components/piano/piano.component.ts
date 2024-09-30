@@ -1,7 +1,7 @@
 import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { PianoService } from '../../services/piano.service';
 import { ToastService } from '../../services/toast.service';
-import { Database, ref, set, push, onValue } from '@angular/fire/database';
+import { Database, ref, set, push, onValue, get } from '@angular/fire/database';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { RoomService } from '../../services/room.service';
 import { EditSongModalComponent } from '../edit-song-modal/edit-song-modal.component';
@@ -32,6 +32,8 @@ export class PianoComponent implements OnInit {
   newSong = { name: '', key: '' };
   songs: { id: string, name: string, key: string }[] = [];
   currentProgression: string[] = [];
+  progressionData: any = {}; // Store progression data here (left, right, both)
+  selectedSongId: string | null = null; // Track selected song ID
 
   keys: KeyGroup[] = [
     {
@@ -68,6 +70,7 @@ export class PianoComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+
     // Subscribe to the current room from RoomService
     this.roomService.currentRoom$.subscribe((roomId) => {
       this.currentRoomId = roomId || ''; // Update the current room ID
@@ -79,6 +82,7 @@ export class PianoComponent implements OnInit {
     this.getAllSongs();
   }
 
+
   getAllSongs(): void {
     if (!this.currentRoomId) {
       return;
@@ -87,7 +91,7 @@ export class PianoComponent implements OnInit {
     const songsRef = ref(this.db, `rooms/${this.currentRoomId}/songs`);
     onValue(songsRef, (snapshot) => {
       const songList = snapshot.val() || {};
-      this.songs = Object.keys(songList).map(key => ({
+            this.songs = Object.keys(songList).map(key => ({
         id: key,
         ...songList[key]
       }));
@@ -237,17 +241,35 @@ deleteSong(id: string) {
     this.pressedKey = note; // Update the pressed key display
   }
 
-  selectSong(song: { name: string; key: string }) {
-    alert(`Selected Song: ${song.name}, Key: ${song.key}`);
-  }
+// Fetch the progression for a song and show it
+selectSong(songId: string): void {
+  this.selectedSongId = songId;
+  const progressionRef = ref(this.db, `rooms/${this.currentRoomId}/songs/${songId}/progression`);
+  
+  get(progressionRef).then(snapshot => {
+    const progression = snapshot.val();
+    if (progression) {
+      this.progressionData = progression;
+      this.currentProgression = progression.both ? [progression.both.left.join(', '), progression.both.right.join(' - ')] : [];
+    } else {
+      this.currentProgression = [];
+      this.progressionData = {};
+    }
+  });
+}
 
+updateProgression(progression: string[]) {
+  this.currentProgression = progression;
+  this.closeProgressionEditor(); // Close the editor after confirming
+}
 
-   // Update the progression when confirmed from the child component
-   updateProgression(progression: string[]) {
-    this.currentProgression = progression;
-    this.closeProgressionEditor(); // Close the editor after confirming
-  }
+closeProgressionEditor() {
+  this.showProgressionEditor = false;
+}
 
+clearCurrentProgression() {
+  this.currentProgression = [];
+}
   updateRooom(){
     this.closeRooms()
   }
@@ -263,12 +285,5 @@ deleteSong(id: string) {
   closeRooms(){
     this.showRooms= false;
   }
-  // Close the progression editor
-  closeProgressionEditor() {
-    this.showProgressionEditor = false;
-  }
-
-  clearCurrentProgression() {
-    this.currentProgression = [];
-  }
+ 
 }
