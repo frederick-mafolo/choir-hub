@@ -203,7 +203,6 @@ export class ProgressionEditorComponent implements OnInit{
 
   pressKey(note: string) {
     const number = this.dynamicSolfegeMap[note];
-    console.log(this.dynamicSolfegeMap[note], note);
     if (!number) {
       return; // If the note doesn't exist in the solfege map, return early.
     }
@@ -300,41 +299,37 @@ export class ProgressionEditorComponent implements OnInit{
     this.leftSelected = false;
     this.rightSelected = false;
     this.bothSelected = true;
-    if (this.leftProgressions.length === 0) {
+    if (this.leftProgressions.length === 0 && this.rightProgressions.length === 0) {
       this.leftProgressions.push(this.fb.control('', Validators.required));
       this.rightProgressions.push(this.fb.control('', Validators.required));
-      console.log(  this.leftProgressions,this.rightProgressions)
     }
 
     this.cdr.markForCheck();
   }
 
   addProgressionRow() {
-    const control = this.fb.control('', Validators.required);
-    
+    const leftControl = this.fb.control('', Validators.required);
+    const rightControl = this.fb.control('', Validators.required);
+
     if (this.leftSelected) {
-      this.leftProgressions.push(control);
+      this.leftProgressions.push(leftControl);
     } else if (this.rightSelected) {
-      this.rightProgressions.push(control);
+      this.rightProgressions.push(rightControl);
     } else{
-      this.rightProgressions.push(control);
-      this.leftProgressions.push(control);
+      this.rightProgressions.push(leftControl);
+      this.leftProgressions.push(rightControl);
     }
   }
 
   saveProgression() {
-   
     const selectedKey = this.progressionForm.get('selectedKey')?.value; // Get selected key
     const songName = this.progressionForm.get('songName')?.value || 'Current progression'; // Default song name if not provided
-    console.log(  this.leftProgressions,this.rightProgressions)
-
+  
     if (this.currentRoomId) {
       const progression = {
         left: this.leftProgressions.length ? this.leftProgressions.value : null,
         right: this.rightProgressions.length ? this.rightProgressions.value : null,
       };
-      console.log(progression)
-
   
       const roomRef = ref(this.db, `rooms/${this.currentRoomId}`); // Reference to the current room
       const songsRef = ref(this.db, `rooms/${this.currentRoomId}/songs/`); // Reference to the songs in the room
@@ -350,13 +345,21 @@ export class ProgressionEditorComponent implements OnInit{
           }
         })
         .then((songsSnapshot) => {
-          const songsData = songsSnapshot.val() || {}; // Get songs or set empty object if none exists
-          let songId = "-O820VXRb2d8wYrLSEv5" || null;
+          const songsData = songsSnapshot.val() || {}; // Get songs or set an empty object if none exists
+          const songId = "-O820VXRb2d8wYrLSEv5" || null; // Use the selectedSongId or generate a new one
   
-          // If a song ID is provided and exists in the songs data, update it
+          // If a song ID is provided and exists in the songs data, update the song
           if (songId && songsData[songId]) {
-            const existingSongRef = ref(this.db, `rooms/${this.currentRoomId}/songs/${songId}/progression`);
-            return set(existingSongRef, progression);
+            const existingSongRef = ref(this.db, `rooms/${this.currentRoomId}/songs/${songId}`);
+            const updatedSong = {
+              id: songId,
+              key: selectedKey,
+              name: songName,
+              progression: progression,
+            };
+  
+            // Update the song with new key, name, and progression
+            return set(existingSongRef, updatedSong);
           } else {
             // If no song ID or song doesn't exist, let Firebase generate a new ID with `push`
             const newSongRef = push(songsRef);
@@ -367,14 +370,15 @@ export class ProgressionEditorComponent implements OnInit{
               progression: progression,
             };
   
-            return set(newSongRef, newSong); // Save the new song to Firebase
+            // Save the new song to Firebase
+            return set(newSongRef, newSong);
           }
         })
         .then(() => {
           console.log('Progression saved successfully!');
         })
         .catch((err) => {
-          console.error('Error saving progression:', err.message);
+          console.error('Error saving progression and song details:', err.message);
         });
     } else {
       console.log('Failed to save! No room ID found.');
