@@ -1,13 +1,28 @@
-import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
+import {
+  Component,
+  ViewChild,
+  ElementRef,
+  OnInit,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { PianoService } from '../../services/piano.service';
 import { ToastService } from '../../services/toast.service';
-import { Database, ref, set, push, onValue, get } from '@angular/fire/database';
+import {
+  Database,
+  ref,
+  set,
+  push,
+  onValue,
+  get,
+  update,
+  remove,
+} from '@angular/fire/database';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { RoomService } from '../../services/room.service';
 import { EditSongModalComponent } from '../edit-song-modal/edit-song-modal.component';
 import { DeleteConfirmationModalComponent } from '../delete-confirmation-modal/delete-confirmation-modal.component';
 import { MatDialog } from '@angular/material/dialog';
-
+import html2canvas from 'html2canvas';
 interface Key {
   note: string;
   active: boolean;
@@ -28,12 +43,25 @@ export class PianoComponent implements OnInit {
   currentRoomId: string = '';
   pressedKey: string | null = null; // Currently pressed key
   showProgressionEditor: boolean = false;
-  showRooms:boolean = false;
-  newSong = { name: '', key: '' };
-  songs: { id: string, name: string, key: string }[] = [];
+  showRooms: boolean = false;
+  newSong = { name: '', key: '', order: 0 };
+  songs: {
+    order: number;
+    id: string;
+    name: string;
+    key: string;
+    progression: [];
+  }[] = [];
+
+  songData!: {} 
+
+  selectedSongIndex: number = 0;
+  progressions: { [id: string]: any } = {}; // Store progressions for each song
+  selectedSongId: string | null = null; // Track the currently selected song
+  selectedSong: any = null;
+  selectedProgression: any = null; // Store the progression of the selected song
   currentProgression: string[] = [];
   progressionData: any = {}; // Store progression data here (left, right, both)
-  selectedSongId: string | null = null; // Track selected song ID
 
   keys: KeyGroup[] = [
     {
@@ -60,17 +88,16 @@ export class PianoComponent implements OnInit {
     { white: { note: 'B', active: false } },
   ];
 
-
   constructor(
     private pianoService: PianoService,
     private toastService: ToastService,
     private db: Database,
     private roomService: RoomService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
-
     // Subscribe to the current room from RoomService
     this.roomService.currentRoom$.subscribe((roomId) => {
       this.currentRoomId = roomId || ''; // Update the current room ID
@@ -82,87 +109,252 @@ export class PianoComponent implements OnInit {
     this.getAllSongs();
   }
 
-
   getAllSongs(): void {
-    if (!this.currentRoomId) {
-      return;
-    }
-  
+    if (!this.currentRoomId) return;
+
     const songsRef = ref(this.db, `rooms/${this.currentRoomId}/songs`);
     onValue(songsRef, (snapshot) => {
       const songList = snapshot.val() || {};
-            this.songs = Object.keys(songList).map(key => ({
+      this.songs = Object.keys(songList).map((key) => ({
         id: key,
-        ...songList[key]
+        ...songList[key],
       }));
+
+      this.songs.sort((a, b) => a.order - b.order);
+
+      // Populate progressions array with song progression data
+      this.songs.forEach((song) => {
+        if (song.progression) {
+          this.progressions[song.id] = song.progression;
+        }
+      });
+
+      // Set default song and progression (first song)
+      if (this.songs.length > 0) {
+        this.songData = this.songs[0];
+        this.selectedSongId = this.songs[0].id;
+        this.selectedSong = this.songs[0]; // Default to first song
+        this.selectedProgression = this.progressions[this.selectedSongId];
+      }
+
+      this.cdr.markForCheck(); // Trigger change detection if needed
     });
   }
-  
 
-   // Add a new song to Firebase
-   addSong() {
+  // Function to handle song click and update progression
+  onSongClick(songId: string, index: number): void {
+    this.songData = this.songs[index];
+    this.selectedSongId = songId;
+    this.selectedSong = this.songs.find((song) => song.id === songId);
+    this.selectedProgression = this.progressions[songId];
+    this.selectedSongIndex = index;
+    this.cdr.markForCheck(); // Ensure UI updates
+  }
+
+  // Add a new song to Firebase
+  addSong() {
     if (!this.currentRoomId) {
       this.toastService.showToast('Please join a room first', 'warning');
       return;
     }
-  
-    let isEmpty = Object.values(this.newSong).every(value => value === '');
 
-    if(isEmpty){
+    let isEmpty = Object.values(this.newSong).every((value) => value === '');
+
+    if (isEmpty) {
       this.toastService.showToast('Invalid form', 'error');
-      return
+      return;
     }
-     
+
+    this.newSong.order = this.songs.length + 1;
 
     const songRef = push(ref(this.db, `rooms/${this.currentRoomId}/songs`));
     set(songRef, this.newSong).then(() => {
-      this.newSong = { name: '', key: '' }; // Reset the form
+      this.newSong = { name: '', key: '', order: 0 }; // Reset the form
     });
   }
-  
-// Edit song
-editSong(index: number) {
-  if (!this.currentRoomId) {
-    alert('Please join a room first');
-    return;
+
+  // Edit song
+  editSong(index: number) {
+    if (!this.currentRoomId) {
+      this.toastService.showToast('Please join a room first', 'warning');
+      return;
+    }
+
+    const song = this.songs[index];
+    const dialogRef = this.dialog.open(EditSongModalComponent, {
+      width: '250px',
+      data: { song: { ...song } },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        set(
+          ref(this.db, `rooms/${this.currentRoomId}/songs/${song.id}`),
+          result
+        );
+      }
+    });
   }
 
-  const song = this.songs[index];
-  const dialogRef = this.dialog.open(EditSongModalComponent, {
-    width: '250px',
-    data: { song: { ...song } }
-  });
 
-  dialogRef.afterClosed().subscribe(result => {
-    if (result) {
-      set(ref(this.db, `rooms/${this.currentRoomId}/songs/${song.id}`), result);
+  deleteProgression(): void {
+    if (!this.selectedSongId || !this.currentRoomId) {
+      console.log('No song or room selected.');
+      return;
     }
-  });
-}
 
-// Delete song
-deleteSong(id: string) {
-  if (!this.currentRoomId) {
-    alert('Please join a room first');
-    return;
+    if (this.progressions && this.progressions[this.selectedSongId]) {
+      delete this.progressions[this.selectedSongId]
+    }
+    
+    const progressionRef = ref(this.db, `rooms/${this.currentRoomId}/songs/${this.selectedSongId}/progression`);
+
+    remove(progressionRef)
+      .then(() => {
+        this.toastService.showToast('Progression deleted successfully!', 'success');
+        this.selectedProgression = null;
+       
+      })
+      .catch((error) => {
+        this.toastService.showToast('Error deleting progression', 'error');
+        console.error('Error deleting progression:', error);
+      });
   }
 
-  const dialogRef = this.dialog.open(DeleteConfirmationModalComponent, {
-    width: '250px'
-  });
 
-  dialogRef.afterClosed().subscribe(confirmed => {
-    if (confirmed) {
-      const songRef = ref(this.db, `rooms/${this.currentRoomId}/songs/${id}`);
-      set(songRef, null);
+  shareProgression(): void {
+    const tableElement = document.querySelector('.progression-table') as HTMLElement;
+    
+    if (tableElement) {
+      html2canvas(tableElement).then((canvas) => {
+        // Convert the canvas to a Blob
+        canvas.toBlob((blob) => {
+          if (!blob) return;
+
+          // Create a file from the Blob
+          const file = new File([blob], 'progression.png', { type: 'image/png' });
+
+          // Use the Web Share API to share the image if supported
+          if (navigator.share && navigator.canShare({ files: [file] })) {
+            navigator.share({
+              title: 'Song Progression',
+              text: 'Check out this progression!',
+              files: [file], // Share the image file
+            }).then(() => {
+              console.log('Progression shared successfully!');
+            }).catch((error) => {
+              console.error('Error sharing progression:', error);
+            });
+          } else {
+            console.log('Sharing not supported on this device.');
+          }
+        }, 'image/png');
+      }).catch((error) => {
+        console.error('Error generating image:', error);
+      });
     }
-  });
-}
+  }
+
+  // Delete song
+  deleteSong(id: string, index: number) {
+    if (!this.currentRoomId) {
+      this.toastService.showToast('Please join a room first', 'warning');
+      return;
+    }
+
+    const song = this.songs[index];
+    const dialogRef = this.dialog.open(DeleteConfirmationModalComponent, {
+      width: '250px',
+      data: { song: { ...song } },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        const songRef = ref(this.db, `rooms/${this.currentRoomId}/songs/${id}`);
+        remove(songRef)
+          .then(() => {
+            this.reIndexSongs();
+          })
+          .catch((error) => {
+            this.toastService.showToast('Error deleting song', 'error');
+            console.error('Error deleting song:', error);
+          });
+      }
+    });
+  }
+
+  reIndexSongs(): void {
+    const songsRef = ref(this.db, `rooms/${this.currentRoomId}/songs`);
+    get(songsRef)
+      .then((snapshot) => {
+        const songList = snapshot.val() || {};
+        const songs = Object.keys(songList).map((key, index) => ({
+          id: key,
+          ...songList[key],
+          order: index + 1, // Reassign sequential order based on the index
+        }));
+
+        // Update the songs with the new order values
+        songs.forEach((song) => {
+          const songRef = ref(
+            this.db,
+            `rooms/${this.currentRoomId}/songs/${song.id}`
+          );
+          set(songRef, song);
+        });
+
+      })
+      .catch((error) => {
+        this.toastService.showToast('Error re-indexing songs', 'success');
+        console.error('Error re-indexing songs:', error);
+      });
+  }
 
   // Handle drag and drop for rearranging songs
   drop(event: CdkDragDrop<any[]>) {
     moveItemInArray(this.songs, event.previousIndex, event.currentIndex);
     // You may want to update the song order in Firebase here if needed
+    this.updateSongOrderInFirebase();
+
+    // Update the selectedSongIndex if the highlighted item was moved
+    if (this.selectedSongIndex === event.previousIndex) {
+      this.selectedSongIndex = event.currentIndex;
+    } else if (
+      this.selectedSongIndex > event.previousIndex &&
+      this.selectedSongIndex <= event.currentIndex
+    ) {
+      this.selectedSongIndex--; // Adjust index if an item was dragged upwards
+    } else if (
+      this.selectedSongIndex < event.previousIndex &&
+      this.selectedSongIndex >= event.currentIndex
+    ) {
+      this.selectedSongIndex++; // Adjust index if an item was dragged downwards
+    }
+
+    this.cdr.markForCheck(); // Ensure the UI updates
+  }
+
+  // Method to update the song order in Firebase
+  updateSongOrderInFirebase(): void {
+    const updates: any = {};
+
+    this.songs.forEach((song, index) => {
+      // Each song will now have an order/index property
+      song.order = index; // Set the new order locally
+      const songRef = `rooms/${this.currentRoomId}/songs/${song.id}`;
+      updates[songRef] = song;
+    });
+
+    // Update Firebase with the new order for each song
+    const dbRef = ref(this.db);
+    update(dbRef, updates)
+      .then(() => {
+       
+      })
+      .catch((error) => {
+        this.toastService.showToast('Error updating song order', 'error');
+        console.error('Error updating song order:', error);
+      });
   }
 
   onRoomJoined(roomId: string) {
@@ -203,7 +395,7 @@ deleteSong(id: string) {
   // Join a session and listen for keypress events
   playSound(note: string) {
     if (!this.currentRoomId) {
-      alert('Please create or join a room first.');
+      this.toastService.showToast('Please create or join a room first.', 'warning');
       return;
     }
 
@@ -233,6 +425,7 @@ deleteSong(id: string) {
         this.pressedKey = note;
       })
       .catch((error) => {
+        this.toastService.showToast('Error updating note in room', 'error');
         console.error('Error updating note in room:', error);
       });
   }
@@ -241,37 +434,46 @@ deleteSong(id: string) {
     this.pressedKey = note; // Update the pressed key display
   }
 
-// Fetch the progression for a song and show it
-selectSong(songId: string): void {
-  this.selectedSongId = songId;
-  const progressionRef = ref(this.db, `rooms/${this.currentRoomId}/songs/${songId}/progression`);
-  
-  get(progressionRef).then(snapshot => {
-    const progression = snapshot.val();
-    if (progression) {
-      this.progressionData = progression;
-      this.currentProgression = progression.both ? [progression.both.left.join(', '), progression.both.right.join(' - ')] : [];
-    } else {
-      this.currentProgression = [];
-      this.progressionData = {};
-    }
-  });
-}
+  // Fetch the progression for a song and show it
+  // selectSong(songId: string): void {
+ 
+  //   this.selectedSongId = songId;
+  //   const progressionRef = ref(
+  //     this.db,
+  //     `rooms/${this.currentRoomId}/songs/${songId}/progression`
+  //   );
 
-updateProgression(progression: string[]) {
-  this.currentProgression = progression;
-  this.closeProgressionEditor(); // Close the editor after confirming
-}
+  //   get(progressionRef).then((snapshot) => {
+  //     const progression = snapshot.val();
+  //     if (progression) {
+  //       this.progressionData = progression;
+  //       this.currentProgression = progression.both
+  //         ? [
+  //             progression.both.left.join(', '),
+  //             progression.both.right.join(' - '),
+  //           ]
+  //         : [];
+  //     } else {
+  //       this.currentProgression = [];
+  //       this.progressionData = {};
+  //     }
+  //   });
+  // }
 
-closeProgressionEditor() {
-  this.showProgressionEditor = false;
-}
+  updateProgression(progression: string[]) {
+    this.currentProgression = progression;
+    this.closeProgressionEditor(); // Close the editor after confirming
+  }
 
-clearCurrentProgression() {
-  this.currentProgression = [];
-}
-  updateRooom(){
-    this.closeRooms()
+  closeProgressionEditor() {
+    this.showProgressionEditor = false;
+  }
+
+  clearCurrentProgression() {
+    this.currentProgression = [];
+  }
+  updateRooom() {
+    this.closeRooms();
   }
 
   openProgressionEditor() {
@@ -282,8 +484,7 @@ clearCurrentProgression() {
     this.showRooms = true;
   }
 
-  closeRooms(){
-    this.showRooms= false;
+  closeRooms() {
+    this.showRooms = false;
   }
- 
 }

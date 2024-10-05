@@ -13,6 +13,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MatMenuModule } from '@angular/material/menu';
+
 
 // Firebase imports
 // import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
@@ -50,6 +52,7 @@ import { DeleteConfirmationModalComponent } from './components/delete-confirmati
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
+    MatMenuModule,
     MatIconModule,
     MatToolbarModule,
     FirebaseModule.forRoot()

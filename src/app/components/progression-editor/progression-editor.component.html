@@ -59,8 +59,10 @@
         </div>
 
         <div class="number-system">
+
+       
         <!-- Left Progressions -->
-        <div *ngIf="leftSelected">
+        <div *ngIf="leftSelected || (!songData.progression?.right?.length && !bothSelected)">
         <div *ngIf="leftProgressions.controls.length">
           <h3>Left Hand Progression</h3>
           <div *ngFor="let row of leftProgressions.controls; let i = index" class="progression-row">
@@ -73,9 +75,10 @@
           <button (click)="addProgressionRow()">Add Row</button>
         </div>
         </div>
+    
 
         <!-- Right Progressions -->
-        <div *ngIf="rightSelected">
+        <div *ngIf="rightSelected || (!songData.progression?.left?.length && !bothSelected)">
         <div *ngIf="rightProgressions.controls.length">
           <h3>Right Hand Progression</h3>
           <div *ngFor="let row of rightProgressions.controls; let i = index" class="progression-row">
@@ -89,7 +92,7 @@
         </div>
         </div>
         <!-- Both Hands Selected -->
-        <div *ngIf="bothSelected" class="table-container">
+        <div *ngIf="bothSelected || (songData.progression?.left?.length && songData.progression?.right?.length)" class="table-container">
           <form [formGroup]="progressionForm">
             <table>
               <thead>
