@@ -348,28 +348,6 @@ export class ProgressionEditorComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
-  async loadProgression() {
-    if (!this.currentRoomId || !this.songData.id) return;
-
-    const progressionRef = ref(
-      this.db,
-      `rooms/${this.currentRoomId}/songs/${this.songData.id}/progression`
-    );
-    const snapshot = await get(progressionRef);
-    const progressionData = snapshot.val();
-    if (progressionData) {
-      if (progressionData.left) {
-        this.leftProgressions.patchValue(progressionData.left);
-      }
-      if (progressionData.right) {
-        this.rightProgressions.patchValue(progressionData.right);
-      }
-      this.progressionForm
-        .get('songName')
-        ?.setValue(progressionData.song || '');
-    }
-  }
-
   selectLeft() {
     this.clearProgression(); // Avoid clearing existing data for simplicity
     this.leftSelected = true;
