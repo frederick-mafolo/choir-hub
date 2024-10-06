@@ -17,9 +17,9 @@
 }
 
 .progression-container {
-  overflow-x: auto; /* Add horizontal scrollbar */
-  white-space: nowrap; /* Prevent line breaks */
-  display: flex; /* Display as flex container */
+  overflow-x: auto; 
+  white-space: nowrap; 
+  display: flex;
   background-color: white;
   padding: 19px;
   border-radius: 15px;
@@ -32,7 +32,7 @@
 .progression-subcontainer{
   display: flex;
   flex-direction: column;
-  position: relative; /* Allows absolute positioning of child elements */
+  position: relative;
 }
 
 @media (min-width: 768px) {
@@ -43,8 +43,8 @@
 
 .close-btn {
   position: absolute;
-  top: 10px; /* Position above the container */
-  right: 10px; /* Slightly outside the container for better aesthetics */
+  top: 10px; 
+  right: 10px; 
   z-index: 1000;
   background-color: #ff4d4d;
   color: white;
@@ -57,34 +57,31 @@
   justify-content: center;
   cursor: pointer;
   font-size: 18px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add slight shadow for depth */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
 }
 
   .piano-and-number-system {
     display: flex;
-    flex-direction: column; /* Stack piano above number system */
+    flex-direction: column; 
     margin-bottom: 20px;
   }
 
   .piano-container {
-    overflow-x: auto; /* Add horizontal scrollbar */
-    white-space: nowrap; /* Prevent line breaks */
-    display: flex; /* Display as flex container */
+    overflow-x: auto; 
+    white-space: nowrap; 
+    display: flex; 
   }
   
-  // .piano {
-  //   display: flex; /* Display as flex item */
-  //   flex-wrap: nowrap; /* Prevent line breaks */
-  // }
+
   .piano {
     display: flex;
-    flex-wrap: nowrap;/* Center the piano horizontally */
-    margin-bottom: 20px; /* Add spacing below the piano */
+    flex-wrap: nowrap;
+    margin-bottom: 20px; 
   }
   .piano {
  
-    height: 200px; /* Adjust height of the piano */
-    width: 60%; /* Occupy 60% of the available width */
+    height: 200px; 
+    width: 60%; 
   }
   
   .key-group {
@@ -127,21 +124,21 @@
   }
   
   .white-key:hover, .black-key:hover {
-    background-color: #ccc; /* Hover effect for keys */
+    background-color: #ccc; 
   }
   
   .number-system {
-    text-align: center; /* Center the number system content */
+    text-align: center; 
     margin-top: 15px;
   }
   
   .table-container {
-    width: 100%; /* Ensure table fits within the parent container */
-    margin: 0 auto; /* Center the table */
+    width: 100%; 
+    margin: 0 auto;
   }
   
   table {
-    width: 100%; /* Make the table responsive */
+    width: 100%; 
     border-collapse: collapse;
   }
 
@@ -156,21 +153,21 @@
 
   .both-chord{
     font-size: 13px;
-    width: 95%; /* Ensure the input fields take up the full width of the table cell */
+    width: 95%; 
     margin: 0 auto; 
     display: block;
     box-sizing: border-box;
     max-width: 95%; 
    }
    tr {
-    display: flex; /* Centers content horizontally */
+    display: flex;
     justify-content: center;
     align-items: center;
-    padding: 10px; /* Optional: Adds padding for better spacing */
+    padding: 10px;
   }
   mat-icon {
     cursor: pointer;
-    vertical-align: middle; /* Ensures the icon is vertically aligned */
+    vertical-align: middle; 
   }
 
    .single-row{
@@ -194,10 +191,10 @@
     display: flex;
     justify-content: space-between;
     margin-top: auto;
-    position: sticky; /* Make the buttons sticky */
-    bottom: 0; /* Stick to the bottom of the screen */
+    position: sticky; 
+    bottom: 0; 
     padding: 15px 25px;
-    z-index: 1000; /* Ensures buttons stay on top */
+    z-index: 1000;
   }
   
   .actions button {
@@ -215,7 +212,7 @@
   }
   
   .actions button:last-child {
-    background-color: #4caf50;  /* Red color for clear button */
+    background-color: #4caf50; 
     border:none;
     color: white;
   }
@@ -227,36 +224,36 @@
   .sticky-actions {
     position: -webkit-sticky; /* For Safari */
     position: sticky;
-    bottom: 0; /* Keeps the button 10px from the bottom of the viewport */
+    bottom: 0; 
     padding: 10px;
-    z-index: 1000; /* Ensures it stays above other content */
-    justify-content: space-between; /* Ensure buttons are spaced evenly */
+    z-index: 1000; 
+    justify-content: space-between; 
     flex-shrink: 0; 
   }
   
   
   .chord-selection {
     display: flex;
-    align-items: center; /* Aligns the items vertically */
+    align-items: center; 
     padding-top: 10px;
-    gap: 10px; /* Adds space between the h3 and select */
+    gap: 10px;
     margin-bottom: 20px; 
   }
  
   .chord-selection h3 {
-    margin: 0; /* Remove any default margin from the h3 */
+    margin: 0; 
   }
   
   .chord-selection select {
-    padding: 5px; /* Adds some padding to the select element for better appearance */
-    font-size: 16px; /* Adjust the font size if needed */
+    padding: 5px; 
+    font-size: 16px; 
   }
 
   .button-selection {
     display: flex;
-    flex-direction: row; /* Stack items vertically */
+    flex-direction: row; 
     align-items: center;
-    justify-content: center; /* Centers the table and button horizontally */
+    justify-content: center; 
     margin-bottom: 10px;
   }
   .button-selection button {
@@ -275,27 +272,27 @@
 
   .table-container {
     display: flex;
-    flex-direction: column; /* Stack items vertically */
+    flex-direction: column; 
     align-items: center;
-    justify-content: center; /* Centers the table and button horizontally */
+    justify-content: center; 
     margin-top: 20px;
   }
 
 
 .add-row-button-container {
-  margin-top: 10px; /* Add some space between the table and button */
+  margin-top: 10px; 
 }
 
 .song-selection{
   display: flex;
-  align-items: center; /* Vertically aligns the content */
+  align-items: center;
   margin-bottom: 40px;
 }
 
 .progression-row {
   display: flex;
-  align-items: center; /* Vertically aligns the content */
-  margin-bottom: 10px; /* Optional: Add some spacing between rows */
+  align-items: center; 
+  margin-bottom: 10px;
   justify-content: center;
 }
 
@@ -305,10 +302,10 @@ span{
 }
 
 input {
-  // flex: 1; /* This ensures the input takes the available space */
-  margin-right: 10px; /* Adds some spacing between the input and icon */
+
+  margin-right: 10px; 
 }
 
 mat-icon {
-  cursor: pointer; /* Changes cursor to pointer when hovering over the icon */
+  cursor: pointer; 
 }

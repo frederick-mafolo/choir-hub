@@ -51,7 +51,8 @@
 
 
 <!-- Add Progression Button if no progression exists -->
-<div *ngIf="!selectedProgression" class="no-progression">
+<div *ngIf="!selectedProgression" class="current-progression">
+  <h3>Add a progression for <b>{{ selectedSong?.name || 'Untitled Song' }}</b></h3>
   <button class="add-progression-btn" (click)="openProgressionEditor()">Add Progression</button>
 </div>
 
@@ -93,20 +94,22 @@
     </thead>
     <tbody>
       <tr *ngFor="let prog of (selectedProgression.left || selectedProgression.right); let i = index">
-        <td>{{ selectedProgression.left ? selectedProgression.left[i] : '---' }}</td>
-        <td>{{ selectedProgression.right ? selectedProgression.right[i] : '---' }}</td>
+        <td>{{ selectedProgression.left && selectedProgression.left[i]?.trim() !== '' ? selectedProgression.left[i] : '---' }}</td>
+        <td>{{ selectedProgression.right && selectedProgression.right[i]?.trim() !== '' ? selectedProgression.right[i] : '---' }}</td>
       </tr>
     </tbody>
   </table>
   
 
-  <!-- Edit Progression Button -->
-  <button mat-fab aria-label="Edit Progression" >
-    <mat-icon class="menu-icon">edit</mat-icon>
-  </button>
+
 </div>
 
 
+
+  <!-- Edit Progression Button -->
+  <button mat-fab class="fab-btn" aria-label="Edit Progression" (click)="overwriteSelectedSongData()" >
+    <mat-icon class="menu-icon">add</mat-icon>
+  </button>
 
 
 </div>

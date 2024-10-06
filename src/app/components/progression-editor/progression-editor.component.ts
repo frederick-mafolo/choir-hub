@@ -32,19 +32,19 @@ interface Key {
   styleUrls: ['./progression-editor.component.scss'],
 })
 export class ProgressionEditorComponent implements OnInit {
-  @Input() songData!: any; // Song ID (if selected)
+  @Input() songData!: any; 
 
-  progressionForm!: FormGroup; // Main FormGroup
+  progressionForm!: FormGroup; 
   leftSelected = false;
   rightSelected = false;
   bothSelected = false;
-  currentRoomId!: string | null; // Room ID
+  currentRoomId!: string | null; 
+  progression!:any;
+  activeRowIndex: number | null = null;
+  activeColumn: 'left' | 'right' | null = null; 
 
-  activeRowIndex: number | null = null; // Track active row for "Both" hands input
-  activeColumn: 'left' | 'right' | null = null; // Track which column is selected ('left' or 'right')
+  @Output() progressionConfirmed = new EventEmitter<any>();
 
-  @Output() progressionConfirmed = new EventEmitter<string[]>();
-  // Array of keys (define your piano keys here)
   keys: KeyGroup[] = [
     {
       white: { note: 'C', active: false },
@@ -311,37 +311,31 @@ export class ProgressionEditorComponent implements OnInit {
     }
 
     // Handle for 'Left' selected
-    else if (this.leftSelected) {
-      const leftInput = this.progressionForm.get(
-        'leftProgressions'
-      ) as FormArray;
-
-      if (leftInput.length === 0) {
-        // Add a new row if the array is empty
-        leftInput.push(this.fb.control(''));
+    else if (this.leftSelected &&  this.activeRowIndex !== null &&
+      this.activeColumn !== null) {
+      if (this.activeColumn === 'left') {
+        if (this.leftProgressions.length > this.activeRowIndex) {
+          const leftRow = this.leftProgressions.at(
+            this.activeRowIndex
+          ) as FormControl;
+          leftRow.setValue(
+            leftRow.value ? `${leftRow.value}, ${number}` : number
+          );
+        }
       }
-
-      const currentValue = leftInput.at(0).value || '';
-      leftInput
-        .at(0)
-        .setValue(currentValue ? `${currentValue}, ${number}` : number);
     }
 
     // Handle for 'Right' selected
-    else if (this.rightSelected) {
-      const rightInput = this.progressionForm.get(
-        'rightProgressions'
-      ) as FormArray;
-
-      if (rightInput.length === 0) {
-        // Add a new row if the array is empty
-        rightInput.push(this.fb.control(''));
+    else if (this.rightSelected &&  this.activeRowIndex !== null &&
+      this.activeColumn !== null) {
+      if (this.rightProgressions.length > this.activeRowIndex) {
+        const rightRow = this.rightProgressions.at(
+          this.activeRowIndex
+        ) as FormControl;
+        rightRow.setValue(
+          rightRow.value ? `${rightRow.value}-${number}` : number
+        );
       }
-
-      const currentValue = rightInput.at(0).value || '';
-      rightInput
-        .at(0)
-        .setValue(currentValue ? `${currentValue} - ${number}` : number);
     }
 
     // Manually trigger change detection after pressing a key
@@ -412,6 +406,8 @@ export class ProgressionEditorComponent implements OnInit {
           ? this.rightProgressions.value
           : null,
       };
+
+      this.progression = progression;
 
       const roomRef = ref(this.db, `rooms/${this.currentRoomId}`); // Reference to the current room
       const songsRef = ref(this.db, `rooms/${this.currentRoomId}/songs/`); // Reference to the songs in the room
@@ -535,6 +531,6 @@ export class ProgressionEditorComponent implements OnInit {
   }
 
   closePopup() {
-    this.progressionConfirmed.emit([]);
+    this.progressionConfirmed.emit(this.progression);
   }
 }

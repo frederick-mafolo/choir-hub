@@ -68,6 +68,7 @@
           <div *ngFor="let row of leftProgressions.controls; let i = index" class="progression-row">
             <input
               [formControl]="asFormControl(row)"
+              (focus)="setActiveCell(i, 'left')"
               placeholder="Left progression"
             />
             <mat-icon (click)="deleteRow(i, true)">delete</mat-icon>
@@ -84,6 +85,7 @@
           <div *ngFor="let row of rightProgressions.controls; let i = index" class="progression-row">
             <input
               [formControl]="asFormControl(row)"
+              (focus)="setActiveCell(i, 'right')"
               placeholder="Right progression"
             />
             <mat-icon (click)="deleteRow(i, false)">delete</mat-icon>

@@ -28,9 +28,14 @@ interface Key {
   active: boolean;
 }
 
+export interface Progression {
+  left?: string[]; 
+  right?: string[]; 
+}
+
 interface KeyGroup {
   white: Key;
-  black?: Key; // Optional black key
+  black?: Key; 
 }
 
 @Component({
@@ -41,7 +46,7 @@ interface KeyGroup {
 export class PianoComponent implements OnInit {
   @ViewChild('audioPlayer') audioPlayerRef!: ElementRef;
   currentRoomId: string = '';
-  pressedKey: string | null = null; // Currently pressed key
+  pressedKey: string | null = null; 
   showProgressionEditor: boolean = false;
   showRooms: boolean = false;
   newSong = { name: '', key: '', order: 0 };
@@ -53,15 +58,15 @@ export class PianoComponent implements OnInit {
     progression: [];
   }[] = [];
 
-  songData!: {} 
+  songData!: {};
 
   selectedSongIndex: number = 0;
-  progressions: { [id: string]: any } = {}; // Store progressions for each song
-  selectedSongId: string | null = null; // Track the currently selected song
+  progressions: { [id: string]: any } = {}; 
+  selectedSongId: string | null = null;
   selectedSong: any = null;
-  selectedProgression: any = null; // Store the progression of the selected song
-  currentProgression: string[] = [];
-  progressionData: any = {}; // Store progression data here (left, right, both)
+  selectedProgression: any = null; 
+
+  progressionData: any = {}; 
 
   keys: KeyGroup[] = [
     {
@@ -111,7 +116,6 @@ export class PianoComponent implements OnInit {
 
   getAllSongs(): void {
     if (!this.currentRoomId) return;
-
     const songsRef = ref(this.db, `rooms/${this.currentRoomId}/songs`);
     onValue(songsRef, (snapshot) => {
       const songList = snapshot.val() || {};
@@ -131,9 +135,9 @@ export class PianoComponent implements OnInit {
 
       // Set default song and progression (first song)
       if (this.songs.length > 0) {
-        this.songData = this.songs[0];
-        this.selectedSongId = this.songs[0].id;
-        this.selectedSong = this.songs[0]; // Default to first song
+        this.songData = this.selectedSongIndex ? this.songs[this.selectedSongIndex] : this.songs[0];
+        this.selectedSongId = this.selectedSongIndex ? this.songs[this.selectedSongIndex].id : this.songs[0].id;
+        this.selectedSong = this.selectedSongIndex ? this.songs[this.selectedSongIndex] : this.songs[0]; // Default to first song
         this.selectedProgression = this.progressions[this.selectedSongId];
       }
 
@@ -148,9 +152,26 @@ export class PianoComponent implements OnInit {
     this.selectedSong = this.songs.find((song) => song.id === songId);
     this.selectedProgression = this.progressions[songId];
     this.selectedSongIndex = index;
-    this.cdr.markForCheck(); // Ensure UI updates
+    this.cdr.markForCheck(); 
   }
 
+  
+  updateProgression(progression: Progression) {
+    console.log(progression)
+    if ((progression?.left == undefined && progression?.right == undefined) || (progression.left == null && progression.right == null)){
+      console.log("Test 1")
+      delete this.progressions[this.selectedSongId as string];
+      this.selectedProgression = null;
+      this.closeProgressionEditor();
+      return;
+    }
+    else { 
+      console.log("Esls")
+    this.selectedSongIndex = this.selectedSongIndex;
+    this.selectedProgression = progression;
+    }
+    this.closeProgressionEditor(); // Close the editor after confirming
+  }
   // Add a new song to Firebase
   addSong() {
     if (!this.currentRoomId) {
@@ -196,7 +217,6 @@ export class PianoComponent implements OnInit {
     });
   }
 
-
   deleteProgression(): void {
     if (!this.selectedSongId || !this.currentRoomId) {
       console.log('No song or room selected.');
@@ -204,16 +224,21 @@ export class PianoComponent implements OnInit {
     }
 
     if (this.progressions && this.progressions[this.selectedSongId]) {
-      delete this.progressions[this.selectedSongId]
+      delete this.progressions[this.selectedSongId];
     }
-    
-    const progressionRef = ref(this.db, `rooms/${this.currentRoomId}/songs/${this.selectedSongId}/progression`);
+
+    const progressionRef = ref(
+      this.db,
+      `rooms/${this.currentRoomId}/songs/${this.selectedSongId}/progression`
+    );
 
     remove(progressionRef)
       .then(() => {
-        this.toastService.showToast('Progression deleted successfully!', 'success');
+        this.toastService.showToast(
+          'Progression deleted successfully!',
+          'success'
+        );
         this.selectedProgression = null;
-       
       })
       .catch((error) => {
         this.toastService.showToast('Error deleting progression', 'error');
@@ -221,37 +246,45 @@ export class PianoComponent implements OnInit {
       });
   }
 
-
   shareProgression(): void {
-    const tableElement = document.querySelector('.progression-table') as HTMLElement;
-    
+    const tableElement = document.querySelector(
+      '.progression-table'
+    ) as HTMLElement;
+
     if (tableElement) {
-      html2canvas(tableElement).then((canvas) => {
-        // Convert the canvas to a Blob
-        canvas.toBlob((blob) => {
-          if (!blob) return;
+      html2canvas(tableElement)
+        .then((canvas) => {
+          // Convert the canvas to a Blob
+          canvas.toBlob((blob) => {
+            if (!blob) return;
 
-          // Create a file from the Blob
-          const file = new File([blob], 'progression.png', { type: 'image/png' });
-
-          // Use the Web Share API to share the image if supported
-          if (navigator.share && navigator.canShare({ files: [file] })) {
-            navigator.share({
-              title: 'Song Progression',
-              text: 'Check out this progression!',
-              files: [file], // Share the image file
-            }).then(() => {
-              console.log('Progression shared successfully!');
-            }).catch((error) => {
-              console.error('Error sharing progression:', error);
+            // Create a file from the Blob
+            const file = new File([blob], 'progression.png', {
+              type: 'image/png',
             });
-          } else {
-            console.log('Sharing not supported on this device.');
-          }
-        }, 'image/png');
-      }).catch((error) => {
-        console.error('Error generating image:', error);
-      });
+
+            // Use the Web Share API to share the image if supported
+            if (navigator.share && navigator.canShare({ files: [file] })) {
+              navigator
+                .share({
+                  title: 'Song Progression',
+                  text: 'Check out this progression!',
+                  files: [file], // Share the image file
+                })
+                .then(() => {
+                  console.log('Progression shared successfully!');
+                })
+                .catch((error) => {
+                  console.error('Error sharing progression:', error);
+                });
+            } else {
+              console.log('Sharing not supported on this device.');
+            }
+          }, 'image/png');
+        })
+        .catch((error) => {
+          console.error('Error generating image:', error);
+        });
     }
   }
 
@@ -302,7 +335,6 @@ export class PianoComponent implements OnInit {
           );
           set(songRef, song);
         });
-
       })
       .catch((error) => {
         this.toastService.showToast('Error re-indexing songs', 'success');
@@ -348,9 +380,7 @@ export class PianoComponent implements OnInit {
     // Update Firebase with the new order for each song
     const dbRef = ref(this.db);
     update(dbRef, updates)
-      .then(() => {
-       
-      })
+      .then(() => {})
       .catch((error) => {
         this.toastService.showToast('Error updating song order', 'error');
         console.error('Error updating song order:', error);
@@ -395,7 +425,10 @@ export class PianoComponent implements OnInit {
   // Join a session and listen for keypress events
   playSound(note: string) {
     if (!this.currentRoomId) {
-      this.toastService.showToast('Please create or join a room first.', 'warning');
+      this.toastService.showToast(
+        'Please create or join a room first.',
+        'warning'
+      );
       return;
     }
 
@@ -434,46 +467,19 @@ export class PianoComponent implements OnInit {
     this.pressedKey = note; // Update the pressed key display
   }
 
-  // Fetch the progression for a song and show it
-  // selectSong(songId: string): void {
- 
-  //   this.selectedSongId = songId;
-  //   const progressionRef = ref(
-  //     this.db,
-  //     `rooms/${this.currentRoomId}/songs/${songId}/progression`
-  //   );
-
-  //   get(progressionRef).then((snapshot) => {
-  //     const progression = snapshot.val();
-  //     if (progression) {
-  //       this.progressionData = progression;
-  //       this.currentProgression = progression.both
-  //         ? [
-  //             progression.both.left.join(', '),
-  //             progression.both.right.join(' - '),
-  //           ]
-  //         : [];
-  //     } else {
-  //       this.currentProgression = [];
-  //       this.progressionData = {};
-  //     }
-  //   });
-  // }
-
-  updateProgression(progression: string[]) {
-    this.currentProgression = progression;
-    this.closeProgressionEditor(); // Close the editor after confirming
-  }
 
   closeProgressionEditor() {
     this.showProgressionEditor = false;
   }
 
-  clearCurrentProgression() {
-    this.currentProgression = [];
-  }
+ 
   updateRooom() {
     this.closeRooms();
+  }
+
+  overwriteSelectedSongData() {
+    this.songData = {};
+    this.openProgressionEditor();
   }
 
   openProgressionEditor() {

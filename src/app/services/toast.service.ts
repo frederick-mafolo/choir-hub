@@ -9,7 +9,6 @@ export class ToastService {
   toastState$ = this.toastSubject.asObservable();
 
   showToast(message: string, type: 'success' | 'error' | 'info' | 'warning' = 'info'): void {
-    console.log("test")
     this.toastSubject.next({ message, type });
   }
 }
