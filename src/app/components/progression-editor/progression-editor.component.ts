@@ -169,6 +169,7 @@ export class ProgressionEditorComponent implements OnInit {
       });
 
       if (this.songData.progression) {
+        this.progression = this.songData.progression;
         if (this.songData.progression?.left != undefined && !this.songData.progression?.right ) {
           this.leftSelected = true;
           // Handle the leftProgressions array
