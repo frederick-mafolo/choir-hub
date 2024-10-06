@@ -350,6 +350,11 @@ export class ProgressionEditorComponent implements OnInit {
     if (this.leftProgressions.length === 0) {
       this.leftProgressions.push(this.fb.control('', Validators.required));
     }
+
+    if (this.leftProgressions.length > 0) {
+      this.activeRowIndex = 0; 
+      this.activeColumn = 'left'; 
+    }
     this.cdr.markForCheck();
   }
 
@@ -360,6 +365,12 @@ export class ProgressionEditorComponent implements OnInit {
     this.bothSelected = false;
     if (this.rightProgressions.length === 0) {
       this.rightProgressions.push(this.fb.control('', Validators.required));
+    }
+
+    
+    if (this.rightProgressions.length > 0) {
+      this.activeRowIndex = 0; 
+      this.activeColumn = 'right'; 
     }
     this.cdr.markForCheck();
   }
@@ -375,6 +386,11 @@ export class ProgressionEditorComponent implements OnInit {
     ) {
       this.leftProgressions.push(this.fb.control('', Validators.required));
       this.rightProgressions.push(this.fb.control('', Validators.required));
+    }
+    
+    if (this.leftProgressions.length > 0) {
+      this.activeRowIndex = 0; 
+      this.activeColumn = 'left'; 
     }
 
     this.cdr.markForCheck();

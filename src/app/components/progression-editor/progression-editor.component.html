@@ -69,6 +69,7 @@
             <input
               [formControl]="asFormControl(row)"
               (focus)="setActiveCell(i, 'left')"
+              [ngClass]="{'focused-input': activeRowIndex === i && activeColumn === 'left'}"
               placeholder="Left progression"
             />
             <mat-icon (click)="deleteRow(i, true)">delete</mat-icon>
@@ -86,6 +87,7 @@
             <input
               [formControl]="asFormControl(row)"
               (focus)="setActiveCell(i, 'right')"
+              [ngClass]="{'focused-input': activeRowIndex === i && activeColumn === 'right'}"
               placeholder="Right progression"
             />
             <mat-icon (click)="deleteRow(i, false)">delete</mat-icon>
@@ -112,6 +114,7 @@
                       class="both-chord"
                       [formControl]="asFormControl(leftProgressions.at(i))"
                       (focus)="setActiveCell(i, 'left')"
+                      [ngClass]="{'focused-input': activeRowIndex === i && activeColumn === 'left'}"
                       placeholder="Left progression"
                     />
                   </td>
@@ -120,6 +123,7 @@
                       class="both-chord"
                       [formControl]="asFormControl(rightProgressions.at(i))"
                       (focus)="setActiveCell(i, 'right')"
+                      [ngClass]="{'focused-input': activeRowIndex === i && activeColumn === 'right'}"
                       placeholder="Right progression"
                     />
                   </td>
