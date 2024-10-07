@@ -1,11 +1,63 @@
-.login-form {
-    display: flex;
-    flex-direction: column;
-    width: 300px;
-    margin: 0 auto;
-  }
-  
-  .form-field {
-    margin-bottom: 16px;
-  }
-  
+.main{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.signup-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  background-color: #fff;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  text-align: center;
+}
+.signup-container h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #333333;
+}
+.signup-container input[type="email"],
+.signup-container input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+.signup-container p {
+  font-size: 14px;
+  color: #666666;
+  margin: 16px 0;
+}
+.signup-container p a {
+  color: #007bff;
+  text-decoration: none;
+}
+.signup-container p a:hover {
+  text-decoration: underline;
+}
+.signup-container button {
+  background-color: #007bff;
+  color: #ffffff;
+  padding: 12px;
+  border: none;
+  border-radius: 4px;
+  width: 100%;
+  font-size: 16px;
+  cursor: pointer;
+}
+.signup-container button:hover {
+  background-color: #0056b3;
+}
+.signup-container .signin-link {
+  margin-top: 16px;
+  font-size: 14px;
+}

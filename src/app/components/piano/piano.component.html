@@ -30,7 +30,9 @@
   <button (click)="addSong()">	<mat-icon>playlist_add</mat-icon> Add</button>
 </div>
 
-<div cdkDropList class="song-list" (cdkDropListDropped)="drop($event)">
+<p *ngIf="!currentRoomId"  class="song-list" >No playlist found!</p>
+
+<div *ngIf="currentRoomId"  cdkDropList class="song-list" (cdkDropListDropped)="drop($event)">
   <div *ngFor="let song of songs; let i = index" 
        cdkDrag  
        [cdkDragStartDelay]="200"  

@@ -1,29 +1,46 @@
-<nav class="navbar">
-  <button mat-mini-fab aria-label="Example icon button with a menu icon">
-    <mat-icon>menu</mat-icon>
-  </button>
-    <ul class="nav-list">
-      <li *ngIf="!authService.isLoggedIn()">
-        <a routerLink="/login" class="nav-link">Login</a>
-      </li>
-      <li *ngIf="!authService.isLoggedIn()">
-        <a routerLink="/register" class="nav-link">Register</a>
-      </li>
-      <li *ngIf="authService.isLoggedIn()">
-        <a routerLink="/rooms" class="nav-link">Rooms</a>
-      </li>
-      <li *ngIf="authService.isLoggedIn()">
-        <a routerLink="/piano" class="nav-link">Piano</a>
-      </li>
-      <li *ngIf="authService.isLoggedIn()">
-        <button mat-raised-button color="primary" (click)="logout()">Logout</button>
-      </li>
-    </ul>
-  </nav>
+<div>
+    <div class="navbar">
+      <div fxLayout fxLayoutGap="20px">
+      <button
+       *ngIf="authService.isLoggedIn()"
+        mat-icon-button
+        (click)="sidenav.toggle()"
+        fxShow="true"
+      >
+        <mat-icon>menu</mat-icon>
+      </button>
+      <div class="logo">
+        <span> Choir Hub </span>
+      </div>
+    </div>
+      <div class="menu">
+        <a *ngIf="authService.isLoggedIn()" routerLink="/home">Home</a>
+        <a *ngIf="!authService.isLoggedIn()" routerLink="/register">Sign up</a>
+      </div>
+    </div>
   
 
-  <router-outlet></router-outlet>
-
-  <app-toast></app-toast>
-  
- 
+  <mat-sidenav-container fxFlexFill>
+    <mat-sidenav #sidenav>
+      <mat-nav-list>
+        <a (click)="sidenav.toggle()"  mat-list-item class="nav-item"><mat-icon>close</mat-icon></a>
+        <mat-divider></mat-divider>
+        <a href="#" mat-list-item>	<mat-icon>library_add</mat-icon>  Library</a>
+        <mat-divider></mat-divider>
+        <a href="#" mat-list-item><mat-icon>build</mat-icon>Techincal team</a>
+        <mat-divider></mat-divider>
+        <a href="#" mat-list-item><mat-icon>meeting_room</mat-icon>Manage rooms</a>
+        <mat-divider></mat-divider>
+        <a href="#" mat-list-item><mat-icon>group</mat-icon>User management</a>
+        <mat-divider></mat-divider>
+        <a href="#" mat-list-item><mat-icon>settings</mat-icon>Settings</a>
+        <mat-divider></mat-divider>
+        <a href="#" (click)="logout()" mat-list-item><mat-icon>keyboard_arrow_left</mat-icon>Log out</a>
+      </mat-nav-list>
+    </mat-sidenav>
+    <mat-sidenav-content fxFlexFill>
+      <router-outlet></router-outlet>
+      <app-toast></app-toast
+    ></mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

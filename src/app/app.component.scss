@@ -1,32 +1,54 @@
-.navbar {
-    background-color: #3f51b5;
-    padding: 16px;
-  }
-  
-  .nav-list {
-    list-style: none;
+mat-toolbar{
+  background-color: rgba(0, 0, 0, 0.5);
+}
+.material-icons {
+  font-size: 17px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center; /* Vertically center the content */
+  gap: 10px; /* Space between icon and text */
+}
+
+.mat-icon {
+  vertical-align: middle;
+  padding-top: 4px;
+}
+.navbar{
     display: flex;
-    gap: 20px;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .nav-list li {
-    display: inline;
-  }
-  
-  .nav-link {
-    color: white;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 16px;
-    transition: color 0.3s ease;
-  }
-  
-  .nav-link:hover {
-    color: #ffeb3b;
-    text-decoration: underline;
-  }
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 5px;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+.menu-spacer {
+  flex: 1 1 auto;
+}
+
+.navbar .logo {
+  display: flex;
+  align-items: center;
+}
+
+.navbar .logo span {
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+}
+.navbar .menu {
+  display: flex;
+  align-items: center;
+}
+.navbar .menu a {
+  color: white;
+  text-decoration: none;
+  margin: 0 15px;
+  font-size: 16px;
+}
+.navbar .menu a:hover {
+  color: #ffcc00;
+}
   
   button[mat-raised-button] {
     background-color: #ff5722;

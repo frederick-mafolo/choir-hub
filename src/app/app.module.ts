@@ -13,13 +13,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { ReactiveFormsModule } from '@angular/forms';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatListModule} from '@angular/material/list';
+import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatMenuModule } from '@angular/material/menu';
 
-
-// Firebase imports
-// import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
-// import { provideDatabase, getDatabase } from '@angular/fire/database';
-// import { environment } from '../environments/environment';
 import { FirebaseModule } from './firebase/firebase.module';
 import { ToastComponent } from './shared/toast/toast.component';
 import { RoomsComponent } from './components/rooms/rooms.component';
@@ -28,6 +26,8 @@ import { RegisterComponent } from './components/register/register.component';
 import { ProgressionEditorComponent } from './components/progression-editor/progression-editor.component';
 import { EditSongModalComponent } from './components/edit-song-modal/edit-song-modal.component';
 import { DeleteConfirmationModalComponent } from './components/delete-confirmation-modal/delete-confirmation-modal.component';
+import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
+import { LandingPageComponent } from './components/landing-page/landing-page.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +39,9 @@ import { DeleteConfirmationModalComponent } from './components/delete-confirmati
     RegisterComponent,
     ProgressionEditorComponent,
     EditSongModalComponent,
-    DeleteConfirmationModalComponent
+    DeleteConfirmationModalComponent,
+    ResetPasswordComponent,
+    LandingPageComponent
   ],
   imports: [
     BrowserModule,
@@ -53,8 +55,12 @@ import { DeleteConfirmationModalComponent } from './components/delete-confirmati
     MatFormFieldModule,
     MatInputModule,
     MatMenuModule,
+  
+    MatSidenavModule,
+    MatListModule,
     MatIconModule,
     MatToolbarModule,
+    FlexLayoutModule,
     FirebaseModule.forRoot()
   ],
   exports:[RoomsComponent],

@@ -1,15 +1,14 @@
-
-<form (ngSubmit)="login()" class="login-form">
-  <h2>Login</h2>
-  <mat-form-field appearance="fill" class="form-field">
-    <mat-label>Email</mat-label>
-    <input matInput [(ngModel)]="email" name="email" type="email" required>
-  </mat-form-field>
-
-  <mat-form-field appearance="fill" class="form-field">
-    <mat-label>Password</mat-label>
-    <input matInput [(ngModel)]="password" name="password" type="password" required>
-  </mat-form-field>
-
-  <button mat-raised-button color="primary" type="submit">Login</button>
+<div class="main">
+<form (ngSubmit)="login()" class="form-container">
+  <h2>Sign In</h2>
+  <input matInput [(ngModel)]="email" name="email" type="email" required placeholder="jheart@email.com">
+  <input matInput [(ngModel)]="password" name="password" type="password" required placeholder="••••••••">
+  <div>
+      <input type="checkbox" id="remember">
+      <label for="remember">Remember me</label>
+  </div>
+  <button type="submit">Sign In</button>
+  <a  routerLink="/reset-password">Forgot password?</a>
+  <button style="background-color: #f5f5f5; color: #333; border: 1px solid #ddd;">Create an account</button>
 </form>
+</div>

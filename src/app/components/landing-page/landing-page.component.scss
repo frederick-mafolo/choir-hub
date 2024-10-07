@@ -1,0 +1,117 @@
+.hero {
+    position: relative;
+    height: 100vh;
+    background: linear-gradient(to right, rgba(67, 67, 67, 0.9) 0%, rgba(0, 0, 0, 0.9) 100%),
+    url('../../../assets/images/guitar-.jpg') no-repeat center center;
+    background-size: cover; /* Ensures the image covers the entire section */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+    overflow: hidden; /* Prevents overflow and scrolling */
+}
+
+
+.hero .content {
+    max-width: 600px;
+}
+.hero .content .tag {
+    background-color: #007bff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-block;
+    margin-bottom: 20px;
+    font-size: 14px;
+    font-weight: bold;
+}
+.hero .content h2 {
+    font-size: 30px;
+    margin: 0 0 20px;
+    font-weight: bold;
+}
+.hero .content p {
+    font-size: 16px;
+    margin: 0 0 30px;
+}
+.hero .content .btn {
+    background-color: #6f42c1;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    text-decoration: none;
+}
+.hero .content .btn:hover {
+    background-color: #5a32a3;
+}
+
+
+h3 {
+    font-size: 25px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+h3 span {
+    background: linear-gradient(to right, #ff7e00, #ff0066, #a200ff);
+    -webkit-background-clip: text;
+    color: transparent;
+}
+h4 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 0px;
+}
+// .features {
+//     display: flex;
+//     flex-wrap: wrap;
+//     justify-content: center;
+//     text-align: center;
+//     padding: 50px;
+//     gap: 20px;
+// }
+// .feature-item {
+//     display: flex;
+//     align-items: center;
+//     font-size: 24px;
+//     color: #ffffff;
+// }
+
+
+.features {
+    display: grid;
+    padding: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .feature-item {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    padding: 15px;
+    color: #ffffff;
+    border-radius: 8px;
+  }
+
+  .feature-item i {
+    color: #ff7e00;
+    margin-right: 10px;
+}
+  
+  @media (min-width: 768px) {
+    /* For laptops/desktops: 4 items per row */
+    .features {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  
+  @media (max-width: 767px) {
+    /* For small screens: 2 items per row */
+    .features {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }

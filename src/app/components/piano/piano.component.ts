@@ -483,6 +483,13 @@ export class PianoComponent implements OnInit {
   }
 
   openProgressionEditor() {
+    if (!this.currentRoomId) {
+      this.toastService.showToast(
+        'Please create or join a room first.',
+        'warning'
+      );
+      return;
+    }
     this.showProgressionEditor = true;
   }
 

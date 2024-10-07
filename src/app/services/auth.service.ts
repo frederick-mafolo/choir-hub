@@ -36,7 +36,7 @@ export class AuthService {
           localStorage.setItem(this.userKey, JSON.stringify(userData));
          
           // Navigate to a protected route (e.g., Rooms)
-          this.router.navigate(['/piano']);
+          this.router.navigate(['/home']);
         });
       })
       .catch((error) => {
@@ -52,7 +52,7 @@ export class AuthService {
       localStorage.removeItem(this.tokenKey);
       localStorage.removeItem(this.userKey);
       this.roomService.clearCurrentRoom();
-      this.router.navigate(['/login']);
+      this.router.navigate(['']);
     });
   }
 
