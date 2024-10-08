@@ -5,6 +5,8 @@ import {
   OnInit,
   Input,
   ChangeDetectorRef,
+  ChangeDetectionStrategy,
+  DoCheck,
 } from '@angular/core';
 import {
   FormGroup,
@@ -16,6 +18,8 @@ import {
 import { Database, ref, set, get, push } from '@angular/fire/database';
 import { RoomService } from 'src/app/services/room.service';
 import { ToastService } from '../../services/toast.service';
+import * as _ from 'lodash'; 
+
 interface KeyGroup {
   white: Key;
   black?: Key;
@@ -30,8 +34,9 @@ interface Key {
   selector: 'app-progression-editor',
   templateUrl: './progression-editor.component.html',
   styleUrls: ['./progression-editor.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProgressionEditorComponent implements OnInit {
+export class ProgressionEditorComponent implements OnInit,DoCheck {
   @Input() songData!: any; 
 
   progressionForm!: FormGroup; 
@@ -144,6 +149,7 @@ export class ProgressionEditorComponent implements OnInit {
     '7',
   ];
   dynamicSolfegeMap: Record<string, string> = {};
+  previousProgression:any;
 
   constructor(
     private fb: FormBuilder,
@@ -168,8 +174,11 @@ export class ProgressionEditorComponent implements OnInit {
         songName: this.songData?.name,
       });
 
+      console.log(this.songData)
+
       if (this.songData.progression) {
         this.progression = this.songData.progression;
+        console.log(this.progression)
         if (this.songData.progression?.left != undefined && !this.songData.progression?.right ) {
           this.leftSelected = true;
           // Handle the leftProgressions array
@@ -225,6 +234,15 @@ export class ProgressionEditorComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
+  ngDoCheck() {
+    // Deep compare the progression arrays (left and right)
+    if (!_.isEqual(this.songData.progression, this.progression)) {
+      console.log("iiiiiiiiii")
+      this.cdr.markForCheck();
+      this.progression = _.cloneDeep(this.songData.progression);  // Store a deep copy of progression
+    }
+  }
+
   initializeForm() {
     this.progressionForm = this.fb.group({
       selectedKey: ['C', Validators.required],
@@ -249,6 +267,7 @@ export class ProgressionEditorComponent implements OnInit {
   }
 
   updateSolfegeMap() {
+    this.clearProgression();
     const selectedKeyValue = this.progressionForm.get('selectedKey')?.value;
 
     if (!selectedKeyValue) return; // Safeguard if selectedKey is not found
@@ -344,10 +363,14 @@ export class ProgressionEditorComponent implements OnInit {
   }
 
   selectLeft() {
-    this.clearProgression(); // Avoid clearing existing data for simplicity
+    if (!this.songData.progression) {
+      this.clearProgression(); 
+    }
+
     this.leftSelected = true;
     this.rightSelected = false;
     this.bothSelected = false;
+   
     if (this.leftProgressions.length === 0) {
       this.leftProgressions.push(this.fb.control('', Validators.required));
     }
@@ -360,7 +383,9 @@ export class ProgressionEditorComponent implements OnInit {
   }
 
   selectRight() {
-    this.clearProgression();
+    if (!this.songData.progression) {
+      this.clearProgression(); 
+    }
     this.leftSelected = false;
     this.rightSelected = true;
     this.bothSelected = false;
@@ -377,7 +402,10 @@ export class ProgressionEditorComponent implements OnInit {
   }
 
   selectBoth() {
-    this.clearProgression();
+    if (!this.songData.progression) {
+      console.log("ddddddddddd")
+      this.clearProgression(); 
+    }
     this.leftSelected = false;
     this.rightSelected = false;
     this.bothSelected = true;
@@ -548,6 +576,7 @@ export class ProgressionEditorComponent implements OnInit {
   }
 
   closePopup() {
+   
     this.progressionConfirmed.emit(this.progression);
   }
 }

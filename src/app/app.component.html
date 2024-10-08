@@ -1,5 +1,5 @@
 <div>
-    <div class="navbar">
+    <div class="navbar" [ngClass]="{'hidden': !navbarVisible}">
       <div fxLayout fxLayoutGap="20px">
       <button
        *ngIf="authService.isLoggedIn()"
@@ -20,22 +20,18 @@
     </div>
   
 
-  <mat-sidenav-container fxFlexFill>
+  <mat-sidenav-container fxFlexFill class="content-container">
     <mat-sidenav #sidenav>
       <mat-nav-list>
         <a (click)="sidenav.toggle()"  mat-list-item class="nav-item"><mat-icon>close</mat-icon></a>
         <mat-divider></mat-divider>
-        <a href="#" mat-list-item>	<mat-icon>library_add</mat-icon>  Library</a>
-        <mat-divider></mat-divider>
-        <a href="#" mat-list-item><mat-icon>build</mat-icon>Techincal team</a>
-        <mat-divider></mat-divider>
-        <a href="#" mat-list-item><mat-icon>meeting_room</mat-icon>Manage rooms</a>
-        <mat-divider></mat-divider>
-        <a href="#" mat-list-item><mat-icon>group</mat-icon>User management</a>
-        <mat-divider></mat-divider>
-        <a href="#" mat-list-item><mat-icon>settings</mat-icon>Settings</a>
-        <mat-divider></mat-divider>
-        <a href="#" (click)="logout()" mat-list-item><mat-icon>keyboard_arrow_left</mat-icon>Log out</a>
+        <ng-container *ngFor="let item of navItems">
+          <a href="{{ item.route }}" mat-list-item class="nav-item" (click)="item.action === 'logout' ? logout() : null">
+            <mat-icon class="mat-menu">{{ item.icon }}</mat-icon>
+            {{ item.label }}
+          </a>
+          <mat-divider></mat-divider>
+        </ng-container>
       </mat-nav-list>
     </mat-sidenav>
     <mat-sidenav-content fxFlexFill>

@@ -1,9 +1,6 @@
 mat-toolbar{
   background-color: rgba(0, 0, 0, 0.5);
 }
-.material-icons {
-  font-size: 17px;
-}
 
 .nav-item {
   display: flex;
@@ -11,17 +8,42 @@ mat-toolbar{
   gap: 10px; /* Space between icon and text */
 }
 
-.mat-icon {
+.mat-menu {
   vertical-align: middle;
   padding-top: 4px;
+  font-size: 17px;
 }
 .navbar{
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 20px 5px;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color:  rgb(157 152 152);
 }
+
+.navbar{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  transition: top 0.3s ease-in-out;
+}
+
+.navbar .hidden {
+  top: -100px; /* Moves the navbar off-screen */
+}
+
+/* Ensure the content starts below the navbar */
+.content-container {
+  padding-top: 70px; /* Height of the navbar */
+}
+
+/* Styling for the rest of the layout */
+mat-sidenav-container {
+  min-height: calc(100vh - 70px); /* Full viewport height minus the navbar */
+}
+
 .menu-spacer {
   flex: 1 1 auto;
 }

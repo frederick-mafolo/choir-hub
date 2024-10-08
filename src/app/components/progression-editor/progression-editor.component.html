@@ -96,7 +96,7 @@
         </div>
         </div>
         <!-- Both Hands Selected -->
-        <div *ngIf="bothSelected || (songData?.progression?.left?.length && songData.progression?.right?.length)" class="table-container">
+        <div *ngIf="bothSelected || ((songData?.progression?.left?.length && songData.progression?.right?.length) && (!rightSelected && !leftSelected))" class="table-container">
           <form [formGroup]="progressionForm">
             <table>
               <thead>
