@@ -1,24 +1,21 @@
 <div class="content-container">
-    <div class="navbar" [ngClass]="{'hidden': !navbarVisible}">
-      <div fxLayout fxLayoutGap="20px">
+  <nav class="navbar" [ngClass]="{'hidden': !navbarVisible}">
+    <div class="navbar-brand">
       <button
-       *ngIf="authService.isLoggedIn()"
+        *ngIf="authService.isLoggedIn()"
         mat-icon-button
         (click)="sidenav.toggle()"
         fxShow="true"
       >
         <mat-icon>menu</mat-icon>
       </button>
-      <div class="logo">
-        <span> Choir Hub </span>
-      </div>
+      <span class="logo">Choir Hub</span>
     </div>
-      <div class="menu">
-        <a *ngIf="authService.isLoggedIn()" routerLink="/home">Home</a>
-        <a *ngIf="!authService.isLoggedIn()" routerLink="/register">Sign up</a>
-      </div>
+    <div class="navbar-menu">
+      <a *ngIf="authService.isLoggedIn()" routerLink="/home">Home</a>
+      <a *ngIf="!authService.isLoggedIn()" routerLink="/register">Sign up</a>
     </div>
-  
+  </nav>
 
   <mat-sidenav-container fxFlexFill >
     <mat-sidenav #sidenav>

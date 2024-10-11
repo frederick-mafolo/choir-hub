@@ -13,15 +13,16 @@ mat-toolbar{
   padding-top: 4px;
   font-size: 17px;
 }
-.navbar{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 5px;
-    background-color:  rgb(157 152 152);
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 5px;
+  background-color: rgb(157, 152, 152);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.navbar{
+.navbar.sticky {
   position: sticky;
   top: 0;
   width: 100%;
@@ -29,10 +30,38 @@ mat-toolbar{
   transition: top 0.3s ease-in-out;
 }
 
-.navbar .hidden {
+.navbar.hidden {
   top: -100px; /* Moves the navbar off-screen */
 }
 
+.navbar-brand {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-brand .logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+  margin-left: 10px;
+}
+
+.navbar-menu {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-menu a {
+  color: white;
+  text-decoration: none;
+  margin: 0 15px;
+  font-size: 16px;
+  transition: color 0.2s ease-in-out;
+}
+
+.navbar-menu a:hover {
+  color: #ffcc00;
+}
 /* Ensure the content starts below the navbar */
 .content-container {
  position:relative;
@@ -50,29 +79,6 @@ mat-sidenav-container{
   flex: 1 1 auto;
 }
 
-.navbar .logo {
-  display: flex;
-  align-items: center;
-}
-
-.navbar .logo span {
-  color: white;
-  font-size: 24px;
-  font-weight: bold;
-}
-.navbar .menu {
-  display: flex;
-  align-items: center;
-}
-.navbar .menu a {
-  color: white;
-  text-decoration: none;
-  margin: 0 15px;
-  font-size: 16px;
-}
-.navbar .menu a:hover {
-  color: #ffcc00;
-}
   
   button[mat-raised-button] {
     background-color: #ff5722;

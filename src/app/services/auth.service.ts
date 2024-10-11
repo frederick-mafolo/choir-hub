@@ -23,7 +23,6 @@ export class AuthService {
     return signInWithEmailAndPassword(this.auth, email, password)
       .then((userCredential: UserCredential) => {
         const user = userCredential.user;
-        this.toastService.showToast('Successfully logged in', 'success');
         // Get the token and save it to localStorage
         return user.getIdToken().then((token: string) => {
           localStorage.setItem(this.tokenKey, token);
