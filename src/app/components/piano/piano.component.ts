@@ -92,6 +92,7 @@ export class PianoComponent implements OnInit {
     },
     { white: { note: 'B', active: false } },
   ];
+  isOverWrittenClicked: boolean = false;
 
   constructor(
     private pianoService: PianoService,
@@ -157,7 +158,11 @@ export class PianoComponent implements OnInit {
 
   
   updateProgression(progression: Progression) {
-    console.log(progression)
+    if(this.isOverWrittenClicked){
+      this.closeProgressionEditor();
+      return;
+    }
+
     if ((progression?.left == undefined && progression?.right == undefined) || (progression.left == null && progression.right == null)){
       console.log("Test 1")
       delete this.progressions[this.selectedSongId as string];
@@ -478,11 +483,13 @@ export class PianoComponent implements OnInit {
   }
 
   overwriteSelectedSongData() {
+    this.isOverWrittenClicked = true;
     this.songData = {};
     this.openProgressionEditor();
   }
 
-  openProgressionEditor() {
+  addProgression(){
+    this.isOverWrittenClicked = false; 
     if (!this.currentRoomId) {
       this.toastService.showToast(
         'Please create or join a room first.',
@@ -490,6 +497,12 @@ export class PianoComponent implements OnInit {
       );
       return;
     }
+
+    this.openProgressionEditor()
+  }
+
+  openProgressionEditor() {
+   
     this.showProgressionEditor = true;
   }
 

@@ -17,7 +17,7 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'reset-password', component: ResetPasswordComponent},
   { path: '', redirectTo: '/landing-page', pathMatch: 'full' },
-  { path: '**', redirectTo: 'piano' } 
+  { path: '**', redirectTo: 'home' } 
 
 ];
 

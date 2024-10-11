@@ -22,9 +22,8 @@ mat-toolbar{
 }
 
 .navbar{
-  position: fixed;
+  position: sticky;
   top: 0;
-  left: 0;
   width: 100%;
   z-index: 1000;
   transition: top 0.3s ease-in-out;
@@ -36,13 +35,16 @@ mat-toolbar{
 
 /* Ensure the content starts below the navbar */
 .content-container {
-  padding-top: 70px; /* Height of the navbar */
+ position:relative;
 }
-
+mat-sidenav-container{
+  z-index: 0;
+}
 /* Styling for the rest of the layout */
-mat-sidenav-container {
-  min-height: calc(100vh - 70px); /* Full viewport height minus the navbar */
-}
+// mat-sidenav-content {
+//   min-height: calc(100vh - 70px); /* Full viewport height minus the navbar */
+
+// }
 
 .menu-spacer {
   flex: 1 1 auto;

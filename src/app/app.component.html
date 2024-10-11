@@ -1,4 +1,4 @@
-<div>
+<div class="content-container">
     <div class="navbar" [ngClass]="{'hidden': !navbarVisible}">
       <div fxLayout fxLayoutGap="20px">
       <button
@@ -20,7 +20,7 @@
     </div>
   
 
-  <mat-sidenav-container fxFlexFill class="content-container">
+  <mat-sidenav-container fxFlexFill >
     <mat-sidenav #sidenav>
       <mat-nav-list>
         <a (click)="sidenav.toggle()"  mat-list-item class="nav-item"><mat-icon>close</mat-icon></a>

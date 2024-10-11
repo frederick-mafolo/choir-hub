@@ -55,7 +55,7 @@
 <!-- Add Progression Button if no progression exists -->
 <div *ngIf="!selectedProgression" class="current-progression">
   <h3>Add a progression for <b>{{ selectedSong?.name || 'Untitled Song' }}</b></h3>
-  <button class="add-progression-btn" (click)="openProgressionEditor()">Add Progression</button>
+  <button class="add-progression-btn" (click)="addProgression()">Add Progression</button>
 </div>
 
 <!-- Display the selected progression -->
@@ -70,7 +70,7 @@
 
     <!-- Menu for delete, share and edit options -->
     <mat-menu #menu="matMenu">
-      <button mat-menu-item (click)="openProgressionEditor()">
+      <button mat-menu-item (click)="addProgression()">
         <mat-icon class="menu-icon">edit</mat-icon>
         <span>Edit</span>
       </button>

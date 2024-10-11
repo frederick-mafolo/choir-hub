@@ -8,7 +8,7 @@ background-color: rgba(0, 0, 0, 0.8);
 display: flex;
 justify-content: center;
 align-items: center;
-z-index: 10000;
+z-index: 10001;
 }
 
 .room-container {
@@ -16,7 +16,7 @@ z-index: 10000;
   padding: 30px;
   border-radius: 15px;
   width: 95%;
-  height: 80%;
+  height: 70%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;

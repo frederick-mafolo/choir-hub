@@ -4,9 +4,7 @@ import {
   EventEmitter,
   OnInit,
   Input,
-  ChangeDetectorRef,
-  ChangeDetectionStrategy,
-  DoCheck,
+  ChangeDetectorRef
 } from '@angular/core';
 import {
   FormGroup,
@@ -34,9 +32,8 @@ interface Key {
   selector: 'app-progression-editor',
   templateUrl: './progression-editor.component.html',
   styleUrls: ['./progression-editor.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProgressionEditorComponent implements OnInit,DoCheck {
+export class ProgressionEditorComponent implements OnInit {
   @Input() songData!: any; 
 
   progressionForm!: FormGroup; 
@@ -149,7 +146,6 @@ export class ProgressionEditorComponent implements OnInit,DoCheck {
     '7',
   ];
   dynamicSolfegeMap: Record<string, string> = {};
-  previousProgression:any;
 
   constructor(
     private fb: FormBuilder,
@@ -232,15 +228,6 @@ export class ProgressionEditorComponent implements OnInit,DoCheck {
       }
     }
     this.cdr.markForCheck();
-  }
-
-  ngDoCheck() {
-    // Deep compare the progression arrays (left and right)
-    if (!_.isEqual(this.songData.progression, this.progression)) {
-      console.log("iiiiiiiiii")
-      this.cdr.markForCheck();
-      this.progression = _.cloneDeep(this.songData.progression);  // Store a deep copy of progression
-    }
   }
 
   initializeForm() {
@@ -403,7 +390,6 @@ export class ProgressionEditorComponent implements OnInit,DoCheck {
 
   selectBoth() {
     if (!this.songData.progression) {
-      console.log("ddddddddddd")
       this.clearProgression(); 
     }
     this.leftSelected = false;
