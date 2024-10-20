@@ -17,6 +17,8 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatListModule} from '@angular/material/list';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatMenuModule } from '@angular/material/menu';
+import {MatTabsModule} from '@angular/material/tabs';
+import {MatDialogModule } from '@angular/material/dialog';
 
 import { FirebaseModule } from './firebase/firebase.module';
 import { ToastComponent } from './shared/toast/toast.component';
@@ -28,6 +30,8 @@ import { EditSongModalComponent } from './components/edit-song-modal/edit-song-m
 import { DeleteConfirmationModalComponent } from './components/delete-confirmation-modal/delete-confirmation-modal.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { LandingPageComponent } from './components/landing-page/landing-page.component';
+import { ManageRoomsComponent } from './components/manage-rooms/manage-rooms.component';
+import { CreateNewRoomComponent } from './components/create-new-room/create-new-room.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +45,9 @@ import { LandingPageComponent } from './components/landing-page/landing-page.com
     EditSongModalComponent,
     DeleteConfirmationModalComponent,
     ResetPasswordComponent,
-    LandingPageComponent
+    LandingPageComponent,
+    ManageRoomsComponent,
+    CreateNewRoomComponent
   ],
   imports: [
     BrowserModule,
@@ -55,12 +61,13 @@ import { LandingPageComponent } from './components/landing-page/landing-page.com
     MatFormFieldModule,
     MatInputModule,
     MatMenuModule,
-  
+    MatTabsModule,
     MatSidenavModule,
     MatListModule,
     MatIconModule,
     MatToolbarModule,
     FlexLayoutModule,
+    MatDialogModule,
     FirebaseModule.forRoot()
   ],
   exports:[RoomsComponent],

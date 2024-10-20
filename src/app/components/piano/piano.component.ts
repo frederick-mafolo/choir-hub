@@ -45,7 +45,7 @@ interface KeyGroup {
 })
 export class PianoComponent implements OnInit {
   @ViewChild('audioPlayer') audioPlayerRef!: ElementRef;
-  currentRoomId: string = '';
+  currentRoomId: string | null = '';
   pressedKey: string | null = null; 
   showProgressionEditor: boolean = false;
   showRooms: boolean = false;
@@ -93,6 +93,7 @@ export class PianoComponent implements OnInit {
     { white: { note: 'B', active: false } },
   ];
   isOverWrittenClicked: boolean = false;
+  currentRoomName!: string;
 
   constructor(
     private pianoService: PianoService,
@@ -105,11 +106,13 @@ export class PianoComponent implements OnInit {
 
   ngOnInit() {
     // Subscribe to the current room from RoomService
-    this.roomService.currentRoom$.subscribe((roomId) => {
-      this.currentRoomId = roomId || ''; // Update the current room ID
+    this.roomService.currentRoom$.subscribe((res:any) => {
+      this.currentRoomId = res?.id || null;
+      this.currentRoomName =  res?.name || res?.id;
       if (this.currentRoomId) {
         this.listenForKeyPresses(this.currentRoomId);
       }
+      
     });
 
     this.getAllSongs();
@@ -164,14 +167,14 @@ export class PianoComponent implements OnInit {
     }
 
     if ((progression?.left == undefined && progression?.right == undefined) || (progression.left == null && progression.right == null)){
-      console.log("Test 1")
+   
       delete this.progressions[this.selectedSongId as string];
       this.selectedProgression = null;
       this.closeProgressionEditor();
       return;
     }
     else { 
-      console.log("Esls")
+ 
     this.selectedSongIndex = this.selectedSongIndex;
     this.selectedProgression = progression;
     }
@@ -186,10 +189,10 @@ export class PianoComponent implements OnInit {
 
     let isEmpty = Object.values(this.newSong).every((value) => value === '');
 
-    if (isEmpty) {
-      this.toastService.showToast('Invalid form', 'error');
-      return;
-    }
+    // if (!isEmpty) {
+    //   this.toastService.showToast('Invalid form', 'error');
+    //   return;
+    // }
 
     this.newSong.order = this.songs.length + 1;
 
@@ -200,7 +203,7 @@ export class PianoComponent implements OnInit {
   }
 
   // Edit song
-  editSong(index: number) {
+  editSong(id:string, index: number) {
     if (!this.currentRoomId) {
       this.toastService.showToast('Please join a room first', 'warning');
       return;
@@ -215,7 +218,7 @@ export class PianoComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         set(
-          ref(this.db, `rooms/${this.currentRoomId}/songs/${song.id}`),
+          ref(this.db, `rooms/${this.currentRoomId}/songs/${id}`),
           result
         );
       }
@@ -299,11 +302,13 @@ export class PianoComponent implements OnInit {
       this.toastService.showToast('Please join a room first', 'warning');
       return;
     }
+    const data = {
+      message: this.songs[index].name
+    };
 
-    const song = this.songs[index];
     const dialogRef = this.dialog.open(DeleteConfirmationModalComponent, {
       width: '250px',
-      data: { song: { ...song } },
+      data: { ...data },
     });
 
     dialogRef.afterClosed().subscribe((confirmed) => {
@@ -393,7 +398,7 @@ export class PianoComponent implements OnInit {
   }
 
   onRoomJoined(roomId: string) {
-    this.roomService.setCurrentRoom(roomId);
+    this.roomService.setCurrentRoom(roomId,this.currentRoomName);
     this.currentRoomId = roomId;
     this.listenForKeyPresses(this.currentRoomId);
     this.getAllSongs();

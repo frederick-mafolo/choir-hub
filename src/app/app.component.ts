@@ -9,11 +9,12 @@ import { AuthService } from './services/auth.service';
 export class AppComponent {
   title = 'Choir Hub';
   navItems = [
+    { icon: 'home', label: 'Home', route: '/home' },
     { icon: 'library_add', label: 'Library', route: '/library' },
     { icon: 'build', label: 'Technical team', route: '/tech-team' },
     { icon: 'meeting_room', label: 'Manage rooms', route: '/manage-rooms' },
     { icon: 'group', label: 'User management', route: '/user-management' },
-    { icon: 'settings', label: 'Settings', route: '/settings' },
+    { icon: 'settings', label: 'Manage Profile', route: '/manage-profile' },
     { icon: 'power_settings_new', label: 'Log out', route: '/logout', action: 'logout' }
   ];
 

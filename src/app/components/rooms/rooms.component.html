@@ -1,36 +1,44 @@
-
 <div class="room-popup">
-<div class="room-container">
-  <button class="close-btn" (click)="closePopup()">✖</button>
-<div class="centered-container">
-  <h3>Your Rooms</h3>
-  <div class="room-list">
-    <ul class="room-list-horizontal">
-      <li
-        *ngFor="let room of joinedRooms"
-        (click)="joinRoom(room)"
-        [class.selected]="currentRoomId === room"
-      >
-        Room: {{ room }}
-      </li>
-    </ul>
-  </div>
-</div>
+  <div class="room-container">
+    <button class="close-btn" (click)="closePopup()">✖</button>
 
-<div class="room-selector">
-  <mat-form-field appearance="outline" class="full-width">
-    <mat-label>Enter Room ID</mat-label>
-    <input matInput [(ngModel)]="roomId" placeholder="Room ID" />
-  </mat-form-field>
+    <div class="centered-container">
+      <h3>Your Rooms</h3>
+      <div class="room-list">
+        <ul class="room-list-horizontal">
+          <li
+            *ngFor="let room of joinedRooms"
+            (click)="selectAndJoinRoom(room.id,room.name)"
+            [class.selected]="currentRoomId === room?.id"
+          >
+            {{ room?.name }}
+          </li>
+        </ul>
+      </div>
+    </div>
+    
 
-  <div class="button-group">
-    <button mat-raised-button color="primary" (click)="joinRoom(roomId)">
-      Join Room
-    </button>
-    <button mat-raised-button color="accent" (click)="createRoom()">
-      Create Room
-    </button>
+    <div class="room-selector">
+      <!-- Conditional input field for room ID -->
+      <mat-form-field *ngIf="showRoomIdInput" appearance="outline" class="full-width">
+        <mat-label>Enter Room ID</mat-label>
+        <input matInput [(ngModel)]="roomId" placeholder="Room ID" />
+      </mat-form-field>
+
+      <!-- Conditional input field for room name -->
+      <mat-form-field *ngIf="showRoomNameInput" appearance="outline" class="full-width">
+        <mat-label>Enter Room Name</mat-label>
+        <input matInput [(ngModel)]="roomName" placeholder="Room Name" />
+      </mat-form-field>
+
+      <div class="button-group">
+        <button mat-raised-button color="primary" (click)="joinRoom(roomId,roomName)">
+          Join Room
+        </button>
+        <button mat-raised-button color="accent" (click)="createRoom()">
+          Create Room
+        </button>
+      </div>
+    </div>
   </div>
-</div>
-</div>
 </div>

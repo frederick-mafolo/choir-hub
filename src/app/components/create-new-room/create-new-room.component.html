@@ -1,0 +1,14 @@
+<h2 mat-dialog-title>Create New Room</h2>
+<mat-dialog-content>
+  <form [formGroup]="createRoomForm">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Room Name</mat-label>
+      <input matInput formControlName="roomName" placeholder="Enter room name" />
+      <mat-error *ngIf="createRoomForm.get('roomName')?.invalid">Room name is required</mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onCreate()" [disabled]="createRoomForm.invalid">Create</button>
+</mat-dialog-actions>

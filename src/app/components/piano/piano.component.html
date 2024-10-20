@@ -4,7 +4,7 @@
 
   <button mat-raised-button class="select-room-btn" (click)="openRooms()">
     <mat-icon class="launch-icon">launch</mat-icon>
-    Current Room: {{ currentRoomId || "None" }}
+    Current Room: {{ currentRoomName || "None" }}
   </button>
   
 <div class="piano">
@@ -25,14 +25,14 @@
 </div>
 
 <div class="song-form">
-  <input [(ngModel)]="newSong.name" placeholder="Song Name" />
-  <input [(ngModel)]="newSong.key" placeholder="Song Key" />
+  <input [(ngModel)]="newSong.name" maxlength="50" placeholder="Song Name" />
+  <input [(ngModel)]="newSong.key"  maxlength="30" placeholder="Song Key" />
   <button (click)="addSong()">	<mat-icon>playlist_add</mat-icon> Add</button>
 </div>
 
-<p *ngIf="!currentRoomId"  class="song-list" >No playlist found!</p>
+<p *ngIf="songs.length == 0"  class="song-list" >No playlist found!</p>
 
-<div *ngIf="currentRoomId"  cdkDropList class="song-list" (cdkDropListDropped)="drop($event)">
+<div *ngIf="songs.length > 0"  cdkDropList class="song-list" (cdkDropListDropped)="drop($event)">
   <div *ngFor="let song of songs; let i = index" 
        cdkDrag  
        [cdkDragStartDelay]="200"  
@@ -41,7 +41,7 @@
     <mat-icon>music_note</mat-icon>
     <span>{{ song.name }} - Key: {{ song.key ? song.key: '---'}}</span>
     <div class="song-actions">
-      <button mat-icon-button (click)="editSong(i)">
+      <button mat-icon-button (click)="editSong(song.id,i)">
         <mat-icon>edit</mat-icon>
       </button>
       <button mat-icon-button (click)="deleteSong(song.id,i)">

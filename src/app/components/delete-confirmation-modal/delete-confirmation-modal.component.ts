@@ -1,6 +1,6 @@
 import { Component ,Inject} from '@angular/core';
 import { MatDialogRef ,MAT_DIALOG_DATA} from '@angular/material/dialog';
-import { Song } from 'src/app/models/song';
+
 @Component({
   selector: 'app-delete-confirmation-modal',
   templateUrl: './delete-confirmation-modal.component.html',
@@ -8,7 +8,7 @@ import { Song } from 'src/app/models/song';
 })
 export class DeleteConfirmationModalComponent {
   constructor(public dialogRef: MatDialogRef<DeleteConfirmationModalComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { song: Song }
+    @Inject(MAT_DIALOG_DATA) public data: { message: any }
   ) {}
 
   onNoClick(): void {

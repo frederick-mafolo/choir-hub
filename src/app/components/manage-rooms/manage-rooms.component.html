@@ -1,0 +1,73 @@
+<div class="container">
+  <div class="manage-rooms-container">
+    <h2>Manage Rooms</h2>
+    <button mat-raised-button color="primary" (click)="openCreateRoomDialog()">
+      <mat-icon>group</mat-icon>New room
+    </button>
+
+    <!-- List of Rooms -->
+    <div class="rooms-list">
+      <ul>
+        <li *ngFor="let room of rooms" 
+            (click)="selectRoom(room)" 
+            [class.selected]="selectedRoom?.id === room.id">
+          {{ room.name }}
+        </li>
+      </ul>
+    </div>
+
+    <!-- Room Details and Users -->
+    <div *ngIf="selectedRoom" class="room-details">
+      <!-- Room Title and Edit Button -->
+      <div class="room-header">
+        <h3>Room: {{ selectedRoom.name }}</h3>
+        
+        <!-- Room name input (Disabled for non-admin users) -->
+        <mat-form-field appearance="outline" class="room-name-input">
+          <label>Edit the room name</label>
+          <input matInput [(ngModel)]="newRoomName" placeholder="Enter room name" 
+                 [disabled]="!isAdmin" />
+        </mat-form-field>
+        
+        <div class="copy-room-id">
+          <span>Room ID: {{ selectedRoom.id }}</span>
+          <button mat-icon-button (click)="copyRoomId(selectedRoom.id)">
+            <mat-icon>file_copy</mat-icon>
+          </button>
+        </div>
+
+        <!-- Save Button (Only available for admin) -->
+        <button *ngIf="isAdmin" mat-raised-button color="primary" 
+                class="save-btn" 
+                [disabled]="!newRoomName"
+                (click)="editRoomName()">
+          <mat-icon>save</mat-icon> Save
+        </button>
+      </div>
+
+      <!-- Delete Room Button (Only visible for admin) -->
+      <button *ngIf="isAdmin"
+              mat-raised-button color="warn" 
+              (click)="deleteRoom(selectedRoom.id, selectedRoom.name)">
+        <mat-icon>delete</mat-icon>Delete Room
+      </button>
+
+      <!-- Users in Room Section -->
+      <div class="users-section">
+        <h4>{{ selectedRoom.users.length }} member(s)</h4>
+        <ul class="user-list">
+          <li *ngFor="let user of selectedRoom.users" class="user-item">
+            <span>{{ user.name }} {{ user.id === userData.uid ? '(You)' : '' }}</span>
+            
+            <!-- Show delete icon for admin or self only -->
+            <button *ngIf="isAdmin || user.id === userData?.uid"
+                    mat-icon-button color="warn" 
+                    (click)="removeUser(user.id)">
+              <mat-icon>remove_circle</mat-icon>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

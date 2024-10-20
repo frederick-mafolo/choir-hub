@@ -7,9 +7,9 @@
         (click)="sidenav.toggle()"
         fxShow="true"
       >
-        <mat-icon>menu</mat-icon>
+        <mat-icon class="menu-icon">menu</mat-icon>
       </button>
-      <span class="logo">Choir Hub</span>
+      <img src="../../../assets/images/logo.png" alt="Choir Hub Logo" class="logo-image" />
     </div>
     <div class="navbar-menu">
       <a *ngIf="authService.isLoggedIn()" routerLink="/home">Home</a>

@@ -1,29 +1,21 @@
-<!-- <form (ngSubmit)="register()" class="register-form">
-  <div class="background"></div>
-  <div class="form-container">
-    <h2>Register</h2>
-    <mat-form-field appearance="fill" class="form-field">
-      <mat-label>Email</mat-label>
-      <input matInput [(ngModel)]="email" name="email" type="email" required>
-    </mat-form-field>
-
-    <mat-form-field appearance="fill" class="form-field">
-      <mat-label>Password</mat-label>
-      <input matInput [(ngModel)]="password" name="password" type="password" required>
-    </mat-form-field>
-
-    <button mat-raised-button color="primary" type="submit">Register</button>
-  </div>
-</form> -->
-
 <div class="main">
 <form (ngSubmit)="register()" class="signup-container">
   <h2>Sign Up</h2>
   <input matInput [(ngModel)]="email" name="email" type="email" placeholder="choir@email.com" required>
-  <input matInput [(ngModel)]="password" name="password" type="password"placeholder="••••••••" required>
-  <input matInput [(ngModel)]="password" name="password" type="password" placeholder="••••••••" required>
-  <p>By creating an account, you agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
-  <button type="submit">Create a new account</button>
+  <input matInput [(ngModel)]="password" name="password" (input)="checkPasswordStrength()"  type="password"placeholder="••••••••" required>
+  <input matInput [(ngModel)]="passwordMatch" name="passwordMatch" type="password" placeholder="••••••••" required>
+    <!-- Password Strength Feedback -->
+    <div *ngIf="password" class="password-strength">
+      <p>Password strength: {{ passwordStrength }}</p>
+      <ul>
+        <li [ngClass]="{ 'valid': hasLength }">At least 8 characters</li>
+        <li [ngClass]="{ 'valid': hasNumbers }">Contains numbers</li>
+        <li [ngClass]="{ 'valid': hasLetters }">Contains letters</li>
+        <li [ngClass]="{ 'valid': hasSymbols }">Contains symbols</li>
+      </ul>
+    </div>
+  <!-- <p>By creating an account, you agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p> -->
+  <button [disabled]="isDisabled" type="submit">Create a new account</button>
   <p class="signin-link">Have an account? <a  routerLink="/login">Sign In</a></p>
 </form>
 </div>

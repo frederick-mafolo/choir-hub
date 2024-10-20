@@ -155,7 +155,8 @@ export class ProgressionEditorComponent implements OnInit {
     private toastService: ToastService,
   ) {
     this.initializeForm();
-    this.currentRoomId = this.roomService.getRoomFromLocalStorage();
+    let roomId = this.roomService.getRoomFromLocalStorage();
+    this.currentRoomId = roomId?.id || null;
   }
 
   ngOnInit() {
@@ -233,9 +234,9 @@ export class ProgressionEditorComponent implements OnInit {
   initializeForm() {
     this.progressionForm = this.fb.group({
       selectedKey: ['C', Validators.required],
-      songName: ['', Validators.required],
-      leftProgressions: this.fb.array([]),
-      rightProgressions: this.fb.array([]),
+      songName: ['', [Validators.required,Validators.maxLength(50)]],
+      leftProgressions: this.fb.array([],Validators.maxLength(50)),
+      rightProgressions: this.fb.array([],Validators.maxLength(50)),
     });
     this.cdr.markForCheck();
   }
@@ -412,8 +413,8 @@ export class ProgressionEditorComponent implements OnInit {
   }
 
   addProgressionRow() {
-    const leftControl = this.fb.control('', Validators.required);
-    const rightControl = this.fb.control('', Validators.required);
+    const leftControl = this.fb.control('', [Validators.required,Validators.maxLength(50)]);
+    const rightControl = this.fb.control('', [Validators.required,Validators.maxLength(50)]);
 
     if (this.leftSelected) {
       this.leftProgressions.push(leftControl);

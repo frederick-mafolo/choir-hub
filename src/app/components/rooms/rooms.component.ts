@@ -1,129 +1,178 @@
-import { Component ,EventEmitter, Output } from '@angular/core';
-import { Database, get, onValue, push, ref, set } from '@angular/fire/database';
+import { Component, EventEmitter, Output } from '@angular/core';
+import { Database, get, push, ref, set } from '@angular/fire/database';
 import { Auth } from '@angular/fire/auth';
-import { AuthService } from 'src/app/services/auth.service';
 import { RoomService } from 'src/app/services/room.service';
 import { ToastService } from 'src/app/services/toast.service';
+
+interface Room {
+  id: string;
+  name: string;
+}
 
 @Component({
   selector: 'app-rooms',
   templateUrl: './rooms.component.html',
-  styleUrl: './rooms.component.scss',
+  styleUrls: ['./rooms.component.scss'],
 })
 export class RoomsComponent {
   roomId: string = '';
+  roomName: string = ''; // Room Name input field
   currentRoomId: string = '';
-  joinedRooms: string[] = [];
+  joinedRooms: Room[] = [];
   userId: string | null = null;
-    // Output event to emit the room ID to the parent component
-  @Output() roomJoined = new EventEmitter<string>();
+  
+  showRoomNameInput: boolean = false;
+  showRoomIdInput: boolean = false;
 
+  // Output event to emit the room ID to the parent component
+  @Output() roomJoined = new EventEmitter<string>();
   @Output() roomConfirmed = new EventEmitter<string[]>();
-  constructor(private db: Database, private auth: Auth,private authService: AuthService,private roomService: RoomService,  private toastService: ToastService,) {}
+
+  constructor(
+    private db: Database,
+    private auth: Auth,
+    private roomService: RoomService,
+    private toastService: ToastService,
+  ) {}
 
   ngOnInit(): void {
-    // Check if the user is logged in and set the userId from localStorage
-
-    this.roomService.currentRoom$.subscribe((roomId) => {
-      this.currentRoomId = roomId || ''; 
-    })
     this.auth.onAuthStateChanged((user) => {
       if (user) {
         this.userId = user.uid;
         this.loadJoinedRooms();
-      } else {
-        // Optionally, check if user data exists in localStorage
-        const storedUser = this.authService.getUserData();
-        if (storedUser) {
-          this.userId = storedUser.uid;
-          this.loadJoinedRooms();
-        }
       }
     });
   }
+
+  // Method to toggle the 'Join Room' input field
+  toggleJoinRoom() {
+    this.showRoomIdInput = true;
+    this.showRoomNameInput = false;
+  }
+
+  // Method to toggle the 'Create Room' input field
+  toggleCreateRoom() {
+    this.showRoomNameInput = true;
+    this.showRoomIdInput = false;
+  }
+
+
   async loadJoinedRooms() {
     try {
       const userRoomsRef = ref(this.db, `users/${this.userId}/rooms`);
       const snapshot = await get(userRoomsRef);
   
       const rooms = snapshot.val();
+  
+      // Check if rooms exist
       if (rooms) {
-        this.joinedRooms = Object.keys(rooms);
+        // Fetch room names from the rooms node
+        this.joinedRooms = await Promise.all(Object.keys(rooms).map(async (roomId) => {
+          const roomNameSnapshot = await get(ref(this.db, `rooms/${roomId}/name`));
+          const roomName = roomNameSnapshot.exists() ? roomNameSnapshot.val() : ''; // Default to roomId if no name
+          return { id: roomId, name: roomName  };
+        }));
       } else {
         this.joinedRooms = [];
-        this.toastService.showToast('No rooms found.', 'warning');
-
       }
     } catch (error) {
-     
       this.toastService.showToast('Error loading joined rooms', 'error');
-
-      // You can show a message to the user or retry logic here
     }
   }
   
   
 
   createRoom() {
-    const roomRef = push(ref(this.db, 'rooms')); // Create a new room in Firebase
-    this.currentRoomId = roomRef.key || '';
-    this.roomJoined.emit(this.currentRoomId);
-    // Add the new room to the user's list of rooms in Firebase
-    const userRoomsRef = ref(
-      this.db,
-      `users/${this.userId}/rooms/${this.currentRoomId}`
-    );
-    set(userRoomsRef, true)
-      .then(() => {
-        this.toastService.showToast(`Room created and added to user's room list: ${this.currentRoomId}`, 'success');
-      })
-      .catch((error) => {
-        this.toastService.showToast('Error adding room to user list', 'error');
-      });
-  }
-
-  joinRoom(roomId: string) {
-
-    if (roomId) {
-    
-      this.currentRoomId = roomId;
-
-      this.roomJoined.emit(roomId)
-     
-      // Add the room to the user's list of rooms in Firebase
-      const userRoomsRef = ref(
-        this.db,
-        `users/${this.userId}/rooms/${this.currentRoomId}`
-      );
-      set(userRoomsRef, true)
-        .then(() => {
-          this.roomService.setCurrentRoom(this.currentRoomId);
-          this.closePopup();
-          this.toastService.showToast(`Joined room ${this.currentRoomId}`, 'success');
-        })
-        .catch((error) => {
-        
-          this.toastService.showToast('Error joining room', 'error');
-
-        });
-    } else {
-      this.toastService.showToast('Please enter a room ID.', 'warning');
-
+    if (this.showRoomNameInput === false) {
+      this.toggleCreateRoom();
+      return;
     }
   
-  }
+    if (!this.roomName) {
+      this.toastService.showToast('Please enter a room name.', 'warning');
+      return;
+    }
 
-  leaveRoom() {
-    this.roomService.clearCurrentRoom();
-    this.toastService.showToast('Left the room:', 'success');
-
+    this.roomService.createRoom(this.roomName).subscribe({
+      next: () => {
+        // Room created successfully
+        this.roomJoined.emit(this.currentRoomId);
+        this.roomName = ''; // Clear the room name input
+        this.toastService.showToast(`Room "${this.roomName}" created successfully`, 'success');
+      },
+      error: (error) => {
+        // Handle any error
+        this.toastService.showToast('Error creating room', 'error');
+        console.error('Room creation failed', error);
+      }
+    });
+  
+   
   }
   
+
+  joinRoom(roomId: string,roomName: string) {
+
+    if(this.showRoomIdInput === false){
+      this.toggleJoinRoom();
+      return
+    }
+
+    if (!roomId) {
+      this.toastService.showToast('Please enter a room ID.', 'warning');
+      return;
+    }
+
+    this.selectAndJoinRoom(roomId,roomName)
+
+  }
+
+  selectAndJoinRoom(roomId: string, roomName: string) {
+    this.currentRoomId = roomId;
+    this.roomJoined.emit(roomId);
+  
+    const user = this.auth.currentUser; // Assume user is authenticated and has user details
+    const userData = {
+      uid: user?.uid,
+      email: user?.email,
+    };
+
+          // If the roomName is not provided, retrieve it from Firebase
+  if (!roomName) {
+    const roomRef = ref(this.db, `rooms/${roomId}/name`);
+    get(roomRef)
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          roomName = snapshot.val();  // Assign the retrieved room name
+        } else {
+          this.toastService.showToast('Room name not found.', 'error');
+        }
+      })
+      .catch(() => {
+        this.toastService.showToast('Error retrieving room name.', 'error');
+      });
+  } 
+  
+  console.log(roomName)
+    // Add user details under room's 'users' node in Firebase
+    const roomUsersRef = ref(this.db, `rooms/${roomId}/users/${user?.uid}`);
+
+    set(roomUsersRef, userData)
+      .then(() => {
+        const userRoomsRef = ref(this.db, `users/${this.userId}/rooms/${roomId}`);
+        return set(userRoomsRef, true); // Add room to user's list of rooms
+      })
+      .then(() => {
+        this.roomService.setCurrentRoom(roomId, roomName);
+        this.closePopup();
+        this.toastService.showToast(`Joined room ${roomName}`, 'success');
+      })
+      .catch(() => {
+        this.toastService.showToast('Error joining room', 'error');
+      });
+  }
   
   closePopup() {
-    // Emit an event or handle closing logic
-    
     this.roomConfirmed.emit([]);
   }
-
 }

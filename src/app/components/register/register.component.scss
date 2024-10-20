@@ -2,8 +2,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  margin: 0;
+  margin: 20px;
 }
 
 .signup-container {
@@ -60,4 +59,24 @@
 .signup-container .signin-link {
   margin-top: 16px;
   font-size: 14px;
+}
+
+.password-strength {
+  margin-top: 10px;
+  p {
+    font-weight: bold;
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    li {
+      font-size: 14px;
+      margin-bottom: 5px;
+      color: red;
+      &.valid {
+        color: green;
+      }
+    }
+  }
 }

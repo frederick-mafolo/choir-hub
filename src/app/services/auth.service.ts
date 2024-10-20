@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut ,UserCredential} from '@angular/fire/auth';
+import { Auth,createUserWithEmailAndPassword, sendPasswordResetEmail,signInWithEmailAndPassword, signOut ,UserCredential} from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { RoomService } from './room.service';
 import { ToastService } from './toast.service';
@@ -40,7 +40,7 @@ export class AuthService {
       })
       .catch((error) => {
         console.log(error)
-        this.toastService.showToast('Error occurred: invalid-credential', 'error');
+        this.toastService.showToast('Error occurred: Invalid credential', 'error');
         // Handle error (e.g., display error message to user)
       });
   }
@@ -53,6 +53,21 @@ export class AuthService {
       this.roomService.clearCurrentRoom();
       this.router.navigate(['']);
     });
+  }
+
+
+  // Method to send password reset email
+  resetPassword(email: string) {
+    return sendPasswordResetEmail(this.auth,email)
+      .then(() => {
+        console.log('Password reset email sent');
+        this.toastService.showToast('Password reset email sent', 'success');
+
+      })
+      .catch((error) => {
+        console.error('Error sending reset email', error);
+        throw error;
+      });
   }
 
   refreshToken() {

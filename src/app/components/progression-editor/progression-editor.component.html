@@ -23,6 +23,7 @@
           <input
             type="text"
             formControlName="songName"
+            maxlength="50"
             placeholder="Enter song name"
           />
         </form>
@@ -69,6 +70,7 @@
             <input
               [formControl]="asFormControl(row)"
               (focus)="setActiveCell(i, 'left')"
+              maxlength="50"
               [ngClass]="{'focused-input': activeRowIndex === i && activeColumn === 'left'}"
               placeholder="Left progression"
             />
@@ -87,6 +89,7 @@
             <input
               [formControl]="asFormControl(row)"
               (focus)="setActiveCell(i, 'right')"
+              maxlength="50"
               [ngClass]="{'focused-input': activeRowIndex === i && activeColumn === 'right'}"
               placeholder="Right progression"
             />
@@ -114,6 +117,7 @@
                       class="both-chord"
                       [formControl]="asFormControl(leftProgressions.at(i))"
                       (focus)="setActiveCell(i, 'left')"
+                      maxlength="50"
                       [ngClass]="{'focused-input': activeRowIndex === i && activeColumn === 'left'}"
                       placeholder="Left progression"
                     />
@@ -123,6 +127,7 @@
                       class="both-chord"
                       [formControl]="asFormControl(rightProgressions.at(i))"
                       (focus)="setActiveCell(i, 'right')"
+                      maxlength="50"
                       [ngClass]="{'focused-input': activeRowIndex === i && activeColumn === 'right'}"
                       placeholder="Right progression"
                     />
