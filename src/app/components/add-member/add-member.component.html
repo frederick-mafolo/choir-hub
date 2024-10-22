@@ -1,0 +1,14 @@
+<h2 mat-dialog-title>Add a New Member</h2>
+<mat-dialog-content>
+  <form [formGroup]="addMemberForm">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Member email</mat-label>
+      <input matInput formControlName="email" placeholder="Enter email address name" />
+      <mat-error *ngIf="addMemberForm.get('email')?.invalid">Email in invalid</mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onCreate()" [disabled]="addMemberForm.invalid">Add</button>
+</mat-dialog-actions>

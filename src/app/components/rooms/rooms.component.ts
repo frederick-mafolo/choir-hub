@@ -129,47 +129,34 @@ export class RoomsComponent {
 
   selectAndJoinRoom(roomId: string, roomName: string) {
     this.currentRoomId = roomId;
-    this.roomJoined.emit(roomId);
-  
-    const user = this.auth.currentUser; // Assume user is authenticated and has user details
+ 
+
+    const user = this.auth.currentUser; // Get current authenticated user
+    if (!user) {
+      this.toastService.showToast('User not authenticated', 'error');
+      return;
+    }
+    
     const userData = {
-      uid: user?.uid,
-      email: user?.email,
+      uid: user.uid,
+      email: user.email,
     };
 
-          // If the roomName is not provided, retrieve it from Firebase
-  if (!roomName) {
-    const roomRef = ref(this.db, `rooms/${roomId}/name`);
-    get(roomRef)
-      .then((snapshot) => {
-        if (snapshot.exists()) {
-          roomName = snapshot.val();  // Assign the retrieved room name
-        } else {
-          this.toastService.showToast('Room name not found.', 'error');
-        }
-      })
-      .catch(() => {
-        this.toastService.showToast('Error retrieving room name.', 'error');
-      });
-  } 
-  
-  console.log(roomName)
-    // Add user details under room's 'users' node in Firebase
-    const roomUsersRef = ref(this.db, `rooms/${roomId}/users/${user?.uid}`);
-
-    set(roomUsersRef, userData)
-      .then(() => {
-        const userRoomsRef = ref(this.db, `users/${this.userId}/rooms/${roomId}`);
-        return set(userRoomsRef, true); // Add room to user's list of rooms
-      })
-      .then(() => {
+    this.roomService.joinRoom(userData,roomId, roomName).subscribe({
+      next: () => {
+        // Room created successfully
+        this.roomJoined.emit(roomId);
         this.roomService.setCurrentRoom(roomId, roomName);
         this.closePopup();
         this.toastService.showToast(`Joined room ${roomName}`, 'success');
-      })
-      .catch(() => {
+      },
+      error: (error) => {
+        // Handle any error
         this.toastService.showToast('Error joining room', 'error');
-      });
+        console.error('Room creation failed', error);
+      }
+    });
+   
   }
   
   closePopup() {

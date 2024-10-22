@@ -20,10 +20,27 @@
     <div *ngIf="selectedRoom" class="room-details">
       <!-- Room Title and Edit Button -->
       <div class="room-header">
+
         <h3>Room: {{ selectedRoom.name }}</h3>
-        
+
+           <!-- Three dot menu button -->
+    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="More options">
+      <mat-icon class="menu-icon">more_vert</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+
+      <button mat-menu-item (click)="shareRoomLink(selectedRoom.id)">
+        <mat-icon class="menu-icon">share</mat-icon>
+        <span>Share room link</span>
+      </button>
+      <button mat-menu-item (click)="openAddMemberDialog(selectedRoom.id,selectedRoom.name)">
+        <mat-icon class="menu-icon">add</mat-icon>
+        <span>Add member</span>
+      </button>
+    </mat-menu>
+  </div>
         <!-- Room name input (Disabled for non-admin users) -->
-        <mat-form-field appearance="outline" class="room-name-input">
+        <mat-form-field *ngIf="isAdmin" appearance="outline" class="room-name-input">
           <label>Edit the room name</label>
           <input matInput [(ngModel)]="newRoomName" placeholder="Enter room name" 
                  [disabled]="!isAdmin" />
@@ -43,13 +60,18 @@
                 (click)="editRoomName()">
           <mat-icon>save</mat-icon> Save
         </button>
-      </div>
+    
 
       <!-- Delete Room Button (Only visible for admin) -->
       <button *ngIf="isAdmin"
               mat-raised-button color="warn" 
               (click)="deleteRoom(selectedRoom.id, selectedRoom.name)">
         <mat-icon>delete</mat-icon>Delete Room
+      </button>
+
+      <button *ngIf="selectedRoom.users.length === 0" mat-raised-button color="warn"
+       (click)="exitRoom(selectedRoom.id)">
+       Delete
       </button>
 
       <!-- Users in Room Section -->

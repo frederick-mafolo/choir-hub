@@ -25,14 +25,13 @@ export class AuthService {
         const user = userCredential.user;
         // Get the token and save it to localStorage
         return user.getIdToken().then((token: string) => {
-          localStorage.setItem(this.tokenKey, token);
 
           // Save user data to localStorage
           const userData = {
             uid: user.uid,
             email: user.email,
           };
-          localStorage.setItem(this.userKey, JSON.stringify(userData));
+          this.setUseData(token,userData)
          
           // Navigate to a protected route (e.g., Rooms)
           this.router.navigate(['/home']);
@@ -43,6 +42,11 @@ export class AuthService {
         this.toastService.showToast('Error occurred: Invalid credential', 'error');
         // Handle error (e.g., display error message to user)
       });
+  }
+
+  setUseData(token:string,userData:any){
+    localStorage.setItem(this.tokenKey,token);
+    localStorage.setItem(this.userKey, JSON.stringify(userData));
   }
 
   // Logout the user

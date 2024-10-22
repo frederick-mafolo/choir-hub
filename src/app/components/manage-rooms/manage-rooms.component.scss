@@ -12,14 +12,41 @@
 
 .rooms-list {
   margin-bottom: 20px;
+  width: 100%;
 }
+
 
 .rooms-list ul {
   list-style: none;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
+  justify-items: center;
+}
+
+
+.rooms-list ul {
+  /* This ensures different layout depending on the number of items */
+  grid-template-columns: repeat(3, 1fr); /* Default layout for 3 items */
+}
+/* Single item should occupy full width */
+.rooms-list ul:has(li:nth-child(1):only-child) {
+  grid-template-columns: 1fr;
+}
+
+/* If there are exactly 2 items, they should split 50% */
+.rooms-list ul:has(li:nth-child(2)) {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* 3 items on the list should take 33% each */
+.rooms-list ul:has(li:nth-child(3)) {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* From the 4th item onward, the 4th will move to the next line */
+.rooms-list ul:has(li:nth-child(n+4)) {
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .rooms-list li {
@@ -32,15 +59,23 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   width: 85%;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Adds subtle shadow for a floating effect */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
 }
 
 .rooms-list li:hover {
-  background: #f7f7f7;
+  background-color: #f0f8ff; /* Change background color on hover */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Make shadow stronger on hover */
+  border-color: #008cff; /* Change border color on hover */
 }
 
+/* Active or selected room style */
 .rooms-list li.selected {
-  background: #bada55;
-  border-color: #aaa;
+  background-color: #e6f7ff;
+  border-color: #007bff; /* Blue border for selected */
+  color: #007bff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Stronger shadow for selected item */
 }
 
 .rooms-list li span {
@@ -60,23 +95,29 @@
   border-radius: 10px;
   width: 95%;
   max-width: 600px;
-
+  gap: 10px;
 }
 
 .room-header {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px;
+  justify-content: space-between; 
+  align-items: center; 
   width: 100%;
+  height: 50px; 
+
 }
 
+
+.menu-icon{
+  padding: initial !important;
+}
+
+
 .room-header h3 {
-  margin-bottom: 20px;
   font-size: 20px;
   font-weight: bold;
   color: #333;
-  text-align: center;
+  margin: 0;
 }
 
 .room-name-input {

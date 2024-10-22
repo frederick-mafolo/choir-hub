@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { ToastService } from 'src/app/services/toast.service';
+import { RoomService } from 'src/app/services/room.service';
+import { Database, ref, set } from '@angular/fire/database';
 
 @Component({
   selector: 'app-register',
@@ -23,7 +25,9 @@ export class RegisterComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private toastService: ToastService
+    private db: Database,
+    private toastService: ToastService,
+    private roomService: RoomService,
   ) {}
 
   ngOnInit() {
@@ -56,22 +60,47 @@ export class RegisterComponent implements OnInit {
   }
 
   register() {
-    console.log('testststts');
-
+    const roomId = this.router.getCurrentNavigation()?.extras?.queryParams?.['roomId'];
+  
     if (this.passwordMatch === this.password) {
       if (this.email && this.password) {
-        this.authService
-          .register(this.email, this.password)
-          .then(() => {
-            this.toastService.showToast('Successfully registered', 'success');
-            this.router.navigate(['/home']);
+        this.authService.register(this.email, this.password)
+          .then((userCredential) => { 
+            const user:any = userCredential.user;
+          
+            // Add user details (UID and email) to the Firebase database
+           const token = user?.accessToken
+            const userData = {
+              uid: user?.uid,
+              email: user?.email,
+            };
+
+           this.authService.setUseData(token,userData);
+  
+            // Save the user data to the 'users' node in Firebase Database or Firestore
+            const userRef = ref(this.db, `users/${user.uid}`);
+            set(userRef, {email : userData.email})
+              .then(() => {
+                if (roomId) {
+                  this.roomService.joinRoom(roomId, ''); // Add user to the room after registration
+                }
+               
+                this.toastService.showToast('Successfully registered', 'success');
+                this.router.navigate(['/home']);
+              })
+              .catch((dbError) => {
+                this.toastService.showToast('Error saving user data: ' + dbError.message, 'error');
+              });
           })
           .catch((error) => {
-            this.toastService.showToast('Error occurred', 'error');
+            this.toastService.showToast('Error occurred: ' + error.message, 'error');
           });
       } else {
         this.toastService.showToast('Please enter your details', 'error');
       }
+    } else {
+      this.toastService.showToast('Passwords do not match', 'error');
     }
   }
+  
 }

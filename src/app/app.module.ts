@@ -32,6 +32,7 @@ import { ResetPasswordComponent } from './components/reset-password/reset-passwo
 import { LandingPageComponent } from './components/landing-page/landing-page.component';
 import { ManageRoomsComponent } from './components/manage-rooms/manage-rooms.component';
 import { CreateNewRoomComponent } from './components/create-new-room/create-new-room.component';
+import { AddMemberComponent } from './components/add-member/add-member.component';
 
 @NgModule({
   declarations: [
@@ -47,7 +48,8 @@ import { CreateNewRoomComponent } from './components/create-new-room/create-new-
     ResetPasswordComponent,
     LandingPageComponent,
     ManageRoomsComponent,
-    CreateNewRoomComponent
+    CreateNewRoomComponent,
+    AddMemberComponent
   ],
   imports: [
     BrowserModule,

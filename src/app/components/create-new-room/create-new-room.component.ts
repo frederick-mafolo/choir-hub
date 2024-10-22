@@ -1,7 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ToastService } from 'src/app/services/toast.service';
 
 @Component({
   selector: 'app-create-new-room',
@@ -33,7 +32,4 @@ export class CreateNewRoomComponent {
   }
 
 
-  createRoom() {
-  
-  }
 }
