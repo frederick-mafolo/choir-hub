@@ -4,7 +4,7 @@
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Member email</mat-label>
       <input matInput formControlName="email" placeholder="Enter email address name" />
-      <mat-error *ngIf="addMemberForm.get('email')?.invalid">Email in invalid</mat-error>
+      <mat-error *ngIf="addMemberForm.get('email')?.invalid">Email is invalid</mat-error>
     </mat-form-field>
   </form>
 </mat-dialog-content>

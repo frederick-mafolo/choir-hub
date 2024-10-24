@@ -109,35 +109,36 @@ export class ManageRoomsComponent implements OnInit {
   }
 
 
-  openAddMemberDialog(roomId: string, roomName:string): void {
+  openAddMemberDialog(roomId: string, roomName: string): void {
     const dialogRef = this.dialog.open(AddMemberComponent);
-
+  
     dialogRef.afterClosed().subscribe((email) => {
       if (roomId) {
-        const userRef = ref(this.db, `users`); // Reference to users in the DB
-  
-        // Check if the user is already registered
-        get(query(userRef, orderByChild('email'), equalTo(email)))
-          .then(snapshot => {
+        const userRef = ref(this.db, `users`); // Reference to the users node in Firebase
+        // Query the 'users' node for a user with the matching email
+        const emailQuery = query(userRef, orderByChild('email'), equalTo(email));
+        
+        get(emailQuery)
+          .then((snapshot) => {
             if (snapshot.exists()) {
-              const userId = Object.keys(snapshot.val())[0];
-              const userData = {
-                uid: userId,
-                email: email,
-              };
-              this.addUserToRoom(userData, roomId,roomName); // Add user to the room if they exist
+              const userData = snapshot.val();
+              const userId = Object.keys(userData)[0]; // Get the userId of the first match
+              const userEmail = userData[userId].email; // Get the matched user's email
+              const user = { uid: userId, email: userEmail };
+              this.addUserToRoom(user, roomId, roomName); // Add the user to the room
             } else {
-              // User not found, send an invitation email
+              // If the user is not found, send an invite email
               this.sendInviteEmail(email, roomId);
             }
           })
-          .catch(error => {
-            console.log(error)
-            this.toastService.showToast(error, 'error');
+          .catch((error) => {
+            this.toastService.showToast('Error searching for user', 'error');
+            console.error(error);
           });
       }
     });
   }
+  
 
     // Add existing user to the room
     addUserToRoom(userData: object, roomId: string,roomName:string): void {
@@ -178,14 +179,21 @@ export class ManageRoomsComponent implements OnInit {
     
       // Use an email service to send the email
       this.emailService.sendEmail(inviteData)
-        .then(() => {
-          this.toastService.showToast('Invitation sent!', 'success');
-        })
-        .catch(() => {
-          this.toastService.showToast('Failed to send invitation', 'error');
+        .subscribe({
+          next: () => {
+            this.toastService.showToast('Invitation sent!', 'success');
+
+          },
+          error: (error) => {
+            console.error('Room creation failed', error);
+
+            this.toastService.showToast('Failed to send invitation', 'error');
+          }
         });
     }
     
+
+
 
   getUsernameFromEmail(email: string): string {
     if (!email) return ''; // Handle cases where email is empty or null

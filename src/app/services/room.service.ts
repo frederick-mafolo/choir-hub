@@ -94,12 +94,10 @@ export class RoomService {
         set(roomUsersRef, userData)
           .then(() => set(userRoomsRef, { name: roomName })) // Add room to user's list of rooms
           .then(() => {
-            console.log("users list")
             observer.next(); // Emit success when everything is done
             observer.complete(); // Complete the observable
           })
           .catch((error) => {
-            console.log(error, "user list")
             observer.error(error)}); // Emit error if something goes wrong
       };
   
@@ -110,6 +108,7 @@ export class RoomService {
           .then((snapshot) => {
             if (snapshot.exists()) {
               roomName = snapshot.val();
+              this.setCurrentRoom(roomId, roomName as string);
               addUserToRoom(roomName as string); // Proceed with adding the user
             } else {
               observer.error(new Error('Room name not found'));
@@ -117,6 +116,7 @@ export class RoomService {
           })
           .catch((error) => observer.error(error)); // Emit error if fetching room name fails
       } else {
+        this.setCurrentRoom(roomId, roomName);
         addUserToRoom(roomName); // Proceed directly if roomName is already provided
       }
     });

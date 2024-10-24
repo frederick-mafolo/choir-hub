@@ -36,14 +36,17 @@ exports.sendEmail = functions.https.onCall((data: { to: any; subject: any; text:
   };
 
   // Send the email using NodeMailer
-  return transporter.sendMail(mailOptions, (error: { toString: () => any; }, info: { response: any; }) => {
-    if (error) {
+return transporter.sendMail(mailOptions)
+    .then((info:any) => {
+      console.log('Email sent: ' + info.response);
+      return { success: true };
+    })
+    .catch((error: {
+              message: any; toString: () => any; 
+          }) => {
       console.error('Error sending email:', error);
-      return { success: false, error: error.toString() };
-    }
-    console.log('Email sent:', info.response);
-    return { success: true };
-  });
+      throw new functions.https.HttpsError('internal', error.message);
+    });
 });
 
 

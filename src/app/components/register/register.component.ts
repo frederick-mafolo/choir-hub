@@ -1,7 +1,7 @@
 // register.component.ts
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToastService } from 'src/app/services/toast.service';
 import { RoomService } from 'src/app/services/room.service';
 import { Database, ref, set } from '@angular/fire/database';
@@ -21,16 +21,20 @@ export class RegisterComponent implements OnInit {
   hasLetters: boolean = false;
   hasSymbols: boolean = false;
   isDisabled: boolean = true;
+  roomId: string | null = null;
 
   constructor(
     private authService: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
     private db: Database,
     private toastService: ToastService,
     private roomService: RoomService,
   ) {}
 
   ngOnInit() {
+  
+
     if (this.authService.isLoggedIn()) {
       this.router.navigate(['home']);
     }
@@ -60,8 +64,10 @@ export class RegisterComponent implements OnInit {
   }
 
   register() {
-    const roomId = this.router.getCurrentNavigation()?.extras?.queryParams?.['roomId'];
-  
+    this.route.queryParams.subscribe(params => {
+      this.roomId = params['roomId'] || null;
+    });
+
     if (this.passwordMatch === this.password) {
       if (this.email && this.password) {
         this.authService.register(this.email, this.password)
@@ -81,12 +87,23 @@ export class RegisterComponent implements OnInit {
             const userRef = ref(this.db, `users/${user.uid}`);
             set(userRef, {email : userData.email})
               .then(() => {
-                if (roomId) {
-                  this.roomService.joinRoom(roomId, ''); // Add user to the room after registration
+                if (this.roomId) {
+                  this.roomService.joinRoom(userData,this.roomId, '').subscribe({
+                    next: () => {
+                      this.toastService.showToast('Successfully joined the room ', 'success');
+                    },
+                    error: (error) => {
+                      // Handle any error
+                      this.toastService.showToast('Error joining room', 'error');
+                    }
+                
+                  }); // Add user to the room after registration
+                } else {
+                  this.toastService.showToast('Successfully registered', 'success');
                 }
-               
-                this.toastService.showToast('Successfully registered', 'success');
                 this.router.navigate(['/home']);
+
+              
               })
               .catch((dbError) => {
                 this.toastService.showToast('Error saving user data: ' + dbError.message, 'error');

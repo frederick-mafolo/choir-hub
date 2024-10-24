@@ -146,7 +146,7 @@ export class RoomsComponent {
       next: () => {
         // Room created successfully
         this.roomJoined.emit(roomId);
-        this.roomService.setCurrentRoom(roomId, roomName);
+    
         this.closePopup();
         this.toastService.showToast(`Joined room ${roomName}`, 'success');
       },
