@@ -17,13 +17,19 @@ export class AppComponent {
     { icon: 'settings', label: 'Manage Profile', route: '/manage-profile' },
     { icon: 'power_settings_new', label: 'Log out', route: '/logout', action: 'logout' }
   ];
-
+  userData!: {
+    uid: string;
+    email: string;
+    name: string;
+  };
 
   lastScrollTop = 0; // Keep track of the last scroll position
   navbarVisible = true; // This will control the visibility of the navbar
 
 
-  constructor(public authService: AuthService) {}
+  constructor(public authService: AuthService) {
+    this.userData = this.authService.getUserData();
+  }
 
   @HostListener('window:scroll', [])
   onWindowScroll() {

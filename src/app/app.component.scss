@@ -55,13 +55,13 @@ mat-toolbar{
   color: white;
   text-decoration: none;
   margin: 0 15px;
-  font-size: 16px;
+  font-size: 10px;
   transition: color 0.2s ease-in-out;
 }
 
-.navbar-menu a:hover {
-  color: #ffcc00;
-}
+// .navbar-menu a:hover {
+//   color: #ffcc00;
+// }
 /* Ensure the content starts below the navbar */
 .content-container {
  position:relative;

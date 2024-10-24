@@ -9,10 +9,13 @@
       >
         <mat-icon class="menu-icon">menu</mat-icon>
       </button>
-      <img src="../../../assets/images/logochoir-.png" alt="Choir Hub Logo" class="logo-image" />
+      <a routerLink="/home">
+        <img src="../../../assets/images/logochoir-.png" alt="Choir Hub Logo" class="logo-image" />
+      </a>
+      
     </div>
     <div class="navbar-menu">
-      <a *ngIf="authService.isLoggedIn()" routerLink="/home">Home</a>
+      <a *ngIf="authService.isLoggedIn()" >{{userData.name || userData.email}}</a>
       <a *ngIf="!authService.isLoggedIn()" routerLink="/register">Sign up</a>
     </div>
   </nav>
