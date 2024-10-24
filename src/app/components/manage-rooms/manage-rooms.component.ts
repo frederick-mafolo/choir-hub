@@ -32,7 +32,7 @@ export class ManageRoomsComponent implements OnInit {
     id: string;
     name: string;
     admin?: string;
-    users: Array<{ id: string; name: string; email: string ; admin?:boolean}>;
+    users: Array<{ id: string; name: string; email: string; admin?: boolean }>;
   } | null = null;
   newRoomName: string = '';
   userData!: {
@@ -41,7 +41,7 @@ export class ManageRoomsComponent implements OnInit {
     name: string;
   };
 
-  isAdmin:boolean = false;
+  isAdmin: boolean = false;
   constructor(
     private db: Database,
     private auth: Auth,
@@ -49,7 +49,7 @@ export class ManageRoomsComponent implements OnInit {
     private toastService: ToastService,
     private roomService: RoomService,
     private dialog: MatDialog,
-    private emailService:EmailService
+    private emailService: EmailService
   ) {
     this.userData = this.authService.getUserData();
   }
@@ -62,17 +62,19 @@ export class ManageRoomsComponent implements OnInit {
 
   async loadRooms() {
     try {
+      this.rooms = [];
+      this.selectedRoom = null;
       const userRoomsRef = ref(this.db, `users/${this.userData?.uid}/rooms`);
       const snapshot = await get(userRoomsRef);
-  
+
       const rooms = snapshot.val();
-  
+
       // Check if rooms exist
       if (rooms) {
         // Use room names from the user's rooms data instead of fetching from the rooms node
-        this.rooms = Object.keys(rooms).map(roomId => ({
+        this.rooms = Object.keys(rooms).map((roomId) => ({
           id: roomId,
-          name: rooms[roomId]?.name || roomId,  // Use the room name or default to roomId
+          name: rooms[roomId]?.name || roomId, // Use the room name or default to roomId
         }));
       } else {
         this.rooms = [];
@@ -82,7 +84,6 @@ export class ManageRoomsComponent implements OnInit {
       this.toastService.showToast('Error loading joined rooms', 'error');
     }
   }
-  
 
   openCreateRoomDialog(): void {
     const dialogRef = this.dialog.open(CreateNewRoomComponent);
@@ -108,16 +109,19 @@ export class ManageRoomsComponent implements OnInit {
     });
   }
 
-
   openAddMemberDialog(roomId: string, roomName: string): void {
     const dialogRef = this.dialog.open(AddMemberComponent);
-  
+
     dialogRef.afterClosed().subscribe((email) => {
       if (roomId) {
         const userRef = ref(this.db, `users`); // Reference to the users node in Firebase
         // Query the 'users' node for a user with the matching email
-        const emailQuery = query(userRef, orderByChild('email'), equalTo(email));
-        
+        const emailQuery = query(
+          userRef,
+          orderByChild('email'),
+          equalTo(email)
+        );
+
         get(emailQuery)
           .then((snapshot) => {
             if (snapshot.exists()) {
@@ -138,62 +142,55 @@ export class ManageRoomsComponent implements OnInit {
       }
     });
   }
-  
 
-    // Add existing user to the room
-    addUserToRoom(userData: object, roomId: string,roomName:string): void {
-      const user = this.auth.currentUser; // Get current authenticated user
-      if (!user) {
-        this.toastService.showToast('User not authenticated', 'error');
-        return;
-      }
-      
-      this.roomService.joinRoom(userData,roomId, roomName).subscribe({
-        next: () => {
-          // Room created successfully
-          // this.roomJoined.emit(roomId);
-          this.roomService.setCurrentRoom(roomId, roomName);
-          // this.closePopup();
-          this.toastService.showToast('User added to the room', 'success');
-        },
-        error: (error) => {
-          // Handle any error
-          this.toastService.showToast('Error adding user to room', 'error');
-  
-          console.error('Room creation failed', error);
-        }
-      });
-  
+  // Add existing user to the room
+  addUserToRoom(userData: object, roomId: string, roomName: string): void {
+    const user = this.auth.currentUser; // Get current authenticated user
+    if (!user) {
+      this.toastService.showToast('User not authenticated', 'error');
+      return;
     }
-    
-    // Send invitation email to non-registered user
-    sendInviteEmail(email: string, roomId: string): void {
-      const baseUrl = window.location.origin;
-      const inviteLink = `${baseUrl}/register?roomId=${roomId}`;
-    
-      const inviteData = {
-        to: email,
-        subject: 'Join Room Invitation',
-        text: `You have been invited to join a room. Click the link to register and join the room: ${inviteLink}`
-      };
-    
-      // Use an email service to send the email
-      this.emailService.sendEmail(inviteData)
-        .subscribe({
-          next: () => {
-            this.toastService.showToast('Invitation sent!', 'success');
 
-          },
-          error: (error) => {
-            console.error('Room creation failed', error);
+    this.roomService.joinRoom(userData, roomId, roomName).subscribe({
+      next: () => {
+        // Room created successfully
+        // this.roomJoined.emit(roomId);
+        this.roomService.setCurrentRoom(roomId, roomName);
+        // this.closePopup();
+        this.toastService.showToast('User added to the room', 'success');
+      },
+      error: (error) => {
+        // Handle any error
+        this.toastService.showToast('Error adding user to room', 'error');
 
-            this.toastService.showToast('Failed to send invitation', 'error');
-          }
-        });
-    }
-    
+        console.error('Room creation failed', error);
+      },
+    });
+  }
 
+  // Send invitation email to non-registered user
+  sendInviteEmail(email: string, roomId: string): void {
+    const baseUrl = window.location.origin;
+    const inviteLink = `${baseUrl}/register?roomId=${roomId}`;
 
+    const inviteData = {
+      to: email,
+      subject: 'Join Room Invitation',
+      text: `You have been invited to join a room. Click the link to register and join the room: ${inviteLink}`,
+    };
+
+    // Use an email service to send the email
+    this.emailService.sendEmail(inviteData).subscribe({
+      next: () => {
+        this.toastService.showToast('Invitation sent!', 'success');
+      },
+      error: (error) => {
+        console.error('Room creation failed', error);
+
+        this.toastService.showToast('Failed to send invitation', 'error');
+      },
+    });
+  }
 
   getUsernameFromEmail(email: string): string {
     if (!email) return ''; // Handle cases where email is empty or null
@@ -230,16 +227,17 @@ export class ManageRoomsComponent implements OnInit {
   // Edit the name of the selected room
   async editRoomName() {
     if (this.selectedRoom && this.newRoomName.trim()) {
+      const currentUser = this.auth.currentUser;
 
-   
-        const currentUser = this.auth.currentUser;
-      
-        // Check if the current user is allowed to remove others
-        if (currentUser?.uid !== this.selectedRoom.admin) {
-          this.toastService.showToast('Only the admin can remove users!', 'error');
-          return;
-        }
- 
+      // Check if the current user is allowed to remove others
+      if (currentUser?.uid !== this.selectedRoom.admin) {
+        this.toastService.showToast(
+          'Only the admin can remove users!',
+          'error'
+        );
+        return;
+      }
+
       const roomRef = ref(this.db, `rooms/${this.selectedRoom.id}`);
       await update(roomRef, { name: this.newRoomName })
         .then(() => {})
@@ -255,16 +253,20 @@ export class ManageRoomsComponent implements OnInit {
   shareRoomLink(roomId: string): void {
     const baseUrl = window.location.origin; // Get the current domain
     const roomLink = `${baseUrl}/join-room/${roomId}`; // Construct the link to join room
-    
-    // Copy the link to the clipboard
-    navigator.clipboard.writeText(roomLink).then(() => {
-      this.toastService.showToast('Room link copied to clipboard!', 'success');
-    }).catch(() => {
-      this.toastService.showToast('Failed to copy room link', 'error');
-    });
-  }
-  
 
+    // Copy the link to the clipboard
+    navigator.clipboard
+      .writeText(roomLink)
+      .then(() => {
+        this.toastService.showToast(
+          'Room link copied to clipboard!',
+          'success'
+        );
+      })
+      .catch(() => {
+        this.toastService.showToast('Failed to copy room link', 'error');
+      });
+  }
 
   // Delete a room
   deleteRoom(roomId: string, roomName: string) {
@@ -273,14 +275,17 @@ export class ManageRoomsComponent implements OnInit {
     };
 
     if (this.selectedRoom) {
-    const currentUser = this.auth.currentUser;
-  
-    // Check if the current user is allowed to remove others
-    if (currentUser?.uid !== this.selectedRoom.admin) {
-      this.toastService.showToast('Only the admin can remove users!', 'error');
-      return;
+      const currentUser = this.auth.currentUser;
+
+      // Check if the current user is allowed to remove others
+      if (currentUser?.uid !== this.selectedRoom.admin) {
+        this.toastService.showToast(
+          'Only the admin can remove users!',
+          'error'
+        );
+        return;
+      }
     }
-  }
     const dialogRef = this.dialog.open(DeleteConfirmationModalComponent, {
       width: '250px',
       data: { ...data },
@@ -334,24 +339,39 @@ export class ManageRoomsComponent implements OnInit {
   async removeUser(userId: string) {
     if (this.selectedRoom) {
       const currentUser = this.auth.currentUser;
-  
+
       // Check if the current user is allowed to remove others
-      if (currentUser?.uid !== this.selectedRoom.admin && userId !== currentUser?.uid) {
-        this.toastService.showToast('Only the admin can remove users!', 'error');
+      if (
+        currentUser?.uid !== this.selectedRoom.admin &&
+        userId !== currentUser?.uid
+      ) {
+        this.toastService.showToast(
+          'Only the admin can remove users!',
+          'error'
+        );
         return;
       }
-  
-      const userRef = ref(this.db, `rooms/${this.selectedRoom.id}/users/${userId}`);
-      
+
+      const userRef = ref(
+        this.db,
+        `rooms/${this.selectedRoom.id}/users/${userId}`
+      );
+
       await remove(userRef)
         .then(async () => {
-          const roomUsersRef = ref(this.db, `rooms/${this.selectedRoom?.id}/users`);
-          const roomAdminRef = ref(this.db, `rooms/${this.selectedRoom?.id}/admin`);
-  
+          const roomUsersRef = ref(
+            this.db,
+            `rooms/${this.selectedRoom?.id}/users`
+          );
+          const roomAdminRef = ref(
+            this.db,
+            `rooms/${this.selectedRoom?.id}/admin`
+          );
+
           // Fetch remaining users in the room
           const usersSnapshot = await get(roomUsersRef);
           const remainingUsers = usersSnapshot.val();
-  
+
           // If user was the admin and there are still users, assign a new admin
           if (userId === this.selectedRoom?.admin && remainingUsers) {
             const remainingUserIds = Object.keys(remainingUsers);
@@ -362,21 +382,24 @@ export class ManageRoomsComponent implements OnInit {
                 ];
               // Set the new admin
               await set(roomAdminRef, newAdminId);
-               // Add "admin: true" property to the new admin's user data
-            const newAdminUserRef = ref(this.db, `rooms/${this.selectedRoom.id}/users/${newAdminId}`);
-            await set(newAdminUserRef, {
-              ...remainingUsers[newAdminId],
-              admin: true
-            });
+              // Add "admin: true" property to the new admin's user data
+              const newAdminUserRef = ref(
+                this.db,
+                `rooms/${this.selectedRoom.id}/users/${newAdminId}`
+              );
+              await set(newAdminUserRef, {
+                ...remainingUsers[newAdminId],
+                admin: true,
+              });
 
-            this.loadRooms();
+              this.loadRooms();
               this.toastService.showToast(
                 `New admin is now ${remainingUsers[newAdminId].email}`,
                 'success'
               );
             }
           }
-  
+
           // If no users remain, delete the room
           if (!remainingUsers) {
             const roomRef = ref(this.db, `rooms/${this.selectedRoom?.id}`);
@@ -386,29 +409,69 @@ export class ManageRoomsComponent implements OnInit {
               'success'
             );
           }
-  
+
           // Also remove the room under the user's rooms list
-          const userRoomsRef = ref(this.db, `users/${userId}/rooms/${this.selectedRoom?.id}`);
+          const userRoomsRef = ref(
+            this.db,
+            `users/${userId}/rooms/${this.selectedRoom?.id}`
+          );
           await remove(userRoomsRef);
           this.toastService.showToast('User removed from room!', 'success');
         })
         .catch((error) => {
           this.toastService.showToast('Failed to remove the user', 'error');
         });
-  
+
       this.selectRoom(this.selectedRoom); // Reload users
     }
   }
+
+  async makeAsAdmin(userId: string, roomId: string): Promise<void> {
+    try {
+      // Fetch user data from the room's user list
+      const userRef = ref(this.db, `rooms/${roomId}/users/${userId}`);
+      const userSnapshot = await get(userRef);
+      
+      if (!userSnapshot.exists()) {
+        this.toastService.showToast('User not found in the room', 'error');
+        return;
+      }
   
+      const userData = userSnapshot.val();
+      
+      // Set the new admin in the room
+      const roomAdminRef = ref(this.db, `rooms/${roomId}/admin`);
+      await set(roomAdminRef, userId);
+      
+      // Update the user data with "admin: true"
+      await set(userRef, {
+        ...userData,
+        admin: true,
+      });
+  
+      // Reload the rooms and notify the success
+      await this.loadRooms();
+      this.toastService.showToast(`${userData.email} is now set as the admin`, 'success');
+    } catch (error) {
+      console.error('Error making user admin:', error);
+      this.toastService.showToast('Failed to assign admin', 'error');
+    }
+  }
+  
+
+  blockUser(userId: string, roomId: string) {}
   exitRoom(roomId: string) {
     const user = this.auth.currentUser; // Get the current user
-  
+
     if (user) {
       // Remove the room from the user's list of rooms
       const userRoomsRef = ref(this.db, `users/${user.uid}/rooms/${roomId}`);
       remove(userRoomsRef)
         .then(() => {
-          this.toastService.showToast('Successfully exited the room', 'success');
+          this.toastService.showToast(
+            'Successfully exited the room',
+            'success'
+          );
           this.loadRooms(); // Reload the rooms to update the UI
           this.selectedRoom = null; // Clear the selected room
         })
@@ -419,5 +482,4 @@ export class ManageRoomsComponent implements OnInit {
       this.toastService.showToast('User not authenticated', 'error');
     }
   }
-  
 }
