@@ -3,6 +3,7 @@ import { Database, get, push, ref, set } from '@angular/fire/database';
 import { Auth } from '@angular/fire/auth';
 import { RoomService } from 'src/app/services/room.service';
 import { ToastService } from 'src/app/services/toast.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 interface Room {
   id: string;
@@ -19,7 +20,7 @@ export class RoomsComponent {
   roomName: string = ''; // Room Name input field
   currentRoomId: string = '';
   joinedRooms: Room[] = [];
-  userId: string | null = null;
+  
   
   showRoomNameInput: boolean = false;
   showRoomIdInput: boolean = false;
@@ -31,17 +32,17 @@ export class RoomsComponent {
   constructor(
     private db: Database,
     private auth: Auth,
+    private authService: AuthService,
     private roomService: RoomService,
     private toastService: ToastService,
   ) {}
 
   ngOnInit(): void {
-    this.auth.onAuthStateChanged((user) => {
-      if (user) {
-        this.userId = user.uid;
-        this.loadJoinedRooms();
-      }
+    this.authService.getUserData().subscribe((data) => {
+      this.loadJoinedRooms( data.uid);
     });
+       
+
   }
 
   // Method to toggle the 'Join Room' input field
@@ -57,9 +58,9 @@ export class RoomsComponent {
   }
 
 
-  async loadJoinedRooms() {
+  async loadJoinedRooms(userId:string) {
     try {
-      const userRoomsRef = ref(this.db, `users/${this.userId}/rooms`);
+      const userRoomsRef = ref(this.db, `users/${userId}/rooms`);
       const snapshot = await get(userRoomsRef);
   
       const rooms = snapshot.val();

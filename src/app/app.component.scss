@@ -49,9 +49,10 @@ mat-toolbar{
 .navbar-menu {
   display: flex;
   align-items: center;
+  margin-right: 7px;
 }
 
-.navbar-menu a {
+.navbar-menu .user-name {
   color: white;
   text-decoration: none;
   margin: 0 15px;
@@ -59,9 +60,6 @@ mat-toolbar{
   transition: color 0.2s ease-in-out;
 }
 
-// .navbar-menu a:hover {
-//   color: #ffcc00;
-// }
 /* Ensure the content starts below the navbar */
 .content-container {
  position:relative;
@@ -90,6 +88,41 @@ mat-sidenav-container{
   button[mat-raised-button]:hover {
     background-color: #e64a19;
   }
+
+  .navbar-menu .sign-in{ 
+    background-color: #003c7c; /* A fresh blue color */
+    margin: 0 15px;
+  }
+
+  .navbar-menu .sign-in:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+    transform: translateY(-2px); /* Subtle lift effect on hover */
+}
+  .navbar-menu .btn {
+   
+    color: white;
+    width: 40%; /* Reduced width */
+    padding: 8px 16px; /* Reduced padding */
+    border: none;
+    border-radius: 10px; /* Slightly rounded corners */
+    font-size: 16px; /* Reduced font size */
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Subtle shadow */
+    transition: background 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+}
+
+
+
+.navbar-menu .sign-up {
+  background-color: #7c7800; /* A fresh blue color */
+}
+
+.navbar-menu .sign-up:hover {
+    background-color: #b3ad07; /* Darker green on hover */
+    transform: translateY(-2px); /* Subtle lift effect on hover */
+}
 
   .menu-icon{
     color: white;

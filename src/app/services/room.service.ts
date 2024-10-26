@@ -79,9 +79,9 @@ export class RoomService {
     });
   }
 
-  joinRoom(userData:any,roomId: string, roomName?: string): Observable<void> {
+   joinRoom(userData:any,roomId: string, roomName?: string): Observable<void> {
     return new Observable((observer) => {
-   
+    
   
       // Helper function to add the user to the room and user's room list
       const addUserToRoom = (roomName: string) => {
@@ -94,6 +94,7 @@ export class RoomService {
         set(roomUsersRef, userData)
           .then(() => set(userRoomsRef, { name: roomName })) // Add room to user's list of rooms
           .then(() => {
+            this.setCurrentRoom(roomId, roomName as string);
             observer.next(); // Emit success when everything is done
             observer.complete(); // Complete the observable
           })
@@ -108,7 +109,6 @@ export class RoomService {
           .then((snapshot) => {
             if (snapshot.exists()) {
               roomName = snapshot.val();
-              this.setCurrentRoom(roomId, roomName as string);
               addUserToRoom(roomName as string); // Proceed with adding the user
             } else {
               observer.error(new Error('Room name not found'));

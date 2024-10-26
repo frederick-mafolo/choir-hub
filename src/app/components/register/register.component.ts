@@ -63,6 +63,11 @@ export class RegisterComponent implements OnInit {
     }
   }
 
+  getUsernameFromEmail(email: string): string {
+    if (!email) return ''; // Handle cases where email is empty or null
+    const username = email.split('@')[0]; // Get the part before '@'
+    return username.replace(/\./g, ' '); // Replace dots with spaces
+  }
   register() {
     this.route.queryParams.subscribe(params => {
       this.roomId = params['roomId'] || null;
@@ -78,10 +83,11 @@ export class RegisterComponent implements OnInit {
            const token = user?.accessToken
             const userData = {
               uid: user?.uid,
-              email: user?.email,
+              email: user?.email ,
+              name:user.displaName || this.getUsernameFromEmail(user?.email)
             };
 
-           this.authService.setUseData(token,userData);
+           this.authService.setUserData(token,userData);
   
             // Save the user data to the 'users' node in Firebase Database or Firestore
             const userRef = ref(this.db, `users/${user.uid}`);
@@ -94,6 +100,7 @@ export class RegisterComponent implements OnInit {
                     },
                     error: (error) => {
                       // Handle any error
+                      console.error(error)
                       this.toastService.showToast('Error joining room', 'error');
                     }
                 

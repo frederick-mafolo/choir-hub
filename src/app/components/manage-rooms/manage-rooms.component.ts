@@ -51,11 +51,15 @@ export class ManageRoomsComponent implements OnInit {
     private dialog: MatDialog,
     private emailService: EmailService
   ) {
-    this.userData = this.authService.getUserData();
+  
   }
 
   ngOnInit(): void {
-    this.loadRooms();
+    this.authService.getUserData().subscribe((data) => {
+      this.userData = data;
+      this.loadRooms();
+
+    });
   }
 
   // Load rooms with their names

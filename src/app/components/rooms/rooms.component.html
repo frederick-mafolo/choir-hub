@@ -5,7 +5,7 @@
     <div class="centered-container">
       <h3>Your Rooms</h3>
       <div class="room-list">
-        <ul class="room-list-horizontal">
+        <ul *ngIf="joinedRooms.length > 0" class="room-list-horizontal">
           <li
             *ngFor="let room of joinedRooms"
             (click)="selectAndJoinRoom(room.id,room.name)"
@@ -14,6 +14,8 @@
             {{ room?.name }}
           </li>
         </ul>
+
+        <p *ngIf="joinedRooms.length == 0">No joined rooms</p>
       </div>
     </div>
     

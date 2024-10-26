@@ -3,7 +3,7 @@
   <form [formGroup]="addMemberForm">
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Member email</mat-label>
-      <input matInput formControlName="email" placeholder="Enter email address name" />
+      <input matInput formControlName="email" placeholder="Enter email address" />
       <mat-error *ngIf="addMemberForm.get('email')?.invalid">Email is invalid</mat-error>
     </mat-form-field>
   </form>

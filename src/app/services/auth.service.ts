@@ -3,13 +3,15 @@ import { Auth,createUserWithEmailAndPassword, sendPasswordResetEmail,signInWithE
 import { Router } from '@angular/router';
 import { RoomService } from './room.service';
 import { ToastService } from './toast.service';
-
+import { BehaviorSubject, Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private tokenKey = 'authToken';
   private userKey = 'userData';
+  private userDataSubject = new BehaviorSubject<any>(null);  // Subject to emit latest user data
+  userData$ = this.userDataSubject.asObservable(); 
 
   constructor(private auth: Auth, private router: Router,private roomService: RoomService,private toastService: ToastService) {}
 
@@ -30,8 +32,9 @@ export class AuthService {
           const userData = {
             uid: user.uid,
             email: user.email,
+            name:user.displayName
           };
-          this.setUseData(token,userData)
+          this.setUserData(token,userData)
          
           // Navigate to a protected route (e.g., Rooms)
           this.router.navigate(['/home']);
@@ -44,10 +47,25 @@ export class AuthService {
       });
   }
 
-  setUseData(token:string,userData:any){
-    localStorage.setItem(this.tokenKey,token);
-    localStorage.setItem(this.userKey, JSON.stringify(userData));
+
+  getUserData(): Observable<any> {
+ 
+    const userData = localStorage.getItem(this.userKey);
+    if (!userData) {
+      return this.userData$;
+    } else {
+      this.userDataSubject.next(JSON.parse(userData));
+      return this.userData$;
+    }
   }
+
+  public setUserData(token: string, userData: any): void {
+    localStorage.setItem(this.tokenKey, token);
+    localStorage.setItem(this.userKey, JSON.stringify(userData));
+    this.userDataSubject.next(userData);  // Emit new data
+  }
+
+
 
   // Logout the user
   logout() {
@@ -94,10 +112,7 @@ isLoggedIn(): boolean {
 }
 
  // Get user data from localStorage if needed
- getUserData(): any {
-  const userData = localStorage.getItem(this.userKey);
-  return userData ? JSON.parse(userData) : null;
-}
+
 
 }
 

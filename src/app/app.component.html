@@ -15,8 +15,9 @@
       
     </div>
     <div class="navbar-menu">
-      <a *ngIf="authService.isLoggedIn()" >{{userData.name || userData.email}}</a>
-      <a *ngIf="!authService.isLoggedIn()" routerLink="/register">Sign up</a>
+      <a *ngIf="authService.isLoggedIn()" class="user-name">{{userData.name || userData.email}}</a>
+      <a *ngIf="!authService.isLoggedIn()" class="sign-in btn" routerLink="/login">Log in</a>
+      <a *ngIf="!authService.isLoggedIn()" class="sign-up btn" routerLink="/register">Sign up</a>
     </div>
   </nav>
 
