@@ -21,20 +21,27 @@
     
 
     <div class="room-selector">
+      <form [formGroup]="roomForm">
       <!-- Conditional input field for room ID -->
       <mat-form-field *ngIf="showRoomIdInput" appearance="outline" class="full-width">
         <mat-label>Enter Room ID</mat-label>
-        <input matInput [(ngModel)]="roomId" placeholder="Room ID" />
+        <input  matInput formControlName="roomId" placeholder="Room ID" />
+        <mat-error *ngIf="roomForm.get('roomId')?.hasError('joinRoomError')">
+        <span>{{errorMessage}}</span>
+        </mat-error>
       </mat-form-field>
 
       <!-- Conditional input field for room name -->
       <mat-form-field *ngIf="showRoomNameInput" appearance="outline" class="full-width">
         <mat-label>Enter Room Name</mat-label>
-        <input matInput [(ngModel)]="roomName" placeholder="Room Name" />
+        <input matInput formControlName="roomName" placeholder="Room Name" />
+        <mat-error *ngIf="roomForm.get('roomName')?.hasError('createRoomError')">
+          <span>{{errorMessage}}</span>
+          </mat-error>
       </mat-form-field>
-
+    </form>
       <div class="button-group">
-        <button mat-raised-button color="primary" (click)="joinRoom(roomId,roomName)">
+        <button mat-raised-button color="primary" (click)="joinRoom()">
           Join Room
         </button>
         <button mat-raised-button color="accent" (click)="createRoom()">

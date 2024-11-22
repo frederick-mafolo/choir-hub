@@ -1,0 +1,14 @@
+<div class="blocked-user-list">
+  <button class="close-btn" (click)="closePopup()">✖</button>
+  <h3>Blocked users</h3>
+  <div class="blocked-users-container">
+    <ul>
+      <li *ngFor="let user of data.blockedUsers" class="blocked-user-item">
+        <span class="blocked-user-name">{{ user.name || user.email }}</span>
+        <button mat-button color="warn" (click)="unblockUser(user.id)">
+          <mat-icon>lock_open</mat-icon> Unblock
+        </button>
+      </li>
+    </ul>
+  </div>
+</div>

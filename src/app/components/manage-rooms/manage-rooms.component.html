@@ -33,16 +33,21 @@
           <mat-icon class="menu-icon">more_vert</mat-icon>
         </button>
         <mat-menu #menu="matMenu">
-          <button mat-menu-item (click)="shareRoomLink(selectedRoom.id)">
+          <button  *ngIf="isAdmin" mat-menu-item (click)="shareRoomLink(selectedRoom.id)">
             <mat-icon class="menu-icon">insert_link</mat-icon>
             <span>Copy room link</span>
           </button>
           <button
+          *ngIf="isAdmin"
             mat-menu-item
             (click)="openAddMemberDialog(selectedRoom.id, selectedRoom.name)"
           >
             <mat-icon class="menu-icon">add</mat-icon>
             <span>Add member</span>
+          </button>
+          <button  mat-menu-item (click)="exitRoom(selectedRoom.id)">
+            <mat-icon class="menu-icon">exit_to_app</mat-icon>
+            <span>Exit room</span>
           </button>
         </mat-menu>
       </div>
@@ -61,7 +66,7 @@
         />
       </mat-form-field>
 
-      <div class="copy-room-id">
+      <div *ngIf="isAdmin" class="copy-room-id">
         <span>Room ID: {{ selectedRoom.id }}</span>
         <button mat-icon-button (click)="copyRoomId(selectedRoom.id)">
           <mat-icon>file_copy</mat-icon>
@@ -82,7 +87,7 @@
 
       <!-- Delete Room Button (Only visible for admin) -->
       <button
-        *ngIf="isAdmin"
+        *ngIf="isAdmin "
         mat-raised-button
         class="delete-btn"
         color="warn"
@@ -91,37 +96,22 @@
         <mat-icon>delete</mat-icon>Delete Room
       </button>
 
-      <button
-        *ngIf="selectedRoom.users.length === 0 && !isAdmin"
-        mat-raised-button
-        color="warn"
-        (click)="exitRoom(selectedRoom.id)"
-      >
-        Delete
-      </button>
-
       <!-- Users in Room Section -->
       <div class="users-section">
         <h4>{{ selectedRoom.users.length }} member(s)</h4>
         <ul class="user-list">
-          <li *ngFor="let user of selectedRoom.users" class="user-item" >
+          <li *ngFor="let user of selectedRoom.users" class="user-item">
             <div class="user-item-sub">
-            <span
-              >{{ user.name }}
-              {{ user.id === userData.uid ? "(You)" : "" }}</span
-            >
+              <span
+                >{{ user.name }}
+                {{ user.id === userData.uid ? "(You)" : "" }}</span
+              >
 
-            <!-- Show delete icon for admin or self only -->
-            <button
-              *ngIf="isAdmin || user.id === userData?.uid"
-              mat-icon-button
-              color="warn"
-              (click)="removeUser(user.id)"
-            >
-              <mat-icon>remove_circle</mat-icon>
-            </button>
-          </div>
-            <div *ngIf="isAdmin">
+              <!-- Show delete icon for admin or self only -->
+              <div *ngIf="user.admin">Admin</div>
+            </div>
+            <!-- <div *ngIf="user.admin">oooo</div> -->
+            <div>
               <!-- Three dot menu button -->
               <button
                 mat-icon-button
@@ -130,25 +120,70 @@
               >
                 <mat-icon class="menu-icon">more_vert</mat-icon>
               </button>
+
               <mat-menu #menu="matMenu">
-                <button mat-menu-item (click)="makeAsAdmin(user.id,selectedRoom.id)">
-                  <mat-icon class="menu-icon">group</mat-icon>
-                  <span>Make as admin</span>
+                <button
+                  *ngIf="isAdmin && !user.admin"
+                  mat-menu-item
+                  (click)="makeAsAdmin(user.id, selectedRoom.id,selectedRoom.name)"
+                >
+                  <mat-icon class="menu-icon">security</mat-icon>
+                  <span>Make room admin</span>
+                </button>
+
+                <button
+                  *ngIf="isAdmin && user.admin"
+                  mat-menu-item
+                  (click)="dismissAsAdmin(user.id, selectedRoom.id, selectedRoom.name)"
+                >
+                  <mat-icon class="menu-icon">work_off</mat-icon>
+                  <span>Dismiss as admin</span>
                 </button>
                 <button
+                  *ngIf="isAdmin && user.id !== userData.uid"
                   mat-menu-item
-                  (click)="
-                    openAddMemberDialog(user.id,selectedRoom.id)
-                  "
+                  (click)="removeUser(user.id)"
+                >
+                  <mat-icon class="menu-icon">remove_circle_outline</mat-icon>
+                  <span>Remove from room</span>
+                </button>
+                <button
+                  *ngIf="isAdmin && user.id !== userData?.uid"
+                  mat-menu-item
+                  (click)="blockUser(user.id, selectedRoom.id, selectedRoom.name)"
                 >
                   <mat-icon class="menu-icon">block</mat-icon>
                   <span>Block</span>
+                </button>
+
+                <button
+                  *ngIf="user.id === userData?.uid"
+                  mat-menu-item
+                  (click)="exitRoom(selectedRoom.id)"
+                >
+                  <mat-icon class="menu-icon">exit_to_app</mat-icon>
+                  <span>Exit room</span>
                 </button>
               </mat-menu>
             </div>
           </li>
         </ul>
       </div>
+
+ <mat-divider></mat-divider>
+      
+<!-- Display Blocked Users Count if any -->
+<div *ngIf="isAdmin && (selectedRoom && selectedRoom.blockedUsers && selectedRoom.blockedUsers.length > 0)" class="blocked-users-section">
+<div class="sub-section">
+  <h4 class="section-title">
+    Blocked users: <b>{{ selectedRoom.blockedUsers.length }}</b>
+  </h4>
+  <button mat-button (click)="openBlockedUsersPopup()">
+    View blocked users
+  </button>
+</div>
+</div>
+
     </div>
   </div>
 </div>

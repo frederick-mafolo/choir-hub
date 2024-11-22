@@ -12,7 +12,7 @@ export class AppComponent implements OnInit  {
   navItems = [
     { icon: 'home', label: 'Home', route: '/home' },
     { icon: 'library_add', label: 'Library', route: '/library' },
-    { icon: 'build', label: 'Technical team', route: '/tech-team' },
+    { icon: 'build', label: 'Technical team', route: '/technical-team' },
     { icon: 'meeting_room', label: 'Manage rooms', route: '/manage-rooms' },
     { icon: 'group', label: 'User management', route: '/user-management' },
     { icon: 'settings', label: 'Profile settings', route: '/manage-profile' },
@@ -26,7 +26,7 @@ export class AppComponent implements OnInit  {
   userData!: {
     uid: string;
     email: string;
-    name: string | null;
+    displayName: string | null;
   };
 
   lastScrollTop = 0; // Keep track of the last scroll position

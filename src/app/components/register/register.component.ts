@@ -84,14 +84,14 @@ export class RegisterComponent implements OnInit {
             const userData = {
               uid: user?.uid,
               email: user?.email ,
-              name:user.displaName || this.getUsernameFromEmail(user?.email)
+              displayName:user.displayName || this.getUsernameFromEmail(user?.email)
             };
 
            this.authService.setUserData(token,userData);
   
             // Save the user data to the 'users' node in Firebase Database or Firestore
             const userRef = ref(this.db, `users/${user.uid}`);
-            set(userRef, {email : userData.email})
+            set(userRef, {email : userData.email, displayName : userData.displayName})
               .then(() => {
                 if (this.roomId) {
                   this.roomService.joinRoom(userData,this.roomId, '').subscribe({

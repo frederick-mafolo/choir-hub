@@ -1,7 +1,7 @@
 .hero {
   position: relative;
-  background: linear-gradient(to right, rgba(67, 67, 67, 0.9) 0%, rgba(0, 0, 0, 0.9) 100%),
-    url('../../../assets/images/guitar-.jpg') no-repeat center center;
+  background:
+    url('../../../assets/images/background.jpg') no-repeat center center;
   background-size: cover;
   display: flex;
   justify-content: center;
@@ -9,6 +9,9 @@
   text-align: center;
   color: white;
   overflow: hidden;
+}
+p{
+  font-weight: lighter;
 }
 
 .hero .content {

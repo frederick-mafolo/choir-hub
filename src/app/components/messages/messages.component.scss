@@ -1,0 +1,42 @@
+.messages-container {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .messages-list {
+    margin-bottom: 20px;
+    width: 100%;
+  }
+
+  .menu-icon{
+    padding: initial !important;
+    margin: 0px !important;
+    color: white !important;
+  }
+  
+  .add-message {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+  }
+
+  mat-chip {
+    margin: 5px;
+    background-color: #369b45;
+  }
+
+  .send-btn{
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background-color: #68be75;
+    margin-right: 10px;
+  }
+
+  .full-width {
+    width: 100%;
+  }
+  

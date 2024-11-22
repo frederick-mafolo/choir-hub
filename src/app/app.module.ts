@@ -19,6 +19,9 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatMenuModule } from '@angular/material/menu';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatDialogModule } from '@angular/material/dialog';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatChipsModule} from '@angular/material/chips';
+import {MatSelectModule} from '@angular/material/select';
 
 import { FirebaseModule } from './firebase/firebase.module';
 import { ToastComponent } from './shared/toast/toast.component';
@@ -33,6 +36,10 @@ import { LandingPageComponent } from './components/landing-page/landing-page.com
 import { ManageRoomsComponent } from './components/manage-rooms/manage-rooms.component';
 import { CreateNewRoomComponent } from './components/create-new-room/create-new-room.component';
 import { AddMemberComponent } from './components/add-member/add-member.component';
+import { BlockedUsersDialogComponent } from './components/blocked-users-dialog/blocked-users-dialog.component';
+import { TechnicalTeamComponent } from './components/technical-team/technical-team.component';
+import { MessagesComponent } from './components/messages/messages.component';
+import { CategoriesComponent } from './components/categories/categories.component';
 
 @NgModule({
   declarations: [
@@ -49,7 +56,11 @@ import { AddMemberComponent } from './components/add-member/add-member.component
     LandingPageComponent,
     ManageRoomsComponent,
     CreateNewRoomComponent,
-    AddMemberComponent
+    AddMemberComponent,
+    BlockedUsersDialogComponent,
+    TechnicalTeamComponent,
+    MessagesComponent,
+    CategoriesComponent
   ],
   imports: [
     BrowserModule,
@@ -63,11 +74,14 @@ import { AddMemberComponent } from './components/add-member/add-member.component
     MatFormFieldModule,
     MatInputModule,
     MatMenuModule,
+    MatDividerModule,
     MatTabsModule,
     MatSidenavModule,
     MatListModule,
+    MatChipsModule,
     MatIconModule,
     MatToolbarModule,
+    MatSelectModule,
     FlexLayoutModule,
     MatDialogModule,
     FirebaseModule.forRoot()

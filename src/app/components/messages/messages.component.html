@@ -1,0 +1,40 @@
+<div class="messages-container">
+    <!-- <h2>{{ messages[0].category }}</h2> -->
+  
+   
+    <div class="add-message">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Enter a message</mat-label>
+        <input
+          matInput
+          [(ngModel)]="newMessage"
+          placeholder="Type your message here"
+          (keyup.enter)="addMessage()"
+        />
+        <button 
+        class="send-btn" 
+        mat-icon-button
+        matSuffix
+        (click)="addMessage()">
+            <mat-icon class="menu-icon">send</mat-icon>
+        </button>
+      </mat-form-field>
+     
+    </div>
+
+    <div class="messages-list">
+        <mat-chip-listbox>
+          <mat-chip
+            *ngFor="let message of messages; let i = index"
+            (removed)="removeMessage(i)"
+          >
+            {{ message.message }} ({{ message.category }})
+            <button mat-icon-button matChipRemove>
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-chip>
+        </mat-chip-listbox>
+      </div>
+    
+  </div>
+  

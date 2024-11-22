@@ -1,0 +1,22 @@
+  
+  <div class="container" *ngIf="currentRoomId">
+    <h2>{{ selectedCategory }} Items</h2>
+    <div class="categories-container">
+        <mat-chip-listbox>
+          <mat-chip
+            *ngFor="let item of categoryMessages"
+            (click)="selectMessage(item)"
+            class="chip"
+          >
+            {{ item }}
+          </mat-chip>
+        </mat-chip-listbox>
+    </div>
+  
+    <app-messages
+      [messages]="selectedMessages"
+      (removeMessage)="removeMessage($event.target)"
+      (addMessage)="addMessage($event.target)"
+    ></app-messages>
+  </div>
+  

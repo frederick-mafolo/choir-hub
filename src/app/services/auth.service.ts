@@ -32,7 +32,7 @@ export class AuthService {
           const userData = {
             uid: user.uid,
             email: user.email,
-            name:user.displayName
+            displayName:user.displayName
           };
           this.setUserData(token,userData)
          

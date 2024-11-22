@@ -1,10 +1,10 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output,ChangeDetectorRef } from '@angular/core';
 import { Database, get, push, ref, set } from '@angular/fire/database';
 import { Auth } from '@angular/fire/auth';
 import { RoomService } from 'src/app/services/room.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { AuthService } from 'src/app/services/auth.service';
-
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 interface Room {
   id: string;
   name: string;
@@ -16,18 +16,17 @@ interface Room {
   styleUrls: ['./rooms.component.scss'],
 })
 export class RoomsComponent {
-  roomId: string = '';
-  roomName: string = ''; // Room Name input field
+
   currentRoomId: string = '';
   joinedRooms: Room[] = [];
-  
-  
+  roomForm: FormGroup;
   showRoomNameInput: boolean = false;
   showRoomIdInput: boolean = false;
 
   // Output event to emit the room ID to the parent component
   @Output() roomJoined = new EventEmitter<string>();
   @Output() roomConfirmed = new EventEmitter<string[]>();
+  errorMessage: string | null = null;
 
   constructor(
     private db: Database,
@@ -35,7 +34,14 @@ export class RoomsComponent {
     private authService: AuthService,
     private roomService: RoomService,
     private toastService: ToastService,
-  ) {}
+    private fb: FormBuilder,
+    private cdr: ChangeDetectorRef
+  ) {
+    this.roomForm = this.fb.group({
+      roomId: ['', Validators.required],
+      roomName: ['', Validators.required],
+    });
+  }
 
   ngOnInit(): void {
     this.authService.getUserData().subscribe((data) => {
@@ -88,23 +94,34 @@ export class RoomsComponent {
       this.toggleCreateRoom();
       return;
     }
+
   
-    if (!this.roomName) {
+    if (!this.roomForm.get('roomName')?.value) {
       this.toastService.showToast('Please enter a room name.', 'warning');
       return;
     }
 
-    this.roomService.createRoom(this.roomName).subscribe({
-      next: () => {
+    this.roomService.createRoom(this.roomForm.get('roomName')?.value).subscribe({
+      next: (res) => {
+        console.log(res)
         // Room created successfully
         this.roomJoined.emit(this.currentRoomId);
-        this.roomName = ''; // Clear the room name input
-        this.toastService.showToast(`Room "${this.roomName}" created successfully`, 'success');
+        this.closePopup();
+        this.toastService.showToast(`Room "${this.roomForm.get('roomName')?.value}" created successfully`, 'success');
+        this.roomForm.reset(); // Clear the room form
       },
       error: (error) => {
         // Handle any error
+        this.roomForm.get('roomName')?.setErrors({ 'createRoomError': true });
+
+        if(error)
+        this.errorMessage = error;
+        else
+        this.errorMessage = 'Error creating room';
+
+        this.cdr.detectChanges(); 
         this.toastService.showToast('Error creating room', 'error');
-        console.error('Room creation failed', error);
+      
       }
     });
   
@@ -112,19 +129,19 @@ export class RoomsComponent {
   }
   
 
-  joinRoom(roomId: string,roomName: string) {
+  joinRoom() { 
 
     if(this.showRoomIdInput === false){
       this.toggleJoinRoom();
       return
     }
 
-    if (!roomId) {
+    if (!this.roomForm.get('roomId')?.value) {
       this.toastService.showToast('Please enter a room ID.', 'warning');
       return;
     }
 
-    this.selectAndJoinRoom(roomId,roomName)
+    this.selectAndJoinRoom(this.roomForm.get('roomId')?.value, this.roomForm.get('roomName')?.value)
 
   }
 
@@ -153,8 +170,15 @@ export class RoomsComponent {
       },
       error: (error) => {
         // Handle any error
-        this.toastService.showToast('Error joining room', 'error');
-        console.error('Room creation failed', error);
+        this.roomForm.get('roomId')?.setErrors({ 'joinRoomError': true });
+
+        if(error)
+        this.errorMessage = error;
+        else
+        this.errorMessage = 'Error joining room';
+
+        this.cdr.detectChanges(); 
+
       }
     });
    

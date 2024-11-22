@@ -20,7 +20,15 @@ import { AuthService } from 'src/app/services/auth.service';
 import { RoomService } from 'src/app/services/room.service';
 import { EmailService } from 'src/app/services/email.service';
 import { AddMemberComponent } from '../add-member/add-member.component';
+import { BlockedUsersDialogComponent } from '../blocked-users-dialog/blocked-users-dialog.component';
 
+export interface User { 
+  id: string; 
+  name: string; 
+  email: string; 
+  admin?: boolean;
+  blocked?:boolean
+}
 @Component({
   selector: 'app-manage-rooms',
   templateUrl: './manage-rooms.component.html',
@@ -32,7 +40,8 @@ export class ManageRoomsComponent implements OnInit {
     id: string;
     name: string;
     admin?: string;
-    users: Array<{ id: string; name: string; email: string; admin?: boolean }>;
+    blockedUsers: User[];
+    users: User[];
   } | null = null;
   newRoomName: string = '';
   userData!: {
@@ -50,15 +59,12 @@ export class ManageRoomsComponent implements OnInit {
     private roomService: RoomService,
     private dialog: MatDialog,
     private emailService: EmailService
-  ) {
-  
-  }
+  ) {}
 
   ngOnInit(): void {
     this.authService.getUserData().subscribe((data) => {
       this.userData = data;
       this.loadRooms();
-
     });
   }
 
@@ -89,6 +95,49 @@ export class ManageRoomsComponent implements OnInit {
     }
   }
 
+  // Select a room to view users
+  async selectRoom(room: { id: string; name: string }) {
+    this.selectedRoom = { ...room, users: [], blockedUsers: [] };
+
+    const roomSnapshot = await get(ref(this.db, `rooms/${room.id}`));
+    const roomData = roomSnapshot.exists() ? roomSnapshot.val() : null;
+
+    if (roomData.admins) {
+      // Check if the current user is an admin by looking at the admins object
+      this.isAdmin = roomData.admins && roomData.admins[this.userData?.uid] === true;
+      this.selectedRoom.admin = Object.keys(roomData.admins).find(
+        (key) => key === this.userData?.uid
+      )  || '';
+      this.selectedRoom.blockedUsers = roomData.blockedUsers;
+    }
+    const users = roomData.users;
+    if (users) {
+      this.selectedRoom.users = Object.keys(users).map((userId) => ({
+        id: userId,
+        name: users[userId].name || this.getUsernameFromEmail(users[userId].email),
+        email: users[userId].email,
+        admin: roomData.admins ? roomData?.admins[userId] === true : false,
+        blocked: users[userId].blocked || false,
+      }));
+    }
+
+    // Populate `blockedUsers` array
+    const blockedUsers = roomData.blockedUsers || {};
+    if (blockedUsers) {
+      this.selectedRoom.blockedUsers = Object.keys(blockedUsers).map(
+        (userId) => ({
+          id: userId,
+          name: blockedUsers[userId].name || this.getUsernameFromEmail(blockedUsers[userId].email),
+          email: blockedUsers[userId].email,
+          admin: !!blockedUsers[userId].admin,
+          blocked: blockedUsers[userId].blocked || true,
+        })
+      );
+    }
+
+    this.newRoomName = this.selectedRoom.name;
+  }
+
   openCreateRoomDialog(): void {
     const dialogRef = this.dialog.open(CreateNewRoomComponent);
 
@@ -117,7 +166,7 @@ export class ManageRoomsComponent implements OnInit {
     const dialogRef = this.dialog.open(AddMemberComponent);
 
     dialogRef.afterClosed().subscribe((email) => {
-      if (roomId) {
+      if (email) {
         const userRef = ref(this.db, `users`); // Reference to the users node in Firebase
         // Query the 'users' node for a user with the matching email
         const emailQuery = query(
@@ -147,6 +196,19 @@ export class ManageRoomsComponent implements OnInit {
     });
   }
 
+    // Open dialog to show blocked users
+    openBlockedUsersPopup() {
+      const dialogRef = this.dialog.open(BlockedUsersDialogComponent, {
+        width: '400px',
+        data: { blockedUsers: this.selectedRoom?.blockedUsers },
+      });
+  
+      dialogRef.afterClosed().subscribe((userId) => {
+        if (userId && this.selectedRoom?.id && this.selectedRoom?.name) {
+          this.unblockUser(userId, this.selectedRoom?.id, this.selectedRoom?.name);
+        }
+      });
+    }
   // Add existing user to the room
   addUserToRoom(userData: object, roomId: string, roomName: string): void {
     const user = this.auth.currentUser; // Get current authenticated user
@@ -200,32 +262,6 @@ export class ManageRoomsComponent implements OnInit {
     if (!email) return ''; // Handle cases where email is empty or null
     const username = email.split('@')[0]; // Get the part before '@'
     return username.replace(/\./g, ' '); // Replace dots with spaces
-  }
-
-  // Select a room to view users
-  async selectRoom(room: { id: string; name: string; admin?: string }) {
-    this.selectedRoom = { ...room, users: [] };
-
-    const roomSnapshot = await get(ref(this.db, `rooms/${room.id}`));
-    const roomData = roomSnapshot.exists() ? roomSnapshot.val() : null;
-
-    if (roomData) {
-      this.isAdmin = roomData.admin === this.userData?.uid;
-      this.selectedRoom.admin = roomData.admin;
-    }
-    const roomUsersRef = ref(this.db, `rooms/${room.id}/users`);
-    const usersSnapshot = await get(roomUsersRef);
-    const users = usersSnapshot.val();
-    this.newRoomName = this.selectedRoom.name;
-    if (users) {
-      this.selectedRoom.users = Object.keys(users).map((userId) => ({
-        id: userId,
-        name:
-          users[userId].name || this.getUsernameFromEmail(users[userId].email),
-        email: users[userId].email,
-        admin: users[userId].admin,
-      }));
-    }
   }
 
   // Edit the name of the selected room
@@ -339,145 +375,83 @@ export class ManageRoomsComponent implements OnInit {
     }
   }
 
-  // Remove a user from a room
-  async removeUser(userId: string) {
-    if (this.selectedRoom) {
-      const currentUser = this.auth.currentUser;
+// Remove a user from the room
+async removeUser(userId: string): Promise<void> {
+  if (!this.selectedRoom) return;
 
-      // Check if the current user is allowed to remove others
-      if (
-        currentUser?.uid !== this.selectedRoom.admin &&
-        userId !== currentUser?.uid
-      ) {
-        this.toastService.showToast(
-          'Only the admin can remove users!',
-          'error'
-        );
-        return;
-      }
+  const currentUser = this.auth.currentUser;
 
-      const userRef = ref(
-        this.db,
-        `rooms/${this.selectedRoom.id}/users/${userId}`
-      );
-
-      await remove(userRef)
-        .then(async () => {
-          const roomUsersRef = ref(
-            this.db,
-            `rooms/${this.selectedRoom?.id}/users`
-          );
-          const roomAdminRef = ref(
-            this.db,
-            `rooms/${this.selectedRoom?.id}/admin`
-          );
-
-          // Fetch remaining users in the room
-          const usersSnapshot = await get(roomUsersRef);
-          const remainingUsers = usersSnapshot.val();
-
-          // If user was the admin and there are still users, assign a new admin
-          if (userId === this.selectedRoom?.admin && remainingUsers) {
-            const remainingUserIds = Object.keys(remainingUsers);
-            if (remainingUserIds.length > 0) {
-              const newAdminId =
-                remainingUserIds[
-                  Math.floor(Math.random() * remainingUserIds.length)
-                ];
-              // Set the new admin
-              await set(roomAdminRef, newAdminId);
-              // Add "admin: true" property to the new admin's user data
-              const newAdminUserRef = ref(
-                this.db,
-                `rooms/${this.selectedRoom.id}/users/${newAdminId}`
-              );
-              await set(newAdminUserRef, {
-                ...remainingUsers[newAdminId],
-                admin: true,
-              });
-
-              this.loadRooms();
-              this.toastService.showToast(
-                `New admin is now ${remainingUsers[newAdminId].email}`,
-                'success'
-              );
-            }
-          }
-
-          // If no users remain, delete the room
-          if (!remainingUsers) {
-            const roomRef = ref(this.db, `rooms/${this.selectedRoom?.id}`);
-            await remove(roomRef);
-            this.toastService.showToast(
-              'Room deleted as no users remain!',
-              'success'
-            );
-          }
-
-          // Also remove the room under the user's rooms list
-          const userRoomsRef = ref(
-            this.db,
-            `users/${userId}/rooms/${this.selectedRoom?.id}`
-          );
-          await remove(userRoomsRef);
-          this.toastService.showToast('User removed from room!', 'success');
-        })
-        .catch((error) => {
-          this.toastService.showToast('Failed to remove the user', 'error');
-        });
-
-      this.selectRoom(this.selectedRoom); // Reload users
-    }
+  if (currentUser?.uid !== this.selectedRoom.admin && userId !== currentUser?.uid) {
+    this.toastService.showToast('Only the admin can remove users!', 'error');
+    return;
   }
 
-  async makeAsAdmin(userId: string, roomId: string): Promise<void> {
-    try {
-      // Fetch user data from the room's user list
-      const userRef = ref(this.db, `rooms/${roomId}/users/${userId}`);
-      const userSnapshot = await get(userRef);
-      
-      if (!userSnapshot.exists()) {
-        this.toastService.showToast('User not found in the room', 'error');
-        return;
-      }
-  
-      const userData = userSnapshot.val();
-      
-      // Set the new admin in the room
-      const roomAdminRef = ref(this.db, `rooms/${roomId}/admin`);
-      await set(roomAdminRef, userId);
-      
-      // Update the user data with "admin: true"
-      await set(userRef, {
-        ...userData,
-        admin: true,
-      });
-  
-      // Reload the rooms and notify the success
-      await this.loadRooms();
-      this.toastService.showToast(`${userData.email} is now set as the admin`, 'success');
-    } catch (error) {
-      console.error('Error making user admin:', error);
-      this.toastService.showToast('Failed to assign admin', 'error');
-    }
-  }
-  
+  const userRef = ref(this.db, `rooms/${this.selectedRoom.id}/users/${userId}`);
+  try {
+    await remove(userRef); // Remove user from room's users list
+    await this.checkAndAssignAdmin(this.selectedRoom.id, this.selectedRoom.name); // Check and assign new admin if necessary
 
-  blockUser(userId: string, roomId: string) {}
-  exitRoom(roomId: string) {
+    // Also remove the room from the user's list
+    const userRoomsRef = ref(this.db, `users/${userId}/rooms/${this.selectedRoom.id}`);
+    await remove(userRoomsRef);
+    this.toastService.showToast('User removed from room!', 'success');
+  } catch (error) {
+    this.toastService.showToast('Failed to remove the user', 'error');
+  }
+
+  this.selectRoom(this.selectedRoom); // Reload room data
+}
+
+  // Helper method to check for admins and assign a new one if necessary
+private async checkAndAssignAdmin(roomId: string, roomName: string): Promise<void> {
+  const roomUsersRef = ref(this.db, `rooms/${roomId}/users`);
+  const usersSnapshot = await get(roomUsersRef);
+  const remainingUsers = usersSnapshot.val();
+
+  if (!remainingUsers) {
+    // Delete the room if no users remain
+    const roomRef = ref(this.db, `rooms/${roomId}`);
+    await remove(roomRef);
+    this.toastService.showToast('Room deleted as no users remain!', 'success');
+    return;
+  }
+
+  // Check if any user is an admin
+  const hasAdmin = Object.values(remainingUsers).some((user: any) => user.admin);
+
+  // If there are no admins, assign a new random admin
+  if (!hasAdmin) {
+    const remainingUserIds = Object.keys(remainingUsers);
+    const newAdminId = remainingUserIds[Math.floor(Math.random() * remainingUserIds.length)];
+    await this.makeAsAdmin(newAdminId, roomId,roomName);
+    console.log("New Admin", newAdminId)
+    this.toastService.showToast(`New admin assigned in room "${roomName}".`, 'info');
+  }
+}
+
+  
+  async exitRoom(roomId: string) {
     const user = this.auth.currentUser; // Get the current user
-
     if (user) {
       // Remove the room from the user's list of rooms
       const userRoomsRef = ref(this.db, `users/${user.uid}/rooms/${roomId}`);
-      remove(userRoomsRef)
+      await remove(userRoomsRef)
         .then(() => {
-          this.toastService.showToast(
+
+          const userRef = ref(
+            this.db,
+            `rooms/${roomId}/users/${user.uid}`
+          );
+      
+           remove(userRef)
+            .then(async () => {
+            this.toastService.showToast(
             'Successfully exited the room',
             'success'
           );
           this.loadRooms(); // Reload the rooms to update the UI
           this.selectedRoom = null; // Clear the selected room
+        }).catch(() => {});
         })
         .catch(() => {
           this.toastService.showToast('Error exiting room', 'error');
@@ -486,4 +460,157 @@ export class ManageRoomsComponent implements OnInit {
       this.toastService.showToast('User not authenticated', 'error');
     }
   }
+  
+  async makeAsAdmin(userId: string, roomId: string, roomName:string): Promise<void> {
+    try {
+      // Fetch user data from the room's user list
+      const userRef = ref(this.db, `rooms/${roomId}/users/${userId}`);
+      const userSnapshot = await get(userRef);
+  
+      if (!userSnapshot.exists()) {
+        this.toastService.showToast('User not found in the room', 'error');
+        return;
+      }
+  
+      const userData = userSnapshot.val();
+  
+      // Set the new admin in the room by adding userId to the admins node
+      const roomAdminRef = ref(this.db, `rooms/${roomId}/admins/${userId}`);
+      await set(roomAdminRef, true);
+  
+      // Update the user data to mark them as an admin in their profile under the room's users
+      await set(userRef, {
+        ...userData,
+        admin: true,
+      });
+  
+      // Reload the rooms and notify of success
+     await this.selectRoom({ id: roomId, name: roomName }); // Reload room data
+      this.toastService.showToast(
+        `${userData.email} is now set as an admin`,
+        'success'
+      );
+    } catch (error) {
+      console.error('Error making user admin:', error);
+      this.toastService.showToast('Failed to assign admin', 'error');
+    }
+  }
+  
+
+
+// Dismiss admin privileges
+async dismissAsAdmin(userId: string, roomId: string, roomName: string): Promise<void> {
+  try {
+    const userRef = ref(this.db, `rooms/${roomId}/users/${userId}`);
+    const userSnapshot = await get(userRef);
+
+    if (!userSnapshot.exists()) {
+      this.toastService.showToast('User not found in the room', 'error');
+      return;
+    }
+
+    const userData = userSnapshot.val();
+    await set(userRef, { ...userData, admin: false }); // Remove admin privileges
+
+    // Remove the userId from the admins object in the room
+    const adminRef = ref(this.db, `rooms/${roomId}/admins/${userId}`);
+    await remove(adminRef);
+
+    await this.checkAndAssignAdmin(roomId, roomName); // Check and assign new admin if necessary
+    this.selectRoom({ id: roomId, name: roomName }); // Reload room data
+    this.toastService.showToast(`${userData.email} is no longer an admin`, 'success');
+  } catch (error) {
+    console.error('Error dismissing as admin:', error);
+    this.toastService.showToast('Failed to dismiss admin privileges', 'error');
+  }
+}
+
+  // Block user: Move user from `users` to `blockedUsers` with `blocked: true`
+  async blockUser(userId: string, roomId: string, roomName:string): Promise<void> {
+    try {
+      const userRef = ref(this.db, `rooms/${roomId}/users/${userId}`);
+      const userSnapshot = await get(userRef);
+
+      if (!userSnapshot.exists()) {
+        this.toastService.showToast('User not found in the room', 'error');
+        return;
+      }
+
+      const userData = userSnapshot.val();
+  // Sanitize email by replacing "." with ","
+      const sanitizedEmail = userData.email.replace(/\./g, ',');
+      const email = userData.email;
+      // Move user to `blockedUsers` with blocked flag
+      const blockedUserRef = ref(
+        this.db,
+        `rooms/${roomId}/blockedUsers/${userId}`
+      );
+      await set(blockedUserRef, { ...userData, blocked: true }).then(() => {
+           // Move user to `blockedUsers` with blocked flag
+       const blockedEmailRef = ref(
+        this.db,
+        `rooms/${roomId}/blockedEmails/${sanitizedEmail}`
+      );
+      
+        set(blockedEmailRef, { email, blocked:true});
+
+        // Remove user from `users`
+         remove(userRef);
+        let room = { id: roomId, name: roomName }
+        this.selectRoom(room);
+        this.toastService.showToast(
+          `${userData.email} has been blocked`,
+          'success'
+        );
+      }).catch((error) => {
+        console.error('Error blocking user:', error);
+        this.toastService.showToast('Failed to block user', 'error');
+  
+      });
+       
+    } catch (error) {
+      console.error('Error blocking user:', error);
+      this.toastService.showToast('Failed to block user', 'error');
+    }
+  }
+
+  // Unblock user: Move user from `blockedUsers` back to `users`
+  async unblockUser(userId: string, roomId: string, roomName:string): Promise<void> {
+    try {
+      const blockedUserRef = ref(this.db, `rooms/${roomId}/blockedUsers/${userId}`);
+      const userSnapshot = await get(blockedUserRef);
+  
+      if (!userSnapshot.exists()) {
+        this.toastService.showToast('User not found in the blocked list', 'error');
+        return;
+      }
+  
+      const userData = userSnapshot.val();
+  
+      // Replace `.` with `,` for blockedEmails key
+      const sanitizedEmail = userData.email.replace(/\./g, ',');
+  
+      const blockedEmailRef = ref(this.db, `rooms/${roomId}/blockedEmails/${sanitizedEmail}`);
+  
+      // Move user back to `users` without blocked flag
+      const userRef = ref(this.db, `rooms/${roomId}/users/${userId}`);
+      await set(userRef, { ...userData, blocked: false });
+  
+      // Remove user from `blockedUsers`
+      await remove(blockedUserRef);
+  
+      // Remove email from `blockedEmails`
+      await remove(blockedEmailRef);
+  
+      // Refresh room and display success message
+      let room = { id: roomId, name: roomName};
+      this.selectRoom(room);
+      this.toastService.showToast(`${userData.email} has been unblocked`, 'success');
+  
+    } catch (error) {
+      console.error('Error unblocking user:', error);
+      this.toastService.showToast('Failed to unblock user', 'error');
+    }
+  }
+  
 }

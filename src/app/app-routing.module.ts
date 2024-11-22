@@ -8,12 +8,16 @@ import { RegisterComponent } from './components/register/register.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { LandingPageComponent } from './components/landing-page/landing-page.component';
 import { ManageRoomsComponent } from './components/manage-rooms/manage-rooms.component';
+import { TechnicalTeamComponent } from './components/technical-team/technical-team.component';
+import { CategoriesComponent } from './components/categories/categories.component';
 
 const routes: Routes = [
   { path: '', component: LandingPageComponent },
   { path: 'rooms', component: RoomsComponent, canActivate: [AuthGuard] },
   { path: 'home', component: PianoComponent, canActivate: [AuthGuard] },
   { path: 'manage-rooms', component: ManageRoomsComponent,canActivate: [AuthGuard] },
+  { path: 'technical-team', component: CategoriesComponent,canActivate : [AuthGuard] },
+  { path: 'messages/:category', component: TechnicalTeamComponent ,canActivate : [AuthGuard] },
   { path: 'login', component: LoginComponent },
   { path: 'landing-page', component: LandingPageComponent },
   { path: 'register', component: RegisterComponent },

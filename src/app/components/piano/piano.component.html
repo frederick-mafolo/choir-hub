@@ -53,7 +53,7 @@
 
 
 <!-- Add Progression Button if no progression exists -->
-<div *ngIf="selectedProgression" class="current-progression">
+<div *ngIf="!selectedProgression" class="current-progression">
   <h3>Add a progression for <b>{{ selectedSong?.name || 'Untitled Song' }}</b></h3>
   <button class="add-progression-btn" (click)="addProgression()">Add Progression</button>
 </div>
