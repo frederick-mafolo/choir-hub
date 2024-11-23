@@ -5,6 +5,7 @@
       <mat-card
         *ngFor="let category of categories"
         class="category-card"
+        [ngStyle]="{ 'background-color': category.color }"
         (click)="navigateToCategory(category.name)">
 
         <mat-card-title>{{ category.name }}</mat-card-title>

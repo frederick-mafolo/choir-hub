@@ -4,7 +4,7 @@
   <input matInput [(ngModel)]="email" name="email" type="email" required placeholder="choir@email.com">
   <input matInput [(ngModel)]="password" name="password" type="password" required placeholder="••••••••">
  
-  <button type="submit">Sign In</button>
+  <button  (keyup.enter)="login()" type="submit">Sign In</button>
   <a  routerLink="/reset-password">Forgot password?</a>
   <button routerLink="/register" style="background-color: #f5f5f5; color: #333; border: 1px solid #ddd;">Create an account</button>
 </form>

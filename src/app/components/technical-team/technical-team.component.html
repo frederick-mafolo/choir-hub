@@ -1,6 +1,11 @@
   
   <div class="container" *ngIf="currentRoomId">
-    <h2>{{ selectedCategory }} Items</h2>
+    <div class="gategory-header"> 
+        <button mat-button routerLink="/technical-team">
+        <mat-icon>arrow_back</mat-icon>
+        </button> 
+        <h2>{{ selectedCategory }}</h2> 
+    </div>
     <div class="categories-container">
         <mat-chip-listbox>
           <mat-chip
@@ -15,8 +20,11 @@
   
     <app-messages
       [messages]="selectedMessages"
-      (removeMessage)="removeMessage($event.target)"
-      (addMessage)="addMessage($event.target)"
+      (messageRemoved)="removeMessage($event)"
+      (messageAdded)="saveMessage($event)"
+      (messageEdited)="editMessage($event)"
     ></app-messages>
   </div>
+
+  <p *ngIf="!currentRoomId">Please select or create a room</p>
   

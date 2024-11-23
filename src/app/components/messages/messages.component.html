@@ -1,7 +1,4 @@
 <div class="messages-container">
-    <!-- <h2>{{ messages[0].category }}</h2> -->
-  
-   
     <div class="add-message">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Enter a message</mat-label>
@@ -12,29 +9,37 @@
           (keyup.enter)="addMessage()"
         />
         <button 
-        class="send-btn" 
-        mat-icon-button
-        matSuffix
-        (click)="addMessage()">
+          class="send-btn" 
+          mat-icon-button
+          matSuffix
+          (click)="addMessage()">
             <mat-icon class="menu-icon">send</mat-icon>
         </button>
       </mat-form-field>
-     
     </div>
-
-    <div class="messages-list">
-        <mat-chip-listbox>
-          <mat-chip
-            *ngFor="let message of messages; let i = index"
-            (removed)="removeMessage(i)"
-          >
-            {{ message.message }} ({{ message.category }})
-            <button mat-icon-button matChipRemove>
-              <mat-icon>cancel</mat-icon>
-            </button>
-          </mat-chip>
-        </mat-chip-listbox>
-      </div>
-    
-  </div>
   
+    <div class="messages-list">
+      <mat-chip-listbox>
+        <mat-chip
+          *ngFor="let message of messages; let i = index"
+          (removed)="removeMessage(message.id, i)"
+          (dblclick)="enableEdit(i)"
+        >
+          <span *ngIf="!isEditing[i]">{{ message.message }} <b>({{ message.category }})</b></span>
+          <input
+            *ngIf="isEditing[i]"
+            id="edit-input-{{i}}" 
+            [(ngModel)]="editedMessage"
+            (blur)="saveEditedMessage(message.id, i)"
+            (keyup.enter)="saveEditedMessage(message.id, i)"
+            (keyup.escape)="cancelEdit(i)"
+            (keydown.backspace)="$event.stopPropagation()"
+            (keydown)="onKeyDown($event)"
+          />
+          <button mat-icon-button matChipRemove>
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip>
+      </mat-chip-listbox>
+    </div>
+  </div>
