@@ -23,14 +23,15 @@ import { EditSongModalComponent } from '../edit-song-modal/edit-song-modal.compo
 import { DeleteConfirmationModalComponent } from '../delete-confirmation-modal/delete-confirmation-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 import html2canvas from 'html2canvas';
+import { AuthService } from 'src/app/services/auth.service';
 interface Key {
   note: string;
   active: boolean;
 }
 
 export interface Progression {
-  left?: string[]; 
-  right?: string[]; 
+ progression:{ left?: string[], right?: string[]};
+ songName:''
 }
 
 interface KeyGroup {
@@ -95,14 +96,25 @@ export class PianoComponent implements OnInit {
   isOverWrittenClicked: boolean = false;
   currentRoomName!: string;
 
+  userData!: {
+    uid: string;
+    email: string;
+    name: string;
+  };
+
   constructor(
     private pianoService: PianoService,
     private toastService: ToastService,
     private db: Database,
     private roomService: RoomService,
     private dialog: MatDialog,
+    private authService: AuthService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) {
+    this.authService.getUserData().subscribe((data) => {
+      this.userData = data;
+    });
+  }
 
   ngOnInit() {
     // Subscribe to the current room from RoomService
@@ -160,13 +172,16 @@ export class PianoComponent implements OnInit {
   }
 
   
-  updateProgression(progression: Progression) {
+  updateProgression(progressionData: Progression) {
     if(this.isOverWrittenClicked){
       this.closeProgressionEditor();
       return;
     }
 
-    if ((progression?.left == undefined && progression?.right == undefined) || (progression.left == null && progression.right == null)){
+    if ((progressionData.progression?.left == undefined 
+      && progressionData.progression?.right == undefined) 
+      || (progressionData.progression.left == null 
+      && progressionData.progression.right == null)){
    
       delete this.progressions[this.selectedSongId as string];
       this.selectedProgression = null;
@@ -174,9 +189,14 @@ export class PianoComponent implements OnInit {
       return;
     }
     else { 
- 
+      console.log(progressionData.songName)
+      this.roomService.setActivityLog(`added progression on song: ${progressionData.songName} `, this.userData, this.currentRoomId as string).subscribe({
+        next: () => {},
+        error: (err) =>{ console.error('Failed to log activity:', err)}
+       }); 
+
     this.selectedSongIndex = this.selectedSongIndex;
-    this.selectedProgression = progression;
+    this.selectedProgression = progressionData.progression;
     }
     this.closeProgressionEditor(); // Close the editor after confirming
   }
@@ -198,6 +218,10 @@ export class PianoComponent implements OnInit {
 
     const songRef = push(ref(this.db, `rooms/${this.currentRoomId}/songs`));
     set(songRef, this.newSong).then(() => {
+      this.roomService.setActivityLog(`added ${this.newSong.name} song to the room`, this.userData, this.currentRoomId as string).subscribe({
+        next: () => console.log('Join activity logged.'),
+        error: (err) => console.error('Failed to log join activity:', err),
+      });
       this.newSong = { name: '', key: '', order: 0 }; // Reset the form
     });
   }
@@ -220,7 +244,12 @@ export class PianoComponent implements OnInit {
         set(
           ref(this.db, `rooms/${this.currentRoomId}/songs/${id}`),
           result
-        );
+        ).then(() => {   
+          this.roomService.setActivityLog(`edited ${result.name} song`, this.userData, this.currentRoomId as string).subscribe({
+          next: () => console.log('Join activity logged.'),
+          error: (err) => console.error('Failed to log join activity:', err),
+        }); 
+      }).catch( (e) => { console.error(e)  })
       }
     });
   }
@@ -246,6 +275,11 @@ export class PianoComponent implements OnInit {
           'Progression deleted successfully!',
           'success'
         );
+        console.log(this.selectedSong)
+        this.roomService.setActivityLog(`deleted progression song :${this.selectedSong.name} `, this.userData, this.currentRoomId as string).subscribe({
+          next: () => console.log('Activity logged.'),
+          error: (err) => console.error('Failed to log activity:', err),
+        }); 
         this.selectedProgression = null;
       })
       .catch((error) => {
@@ -280,7 +314,10 @@ export class PianoComponent implements OnInit {
                   files: [file], // Share the image file
                 })
                 .then(() => {
-                  console.log('Progression shared successfully!');
+                    this.roomService.setActivityLog(`Shared progression song :${this.selectedSong.name} `, this.userData, this.currentRoomId as string).subscribe({
+                      next: () => console.log('Activity logged.'),
+                      error: (err) => console.error('Failed to log activity:', err),
+                     }); 
                 })
                 .catch((error) => {
                   console.error('Error sharing progression:', error);
@@ -316,6 +353,10 @@ export class PianoComponent implements OnInit {
         const songRef = ref(this.db, `rooms/${this.currentRoomId}/songs/${id}`);
         remove(songRef)
           .then(() => {
+            this.roomService.setActivityLog(`deleted song : ${data.message} `, this.userData, this.currentRoomId as string).subscribe({
+              next: () => console.log('Activity logged.'),
+              error: (err) => console.error('Failed to log activity:', err),
+             }); 
             this.reIndexSongs();
           })
           .catch((error) => {
@@ -409,6 +450,7 @@ export class PianoComponent implements OnInit {
     const roomRef = ref(this.db, `rooms/${roomId}/piano-key`);
     onValue(roomRef, (snapshot) => {
       const keyData = snapshot.val();
+
       if (keyData && keyData.note) {
         // Reset all keys to inactive
         this.keys.forEach((keyGroup) => {
@@ -441,6 +483,11 @@ export class PianoComponent implements OnInit {
       );
       return;
     }
+
+    this.roomService.setActivityLog(`pressed: ${note} `, this.userData, this.currentRoomId as string).subscribe({
+      next: () => {},
+      error: (err) =>{ console.error('Failed to log activity:', err)}
+     }); 
 
     // Reset all keys to inactive
     this.keys.forEach((keyGroup) => {

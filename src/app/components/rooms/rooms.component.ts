@@ -38,8 +38,8 @@ export class RoomsComponent {
     private cdr: ChangeDetectorRef
   ) {
     this.roomForm = this.fb.group({
-      roomId: ['', Validators.required],
-      roomName: ['', Validators.required],
+      roomId: ['', [Validators.required, Validators.maxLength(50)]],
+      roomName: ['', Validators.required, Validators.maxLength(50)],
     });
   }
 
@@ -158,6 +158,7 @@ export class RoomsComponent {
     const userData = {
       uid: user.uid,
       email: user.email,
+      displayName: user.displayName
     };
 
     this.roomService.joinRoom(userData,roomId, roomName).subscribe({

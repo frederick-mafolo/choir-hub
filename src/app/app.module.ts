@@ -22,6 +22,8 @@ import {MatDialogModule } from '@angular/material/dialog';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatSelectModule} from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import {MatTableModule} from '@angular/material/table';
 
 import { FirebaseModule } from './firebase/firebase.module';
 import { ToastComponent } from './shared/toast/toast.component';
@@ -40,6 +42,10 @@ import { BlockedUsersDialogComponent } from './components/blocked-users-dialog/b
 import { TechnicalTeamComponent } from './components/technical-team/technical-team.component';
 import { MessagesComponent } from './components/messages/messages.component';
 import { CategoriesComponent } from './components/categories/categories.component';
+import { ProfileSettingsComponent } from './profile-settings/profile-settings.component';
+import { ConfirmDeleteModalComponent } from './confirm-delete-modal/confirm-delete-modal.component';
+import { UserManagementComponent } from './components/user-management/user-management.component';
+import { ActivityLogComponent } from './components/activity-log/activity-log.component';
 
 @NgModule({
   declarations: [
@@ -59,8 +65,12 @@ import { CategoriesComponent } from './components/categories/categories.componen
     AddMemberComponent,
     BlockedUsersDialogComponent,
     TechnicalTeamComponent,
+    ProfileSettingsComponent,
     MessagesComponent,
-    CategoriesComponent
+    CategoriesComponent,
+    ConfirmDeleteModalComponent,
+    UserManagementComponent,
+    ActivityLogComponent
   ],
   imports: [
     BrowserModule,
@@ -79,8 +89,10 @@ import { CategoriesComponent } from './components/categories/categories.componen
     MatSidenavModule,
     MatListModule,
     MatChipsModule,
+    MatCheckboxModule,
     MatIconModule,
     MatToolbarModule,
+    MatTableModule,
     MatSelectModule,
     FlexLayoutModule,
     MatDialogModule,

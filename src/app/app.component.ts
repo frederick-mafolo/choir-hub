@@ -15,11 +15,10 @@ export class AppComponent implements OnInit  {
     { icon: 'build', label: 'Technical team', route: '/technical-team' },
     { icon: 'meeting_room', label: 'Manage rooms', route: '/manage-rooms' },
     { icon: 'group', label: 'User management', route: '/user-management' },
-    { icon: 'settings', label: 'Profile settings', route: '/manage-profile' },
+    { icon: 'settings', label: 'Profile settings', route: '/profile-settings' },
     {
       icon: 'power_settings_new',
       label: 'Log out',
-      route: '/logout',
       action: 'logout',
     },
   ];

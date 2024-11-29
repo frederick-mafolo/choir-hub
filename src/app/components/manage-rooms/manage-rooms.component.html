@@ -61,6 +61,7 @@
         <input
           matInput
           [(ngModel)]="newRoomName"
+          maxlength="50"
           placeholder="Enter room name"
           [disabled]="!isAdmin"
         />
@@ -142,7 +143,7 @@
                 <button
                   *ngIf="isAdmin && user.id !== userData.uid"
                   mat-menu-item
-                  (click)="removeUser(user.id)"
+                  (click)="removeUser(user.id, user.name)"
                 >
                   <mat-icon class="menu-icon">remove_circle_outline</mat-icon>
                   <span>Remove from room</span>

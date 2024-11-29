@@ -1,0 +1,59 @@
+
+<div class="container">
+<div class="user-management">
+    <div class="user-list">
+        <table mat-table [dataSource]="filteredUsers" class="mat-elevation-z8">
+          <!-- Name Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let user">{{ user.displayName }}</td>
+          </ng-container>
+      
+          <!-- Email Column -->
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef>Email</th>
+            <td mat-cell *matCellDef="let user">{{ user.email }}</td>
+          </ng-container>
+      
+          <!-- Role Column -->
+          <ng-container matColumnDef="role">
+            <th mat-header-cell *matHeaderCellDef>Role</th>
+            <td mat-cell *matCellDef="let user">{{ user.admin ? "admin":"member" }}</td>
+          </ng-container>
+      
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let user">
+              <span [ngClass]="user.status === 'Active' ? 'active' : 'inactive'">
+                {{ user.status }}
+              </span>
+            </td>
+          </ng-container>
+      
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let user">
+              <button mat-icon-button (click)="viewUserDetails(user)">
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button mat-icon-button (click)="editUser(user)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteUser(user)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+      
+          <!-- Header and Row Declarations -->
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+      
+  
+    <app-activity-log [roomId]="currentRoomId"></app-activity-log>
+  </div>
+</div>

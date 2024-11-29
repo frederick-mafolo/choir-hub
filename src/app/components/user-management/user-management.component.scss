@@ -1,0 +1,41 @@
+.user-management .header {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding: 20px;
+  }
+  
+  .user-list {
+    margin: 20px 0px 50px 0px;
+
+    // overflow-x: auto;
+  }
+  
+  table {
+    width: 100%;
+  }
+  
+  th.mat-header-cell {
+    text-align: left;
+    font-weight: bold;
+  }
+  
+  td.mat-cell {
+    text-align: left;
+  }
+  
+  .active {
+    color: green;
+    font-weight: bold;
+  }
+  
+  .inactive {
+    color: red;
+    font-weight: bold;
+  }
+  
+  button.mat-icon-button {
+    margin: 0 5px;
+  }
+  
+  

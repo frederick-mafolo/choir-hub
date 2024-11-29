@@ -1,0 +1,35 @@
+<div class="profile-settings-container">
+    <h2>Profile Settings</h2>
+  
+    <!-- Update Display Name -->
+    <div class="form-group">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Display Name</mat-label>
+        <input matInput [(ngModel)]="displayName"  maxlength="30"  placeholder="Enter new display name" />
+      </mat-form-field>
+      <button mat-raised-button color="primary" (click)="updateDisplayName()">Update Display Name</button>
+    </div>
+  
+    <!-- Change Password -->
+    <div class="form-group">
+     <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Old Password</mat-label>
+        <input matInput type="password" [(ngModel)]="oldPassword"  maxlength="50"  placeholder="Enter old password"  required />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>New Password</mat-label>
+        <input matInput [(ngModel)]="newPassword" type="password" maxlength="50" placeholder="Enter new password" required />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Confirm Password</mat-label>
+        <input matInput [(ngModel)]="confirmPassword" type="password" maxlength="50" placeholder="Confirm new password" required />
+      </mat-form-field>
+      <button mat-raised-button color="primary" (click)="changePassword()">Change Password</button>
+    </div>
+  
+    <!-- Delete Account -->
+    <div class="form-group delete-btn">
+      <button mat-raised-button color="warn" (click)="openDeleteAccountModal()">Delete Account</button>
+    </div>
+  </div>
+  

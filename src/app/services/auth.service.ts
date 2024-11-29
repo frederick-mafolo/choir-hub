@@ -60,7 +60,9 @@ export class AuthService {
   }
 
   public setUserData(token: string, userData: any): void {
+    if(token)
     localStorage.setItem(this.tokenKey, token);
+
     localStorage.setItem(this.userKey, JSON.stringify(userData));
     this.userDataSubject.next(userData);  // Emit new data
   }

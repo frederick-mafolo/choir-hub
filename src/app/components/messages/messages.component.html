@@ -1,10 +1,11 @@
 <div class="messages-container">
     <div class="add-message">
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Enter a message</mat-label>
+        <!-- <mat-label>Enter a message</mat-label> -->
         <input
           matInput
           [(ngModel)]="newMessage"
+          maxlength="200"
           placeholder="Type your message here"
           (keyup.enter)="addMessage()"
         />
@@ -21,15 +22,23 @@
     <div class="messages-list">
       <mat-chip-listbox>
         <mat-chip
+           class="chip-content"
           *ngFor="let message of messages; let i = index"
           (removed)="removeMessage(message.id, i)"
           (dblclick)="enableEdit(i)"
+   
         >
-          <span *ngIf="!isEditing[i]">{{ message.message }} <b>({{ message.category }})</b></span>
+          <mat-checkbox
+            class="checkbox"
+            [(ngModel)]="message.isCompleted"
+            (change)="toggleCompleted(message)"
+          ></mat-checkbox>
+          <span [class.completed]="message.isCompleted" *ngIf="!isEditing[i]">{{ message.message }} <b>({{ message.category.charAt(0) }})</b></span>
           <input
             *ngIf="isEditing[i]"
-            id="edit-input-{{i}}" 
+            id="edit-input-{{ i }}"
             [(ngModel)]="editedMessage"
+            maxlength="200"
             (blur)="saveEditedMessage(message.id, i)"
             (keyup.enter)="saveEditedMessage(message.id, i)"
             (keyup.escape)="cancelEdit(i)"
@@ -42,4 +51,5 @@
         </mat-chip>
       </mat-chip-listbox>
     </div>
+    
   </div>

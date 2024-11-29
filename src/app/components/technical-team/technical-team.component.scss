@@ -2,7 +2,6 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
-    padding: 20px;
     max-height: 300px; 
     overflow-y: auto;
   }
@@ -11,6 +10,15 @@
     margin: 5px;
     background-color: #e0e0e0;
     cursor: pointer;
+  }
+
+  .menu-icon{
+    padding: initial !important;
+  }
+  
+  .back-btn{
+    justify-content: start;
+    padding: 0 !important;
   }
   
   mat-chip:hover {

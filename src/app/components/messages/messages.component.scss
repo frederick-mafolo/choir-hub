@@ -6,8 +6,9 @@
   }
   
   .messages-list {
-    margin-bottom: 20px;
     width: 100%;
+    overflow-x: auto; 
+    margin: 10px 0;    
   }
 
   .menu-icon{
@@ -23,9 +24,18 @@
     width: 100%;
   }
 
-  mat-chip {
+  mat-chip-listbox {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 8px;         
+  }
+
+  .chip-content {
+    word-wrap: break-word; 
+    max-width: 100%;    
     margin: 5px;
-    background-color: #369b45;
+    display: flex;
+    align-items: center;
   }
 
   .send-btn{
@@ -40,3 +50,13 @@
     width: 100%;
   }
   
+  .completed {
+    text-decoration: line-through;
+    text-decoration-thickness: 2px;
+    text-decoration-color: rgb(36, 36, 36);
+    text-decoration-style: solid; 
+  }
+  
+  .checkbox {
+    margin-right: 8px;
+  }

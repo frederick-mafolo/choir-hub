@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Database, get, push, ref, set } from '@angular/fire/database';
-import { ToastService } from './toast.service';
+import { Database, get, push, ref, remove, set, update } from '@angular/fire/database';
 import { Auth } from '@angular/fire/auth';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { from } from 'rxjs';
 interface Room {
   id: string;
   name: string;
@@ -43,6 +41,7 @@ export class RoomService {
       const userData = {
         uid: user.uid,
         email: user.email,
+        displayName: user.displayName,
         admin: true, // Mark the user as admin
       };
   
@@ -88,6 +87,22 @@ export class RoomService {
     });
   }
   
+  saveUserData(userData:any): Observable<void>{
+    return new Observable((observer) => {
+      // Save the user data to the 'users' node in Firebase Database or Firestore
+      const userRef = ref(this.db, `users/${userData.uid}`);
+      update(userRef, {email : userData.email, displayName : userData.displayName})
+        .then(() => {
+     
+          observer.next(); // Emit success when everything is done
+          observer.complete(); // Complete the observable
+        
+        })
+        .catch((dbError) => {
+          observer.error(dbError); // Emit error if something goes wrong
+        });
+      })
+  }
 
   joinRoom(userData: any, roomId: string, roomName?: string): Observable<void> {
     return new Observable((observer) => {
@@ -112,6 +127,10 @@ export class RoomService {
             .then(() => set(userRoomsRef, { name: roomName })) // Add room to user's list of rooms
             .then(() => {
               this.setCurrentRoom(roomId, roomName as string);
+              this.setActivityLog('joined the room', userData, roomId).subscribe({
+                next: () => console.log('Join activity logged.'),
+                error: (err) => console.error('Failed to log join activity:', err),
+              });
               observer.next(); // Emit success when everything is done
               observer.complete(); // Complete the observable
             })
@@ -139,7 +158,92 @@ export class RoomService {
       }).catch((error) => observer.error(error));
     });
   }
+
+  exitRoom(userData:any, roomId: string): Observable<void>{
+   return new Observable((observer) =>{
+
+    this.setActivityLog('left the room', userData, roomId).subscribe({
+      next: () =>{
+        const userRoomsRef = ref(this.db, `users/${userData.uid}/rooms/${roomId}`);
+        remove(userRoomsRef)
+         .then(() => {
+           const userRef = ref(
+             this.db,
+             `rooms/${roomId}/users/${userData.uid}`
+           );
+            remove(userRef)
+             .then(async () => {
+               
+               observer.next(); // Emit success when everything is done
+               observer.complete(); // Complete the observable
+         }).catch((error) => {
+           observer.error(error)
+         });
+         }).catch((error) => {
+           observer.error(error)
+         });
+      },
+      error: (err) => console.error('Failed to log join activity:', err),
+    });
+   })
   
+  }
+
+  setActivityLog(activity: string, userData: any, roomId: string): Observable<void> {
+    return new Observable((observer) => {
+      const timestamp = Date.now();
+      const logEntry = {
+        type: activity, // join or leave
+        userId: userData.uid,
+        displayName: userData.displayName || userData.email,
+        email:userData.email,
+        roomId: roomId,
+        timestamp: timestamp,
+      };
+  
+      const activityLogRef = ref(this.db, `rooms/${roomId}/activityLogs`);
+      push(activityLogRef, logEntry)
+        .then(() => {
+          observer.next(); // Log entry added successfully
+          observer.complete();
+        })
+        .catch((error) => {
+          observer.error(error); // Handle errors
+        });
+    });
+  }
+
+  getActivityLog(roomId: string): Observable<any[]> {
+    const activityLogRef = ref(this.db, `rooms/${roomId}/activityLogs`);
+    return new Observable((observer) => {
+      get(activityLogRef)
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            const logs = Object.values(snapshot.val());
+            observer.next(logs);
+          } else {
+            observer.next([]);
+          }
+          observer.complete();
+        })
+        .catch((error) => observer.error(error));
+    });
+  }
+  
+  deleteAllActivityLogs(roomId: string): Observable<void> {
+    return new Observable((observer) => {
+    const activityLogsRef = ref(this.db, `rooms/${roomId}/activityLogs`);
+     remove(activityLogsRef)
+      .then(() => {
+        observer.next(); 
+        observer.complete();
+      })
+      .catch((error) => {
+        observer.error(error)
+      });
+    })
+  }
+
 
   // Set the current room (ID and name) and save it to local storage
   setCurrentRoom(roomId: string, roomName: string) {

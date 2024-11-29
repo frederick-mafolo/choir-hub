@@ -17,6 +17,7 @@ import { Database, ref, set, get, push } from '@angular/fire/database';
 import { RoomService } from 'src/app/services/room.service';
 import { ToastService } from '../../services/toast.service';
 import * as _ from 'lodash'; 
+import { AuthService } from 'src/app/services/auth.service';
 
 interface KeyGroup {
   white: Key;
@@ -146,17 +147,28 @@ export class ProgressionEditorComponent implements OnInit {
     '7',
   ];
   dynamicSolfegeMap: Record<string, string> = {};
+  songName: string='';
+  userData!: {
+    uid: string;
+    email: string;
+    name: string;
+  };
 
   constructor(
     private fb: FormBuilder,
     private db: Database,
     private roomService: RoomService,
     private cdr: ChangeDetectorRef,
+    private authService: AuthService,
     private toastService: ToastService,
   ) {
     this.initializeForm();
     let roomId = this.roomService.getRoomFromLocalStorage();
     this.currentRoomId = roomId?.id || null;
+
+    this.authService.getUserData().subscribe((data) => {
+      this.userData = data;
+    });
   }
 
   ngOnInit() {
@@ -170,8 +182,6 @@ export class ProgressionEditorComponent implements OnInit {
         selectedKey: this.songData?.key,
         songName: this.songData?.name,
       });
-
-      console.log(this.songData)
 
       if (this.songData.progression) {
         this.progression = this.songData.progression;
@@ -428,8 +438,7 @@ export class ProgressionEditorComponent implements OnInit {
 
   saveProgression() {
     const selectedKey = this.progressionForm.get('selectedKey')?.value; // Get selected key
-    const songName =
-      this.progressionForm.get('songName')?.value || 'Current progression'; // Default song name if not provided
+    this.songName = this.progressionForm.get('songName')?.value || 'Current progression'; // Default song name if not provided
 
     if (this.currentRoomId) {
       const progression = {
@@ -468,7 +477,7 @@ export class ProgressionEditorComponent implements OnInit {
               id: songId,
               order: this.songData.order,
               key: selectedKey,
-              name: songName,
+              name: this.songName,
               progression: progression,
             };
 
@@ -480,7 +489,7 @@ export class ProgressionEditorComponent implements OnInit {
             const newSong = {
               id: newSongRef.key, // Firebase-generated unique ID
               key: selectedKey,
-              name: songName,
+              name: this.songName,
               progression: progression,
             };
 
@@ -563,7 +572,7 @@ export class ProgressionEditorComponent implements OnInit {
   }
 
   closePopup() {
-   
-    this.progressionConfirmed.emit(this.progression);
+    console.log(this.songName )
+    this.progressionConfirmed.emit({progression:this.progression,songName:this.songName });
   }
 }

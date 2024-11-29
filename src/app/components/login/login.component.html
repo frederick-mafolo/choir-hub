@@ -1,8 +1,8 @@
 <div class="main">
 <form (ngSubmit)="login()" class="form-container">
   <h2>Sign In</h2>
-  <input matInput [(ngModel)]="email" name="email" type="email" required placeholder="choir@email.com">
-  <input matInput [(ngModel)]="password" name="password" type="password" required placeholder="••••••••">
+  <input matInput [(ngModel)]="email" name="email" type="email"  maxlength="50" required placeholder="choir@email.com">
+  <input matInput [(ngModel)]="password" name="password" type="password"  maxlength="50" required placeholder="••••••••">
  
   <button  (keyup.enter)="login()" type="submit">Sign In</button>
   <a  routerLink="/reset-password">Forgot password?</a>

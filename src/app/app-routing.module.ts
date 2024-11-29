@@ -10,6 +10,8 @@ import { LandingPageComponent } from './components/landing-page/landing-page.com
 import { ManageRoomsComponent } from './components/manage-rooms/manage-rooms.component';
 import { TechnicalTeamComponent } from './components/technical-team/technical-team.component';
 import { CategoriesComponent } from './components/categories/categories.component';
+import { ProfileSettingsComponent } from './profile-settings/profile-settings.component';
+import { UserManagementComponent } from './components/user-management/user-management.component';
 
 const routes: Routes = [
   { path: '', component: LandingPageComponent },
@@ -18,6 +20,8 @@ const routes: Routes = [
   { path: 'manage-rooms', component: ManageRoomsComponent,canActivate: [AuthGuard] },
   { path: 'technical-team', component: CategoriesComponent,canActivate : [AuthGuard] },
   { path: 'messages/:category', component: TechnicalTeamComponent ,canActivate : [AuthGuard] },
+  { path: 'profile-settings', component: ProfileSettingsComponent ,canActivate : [AuthGuard] },
+  { path: 'user-management', component: UserManagementComponent ,canActivate : [AuthGuard] },
   { path: 'login', component: LoginComponent },
   { path: 'landing-page', component: LandingPageComponent },
   { path: 'register', component: RegisterComponent },

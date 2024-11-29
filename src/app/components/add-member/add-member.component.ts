@@ -15,7 +15,7 @@ export class AddMemberComponent {
     private dialogRef: MatDialogRef<AddMemberComponent>
   ) {
     this.addMemberForm = this.fb.group({
-      email: ['', [Validators.required,  Validators.pattern(
+      email: ['', [Validators.required, Validators.maxLength(50), Validators.pattern(
         /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
       )]]
     });

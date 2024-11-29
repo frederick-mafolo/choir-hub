@@ -16,7 +16,7 @@ export class CreateNewRoomComponent {
     private dialogRef: MatDialogRef<CreateNewRoomComponent>
   ) {
     this.createRoomForm = this.fb.group({
-      roomName: ['', Validators.required]
+      roomName: ['', [Validators.required, Validators.maxLength(50)]]
     });
   }
 

@@ -1,0 +1,9 @@
+<div class="activity-log">
+   <div><div class="title">Activity logs</div> <button *ngIf="activityLogs.length > 0" mat-flat-button color="warn" type="button" (click)="deleteAllActivityLogs()">Clear all</button></div> 
+    <ul>
+        <li *ngFor="let log of activityLogs">
+            <span class="timestamp">{{ log.timestamp | date: 'short' }}</span>
+            <span class="log-entry">{{ log.displayName }} ({{ log.email }}) {{ log.type}}</span>
+        </li>
+    </ul>
+</div>

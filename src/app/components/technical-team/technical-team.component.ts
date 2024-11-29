@@ -3,6 +3,7 @@ import { Database, get, push, ref, remove, set, update } from '@angular/fire/dat
 import { RoomService } from 'src/app/services/room.service';
 import { ActivatedRoute } from '@angular/router';
 import categoriesData from '../../../assets/data/categories.json';
+import { Message, NewMessage } from 'src/app/models/message';
 @Component({
   selector: 'app-technical-team',
   templateUrl: './technical-team.component.html',
@@ -14,7 +15,7 @@ export class TechnicalTeamComponent implements OnInit {
   selectedCategory = '';
   categoryMessages: string[] = [];
   categoriesItems: { [key: string]: string[] } = categoriesData
-  selectedMessages: { message: string; category: string, id:string }[] = [];
+  selectedMessages: { message: string; category: string, id:string ,isCompleted:boolean}[] = [];
   currentRoomId: string | null = '';
 
   constructor(private db: Database, private roomService: RoomService,private route: ActivatedRoute) {
@@ -51,25 +52,29 @@ export class TechnicalTeamComponent implements OnInit {
   }
 
   selectMessage(item: string) {
-    this.saveMessage({ message: item, category:this.selectedCategory });
+    this.saveMessage({ message: item, category:this.selectedCategory, isCompleted: false });
   }
 
-  async saveMessage(newMessage: { message: string; category: string}): Promise<void> {
+  async saveMessage(newMessage: NewMessage): Promise<void> {
     if (!this.currentRoomId) return;
 
       const messageRef = push(ref(this.db, `rooms/${this.currentRoomId}/messages`)); // Create new message reference in Firebase
       let currentMessageId = messageRef.key || ''; // Store the message ID
-      this.selectedMessages.push( {id:currentMessageId,message:newMessage.message, category: newMessage.category});
+      this.selectedMessages.push( {
+        id:currentMessageId,
+        message:newMessage.message, 
+        category: newMessage.category, 
+        isCompleted: newMessage.isCompleted});
 
       const roomMessagesRef = ref(this.db, `rooms/${this.currentRoomId}/messages/${currentMessageId}`);
-      await set(roomMessagesRef, { category: newMessage.category, message: newMessage.message }).then((res) =>{
+      await set(roomMessagesRef, { category: newMessage.category, message: newMessage.message ,isCompleted: newMessage.isCompleted}).then((res) =>{
       }).catch((error) => {
         console.error(error)
       });
     
   }
 
-  async editMessage(editeMessageData: { id: string; message: string; category: string }) {
+  async editMessage(editeMessageData: Message) {
     // Find the index of the message with the given ID
     const index = this.selectedMessages.findIndex(message => message.id === editeMessageData.id);
     
@@ -85,7 +90,8 @@ export class TechnicalTeamComponent implements OnInit {
           this.selectedMessages.splice(index, 1, {
             id: editeMessageData.id,
             message: editeMessageData.message,
-            category: editeMessageData.category
+            category: editeMessageData.category,
+            isCompleted: editeMessageData.isCompleted
         });
         }).catch((error) => {
           console.error('Error', error);

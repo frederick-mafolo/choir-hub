@@ -1,0 +1,48 @@
+.activity-log {
+    padding: 15px;
+    background-color: #f4f4f4;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-family: 'Courier New', Courier, monospace; /* Monospace font for log-like appearance */
+}
+button{
+    padding: 11px;
+    font-size: 12px;
+    border-radius: 20px;
+}
+
+div div{
+    display:flex; 
+    justify-content: space-between;
+    align-items: center;
+}
+
+.title{
+    font-weight: 600;
+    font-size: 1em;
+    color: #333;
+}
+
+.activity-log ul {
+    list-style: none;
+    padding: 0;
+    overflow-y: auto;
+    height: auto;
+    max-height: 200px;
+}
+
+.activity-log li {
+    margin-bottom: 8px;
+    padding: 5px;
+    border-bottom: 1px solid #ccc; /* Add a bottom border for separation */
+}
+
+.activity-log .timestamp {
+    color: #888; /* Lighter color for timestamp */
+    font-size: 0.9em;
+    margin-right: 10px; /* Space between timestamp and log entry */
+}
+
+.activity-log .log-entry {
+    color: #333; /* Darker color for log entry text */
+}

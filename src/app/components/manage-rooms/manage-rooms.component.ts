@@ -3,7 +3,6 @@ import {
   Database,
   ref,
   get,
-  push,
   update,
   set,
   remove,
@@ -114,7 +113,7 @@ export class ManageRoomsComponent implements OnInit {
     if (users) {
       this.selectedRoom.users = Object.keys(users).map((userId) => ({
         id: userId,
-        name: users[userId].name || this.getUsernameFromEmail(users[userId].email),
+        name: users[userId].diplayName || this.getUsernameFromEmail(users[userId].email),
         email: users[userId].email,
         admin: roomData.admins ? roomData?.admins[userId] === true : false,
         blocked: users[userId].blocked || false,
@@ -178,10 +177,12 @@ export class ManageRoomsComponent implements OnInit {
         get(emailQuery)
           .then((snapshot) => {
             if (snapshot.exists()) {
+
               const userData = snapshot.val();
               const userId = Object.keys(userData)[0]; // Get the userId of the first match
               const userEmail = userData[userId].email; // Get the matched user's email
-              const user = { uid: userId, email: userEmail };
+              const displayName = userData[userId].displayName; // Get the user's displayName
+              const user = { uid: userId, email: userEmail, displayName:displayName };
               this.addUserToRoom(user, roomId, roomName); // Add the user to the room
             } else {
               // If the user is not found, send an invite email
@@ -210,7 +211,7 @@ export class ManageRoomsComponent implements OnInit {
       });
     }
   // Add existing user to the room
-  addUserToRoom(userData: object, roomId: string, roomName: string): void {
+  addUserToRoom(userData: any, roomId: string, roomName: string): void {
     const user = this.auth.currentUser; // Get current authenticated user
     if (!user) {
       this.toastService.showToast('User not authenticated', 'error');
@@ -221,9 +222,15 @@ export class ManageRoomsComponent implements OnInit {
       next: () => {
         // Room created successfully
         // this.roomJoined.emit(roomId);
+        
+        this.roomService.setActivityLog(`added: ${userData.email} to the room`, this.userData, roomId).subscribe({
+          next: () => {},
+          error: (err) =>{ console.error('Failed to log activity:', err)}
+          }); 
         this.roomService.setCurrentRoom(roomId, roomName);
         // this.closePopup();
         this.toastService.showToast('User added to the room', 'success');
+        this.selectRoom({id: roomId, name: roomName});
       },
       error: (error) => {
         // Handle any error
@@ -248,6 +255,11 @@ export class ManageRoomsComponent implements OnInit {
     // Use an email service to send the email
     this.emailService.sendEmail(inviteData).subscribe({
       next: () => {
+        
+        this.roomService.setActivityLog(`sent the invite to: ${email}`, this.userData, roomId).subscribe({
+          next: () => {},
+          error: (err) =>{ console.error('Failed to log activity:', err)}
+         }); 
         this.toastService.showToast('Invitation sent!', 'success');
       },
       error: (error) => {
@@ -280,7 +292,13 @@ export class ManageRoomsComponent implements OnInit {
 
       const roomRef = ref(this.db, `rooms/${this.selectedRoom.id}`);
       await update(roomRef, { name: this.newRoomName })
-        .then(() => {})
+        .then(() => {
+          
+          this.roomService.setActivityLog(`changed the room name to ${this.newRoomName}`, this.userData, this.selectedRoom?.id as string).subscribe({
+            next: () => {},
+            error: (err) =>{ console.error('Failed to log activity:', err)}
+           }); 
+        })
         .catch(() => {
           this.toastService.showToast('Error editing name', 'error');
         });
@@ -298,6 +316,11 @@ export class ManageRoomsComponent implements OnInit {
     navigator.clipboard
       .writeText(roomLink)
       .then(() => {
+
+        this.roomService.setActivityLog(`Shared the link`, this.userData, roomId).subscribe({
+          next: () => {},
+          error: (err) =>{ console.error('Failed to log activity:', err)}
+         }); 
         this.toastService.showToast(
           'Room link copied to clipboard!',
           'success'
@@ -363,6 +386,11 @@ export class ManageRoomsComponent implements OnInit {
     if (roomId) {
       navigator.clipboard.writeText(roomId).then(
         () => {
+
+          this.roomService.setActivityLog(`copied room id`, this.userData, roomId).subscribe({
+            next: () => {},
+            error: (err) =>{ console.error('Failed to log activity:', err)}
+           }); 
           this.toastService.showToast(
             'Room ID copied to clipboard!',
             'success'
@@ -376,7 +404,7 @@ export class ManageRoomsComponent implements OnInit {
   }
 
 // Remove a user from the room
-async removeUser(userId: string): Promise<void> {
+async removeUser(userId: string, userName:string): Promise<void> {
   if (!this.selectedRoom) return;
 
   const currentUser = this.auth.currentUser;
@@ -389,6 +417,11 @@ async removeUser(userId: string): Promise<void> {
   const userRef = ref(this.db, `rooms/${this.selectedRoom.id}/users/${userId}`);
   try {
     await remove(userRef); // Remove user from room's users list
+
+    this.roomService.setActivityLog(`removed ${userName} from the room`, this.userData, this.selectedRoom.id).subscribe({
+      next: () => {},
+      error: (err) =>{ console.error('Failed to log activity:', err)}
+     }); 
     await this.checkAndAssignAdmin(this.selectedRoom.id, this.selectedRoom.name); // Check and assign new admin if necessary
 
     // Also remove the room from the user's list
@@ -433,29 +466,22 @@ private async checkAndAssignAdmin(roomId: string, roomName: string): Promise<voi
   async exitRoom(roomId: string) {
     const user = this.auth.currentUser; // Get the current user
     if (user) {
+      const userData = {
+        uid: user?.uid,
+        email: user?.email,
+        displayName: user.displayName || this.getUsernameFromEmail(user?.email || ''),
+      };
       // Remove the room from the user's list of rooms
-      const userRoomsRef = ref(this.db, `users/${user.uid}/rooms/${roomId}`);
-      await remove(userRoomsRef)
-        .then(() => {
+     this.roomService.exitRoom(userData, roomId).subscribe({
+      next:() =>{
+        this.loadRooms(); // Reload the rooms to update the UI
+        this.selectedRoom = null; // Clear the selected room
+      },
+      error:() =>{
+        this.toastService.showToast('Error exiting room', 'error');
+      }
 
-          const userRef = ref(
-            this.db,
-            `rooms/${roomId}/users/${user.uid}`
-          );
-      
-           remove(userRef)
-            .then(async () => {
-            this.toastService.showToast(
-            'Successfully exited the room',
-            'success'
-          );
-          this.loadRooms(); // Reload the rooms to update the UI
-          this.selectedRoom = null; // Clear the selected room
-        }).catch(() => {});
-        })
-        .catch(() => {
-          this.toastService.showToast('Error exiting room', 'error');
-        });
+     }) 
     } else {
       this.toastService.showToast('User not authenticated', 'error');
     }
@@ -476,14 +502,23 @@ private async checkAndAssignAdmin(roomId: string, roomName: string): Promise<voi
   
       // Set the new admin in the room by adding userId to the admins node
       const roomAdminRef = ref(this.db, `rooms/${roomId}/admins/${userId}`);
-      await set(roomAdminRef, true);
-  
-      // Update the user data to mark them as an admin in their profile under the room's users
-      await set(userRef, {
+      await set(roomAdminRef, true).then(() => { 
+        this.roomService.setActivityLog(`added ${userData.email} as the admin`, this.userData, roomId).subscribe({
+          next: () => {},
+          error: (err) =>{ console.error('Failed to log activity:', err)}
+         }); 
+
+        // Update the user data to mark them as an admin in their profile under the room's users
+       set(userRef, {
         ...userData,
         admin: true,
       });
   
+      }).catch(error => {
+        console.log(error)
+      })
+  
+
       // Reload the rooms and notify of success
      await this.selectRoom({ id: roomId, name: roomName }); // Reload room data
       this.toastService.showToast(
@@ -496,7 +531,6 @@ private async checkAndAssignAdmin(roomId: string, roomName: string): Promise<voi
     }
   }
   
-
 
 // Dismiss admin privileges
 async dismissAsAdmin(userId: string, roomId: string, roomName: string): Promise<void> {
@@ -514,9 +548,16 @@ async dismissAsAdmin(userId: string, roomId: string, roomName: string): Promise<
 
     // Remove the userId from the admins object in the room
     const adminRef = ref(this.db, `rooms/${roomId}/admins/${userId}`);
-    await remove(adminRef);
+    await remove(adminRef).then(() => {
+      this.roomService.setActivityLog(`removed ${userData.email} as the admin`, this.userData, roomId).subscribe({
+        next: () => {},
+        error: (err) =>{ console.error('Failed to log activity:', err)}
+       }); 
 
-    await this.checkAndAssignAdmin(roomId, roomName); // Check and assign new admin if necessary
+       this.checkAndAssignAdmin(roomId, roomName); // Check and assign new admin if necessary
+
+    }).catch(err => console.error(err))
+
     this.selectRoom({ id: roomId, name: roomName }); // Reload room data
     this.toastService.showToast(`${userData.email} is no longer an admin`, 'success');
   } catch (error) {
@@ -546,6 +587,11 @@ async dismissAsAdmin(userId: string, roomId: string, roomName: string): Promise<
         `rooms/${roomId}/blockedUsers/${userId}`
       );
       await set(blockedUserRef, { ...userData, blocked: true }).then(() => {
+
+        this.roomService.setActivityLog(`blocked ${userData.email}`, this.userData, roomId).subscribe({
+          next: () => {},
+          error: (err) =>{ console.error('Failed to log activity:', err)}
+         });   
            // Move user to `blockedUsers` with blocked flag
        const blockedEmailRef = ref(
         this.db,
@@ -594,13 +640,21 @@ async dismissAsAdmin(userId: string, roomId: string, roomName: string): Promise<
   
       // Move user back to `users` without blocked flag
       const userRef = ref(this.db, `rooms/${roomId}/users/${userId}`);
-      await set(userRef, { ...userData, blocked: false });
+      await set(userRef, { ...userData, blocked: false }).then(() => {
+
+        this.roomService.setActivityLog(`unblocked ${userData.email}`, this.userData, roomId).subscribe({
+          next: () => {},
+          error: (err) =>{ console.error('Failed to log activity:', err)}
+         });   
+
+          // Remove user from `blockedUsers`
+          remove(blockedUserRef);
   
-      // Remove user from `blockedUsers`
-      await remove(blockedUserRef);
+          // Remove email from `blockedEmails`
+          remove(blockedEmailRef);
+      })
   
-      // Remove email from `blockedEmails`
-      await remove(blockedEmailRef);
+   
   
       // Refresh room and display success message
       let room = { id: roomId, name: roomName};
