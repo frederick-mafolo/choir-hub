@@ -60,7 +60,7 @@ export class RoomService {
             `users/${user.uid}/rooms/${this.currentRoomId}`
           );
           // Store roomName under the user's rooms
-          return set(userRoomsRef, { name: roomName });
+          return set(userRoomsRef, true);
         })
         .then(() => {
           // Add the user who created the room to the room's 'users' node
@@ -124,7 +124,7 @@ export class RoomService {
           const userRoomsRef = ref(this.db, `users/${userData.uid}/rooms/${roomId}`);
   
           set(roomUsersRef, userData)
-            .then(() => set(userRoomsRef, { name: roomName })) // Add room to user's list of rooms
+            .then(() => set(userRoomsRef, true)) // Add room to user's list of rooms
             .then(() => {
               this.setCurrentRoom(roomId, roomName as string);
               this.setActivityLog('joined the room', userData, roomId).subscribe({
@@ -255,7 +255,7 @@ export class RoomService {
   setCurrentRoom(roomId: string, roomName: string) {
     const roomData = { id: roomId, name: roomName };
     this.currentRoomSubject.next(roomData);
-   console.log(roomId)
+  
     // Persist the room ID and name in localStorage
     localStorage.setItem(this.roomIdKey, roomId);
     localStorage.setItem(this.roomNameKey, roomName);

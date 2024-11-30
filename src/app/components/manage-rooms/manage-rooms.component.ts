@@ -74,28 +74,39 @@ export class ManageRoomsComponent implements OnInit {
     try {
       this.rooms = [];
       this.selectedRoom = null;
+  
       const userRoomsRef = ref(this.db, `users/${this.userData?.uid}/rooms`);
-       onValue(userRoomsRef, (snapshot) =>{
+  
+      onValue(userRoomsRef, async (snapshot) => {
         const rooms = snapshot.val();
-
-        // Check if rooms exist
+  
         if (rooms) {
-          // Use room names from the user's rooms data instead of fetching from the rooms node
-          this.rooms = Object.keys(rooms).map((roomId) => ({
-            id: roomId,
-            name: rooms[roomId]?.name || roomId, // Use the room name or default to roomId
-          }));
+          const roomIds = Object.keys(rooms);
+  
+          // Fetch room names from the rooms node for each room ID
+          const fetchedRooms = await Promise.all(
+            roomIds.map(async (roomId) => {
+              const roomRef = ref(this.db, `rooms/${roomId}/name`);
+              const roomSnapshot = await get(roomRef);
+  
+              return {
+                id: roomId,
+                name: roomSnapshot.exists() ? roomSnapshot.val() : roomId, // Use room name or default to roomId
+              };
+            })
+          );
+  
+          this.rooms = fetchedRooms;
         } else {
           this.rooms = [];
         }
-       })
-
-     
+      });
     } catch (error) {
       console.error(error);
       this.toastService.showToast('Error loading joined rooms', 'error');
     }
   }
+  
 
   // Select a room to view users
   async selectRoom(room: { id: string; name: string }) {
@@ -313,7 +324,7 @@ export class ManageRoomsComponent implements OnInit {
         });
       this.toastService.showToast('Room name updated!', 'success');
       this.selectedRoom.name = this.newRoomName;
-      // this.loadRooms(); 
+      this.loadRooms(); 
     }
   }
 
@@ -413,7 +424,7 @@ export class ManageRoomsComponent implements OnInit {
   }
 
 // Remove a user from the room
-async removeUser(userId: string, userName:string): Promise<void> {
+async removeUser(userId: string, userName: string, isAdmin?: boolean): Promise<void> {
   if (!this.selectedRoom) return;
 
   const currentUser = this.auth.currentUser;
@@ -423,24 +434,37 @@ async removeUser(userId: string, userName:string): Promise<void> {
     return;
   }
 
-  const userRef = ref(this.db, `rooms/${this.selectedRoom.id}/users/${userId}`);
   try {
-    await remove(userRef); // Remove user from room's users list
+    // Check if the user is an admin
+    if (isAdmin) {
+      const adminRef = ref(this.db, `rooms/${this.selectedRoom.id}/admins/${userId}`);
+      await remove(adminRef); // Remove from admins list
+    }
 
+    // Remove user from room's users list
+    const userRef = ref(this.db, `rooms/${this.selectedRoom.id}/users/${userId}`);
+    await remove(userRef);
+
+    // Log the activity
     this.roomService.setActivityLog(`removed ${userName} from the room`, this.userData, this.selectedRoom.id).subscribe({
       next: () => {},
-      error: (err) =>{ console.error('Failed to log activity:', err)}
-     }); 
-    await this.checkAndAssignAdmin(this.selectedRoom.id, this.selectedRoom.name); // Check and assign new admin if necessary
+      error: (err) => console.error('Failed to log activity:', err),
+    });
 
-    // Also remove the room from the user's list
+    // Check and assign a new admin if necessary
+    await this.checkAndAssignAdmin(this.selectedRoom.id, this.selectedRoom.name);
+
+    // Remove the room from the user's list
     const userRoomsRef = ref(this.db, `users/${userId}/rooms/${this.selectedRoom.id}`);
     await remove(userRoomsRef);
-    this.toastService.showToast(`User removed ${userName} from room!`, 'success');
+
+    this.toastService.showToast(`User ${userName} removed from room!`, 'success');
   } catch (error) {
+    console.error('Error removing user:', error);
     this.toastService.showToast('Failed to remove the user', 'error');
   }
 }
+
 
   // Helper method to check for admins and assign a new one if necessary
 private async checkAndAssignAdmin(roomId: string, roomName: string): Promise<void> {

@@ -4,15 +4,14 @@
 }
 
 .manage-rooms-container {
-  padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
 .rooms-list {
-  margin-bottom: 20px;
   width: 100%;
+  max-width: 600px;
 }
 
 
@@ -108,6 +107,17 @@
 
 }
 
+mat-form-field{
+  width: 100% !important;
+}
+
+.form-btns{
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+}
+
 
 .menu-icon{
   padding: initial !important;
@@ -133,7 +143,7 @@
 }
 
 .save-btn {
-  font-size: 14px;
+  font-size: 0.8em;
   width: 150px;
   display: flex;
   align-items: center;
@@ -154,12 +164,23 @@
 }
 
 .delete-btn{
+  font-size:0.8em;
   width: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+
+@media (min-width: 768px) {
+  .delete-btn{
+    font-size:1em;
+  }
+
+  .save-btn {
+    font-size: 1em;
+  }
+}
 
 .room-details button.mat-raised-button {
   margin-top: 20px;
@@ -177,6 +198,7 @@
   color: #333;
   margin-bottom: 15px;
 }
+
 
 .user-list {
   max-height: 250px; /* Set the height to your preference */
