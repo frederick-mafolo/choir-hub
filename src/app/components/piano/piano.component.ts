@@ -95,13 +95,13 @@ export class PianoComponent implements OnInit {
   ];
   isOverWrittenClicked: boolean = false;
   currentRoomName!: string;
-
+  lineNotes = ["1", "2b", "2", "3b", "3", "4", "5b", "5", "6b", "6", "7b", "7"]
   userData!: {
     uid: string;
     email: string;
     name: string;
   };
-
+  selectedValue: string | null = null;
   constructor(
     private pianoService: PianoService,
     private toastService: ToastService,
@@ -123,12 +123,107 @@ export class PianoComponent implements OnInit {
       this.currentRoomName =  res?.name || res?.id;
       if (this.currentRoomId) {
         this.listenForKeyPresses(this.currentRoomId);
+        this.getAllSongs();
+        this.getLineNote();
       }
-      
+    });
+  }
+
+   // Function to listen to keypress events in Firebase for the current room
+   listenForKeyPresses(roomId: string) {
+    const roomRef = ref(this.db, `rooms/${roomId}/piano-key`);
+    onValue(roomRef, (snapshot) => {
+      const keyData = snapshot.val();
+
+      if (keyData && keyData.note) {
+        // Reset all keys to inactive
+        this.keys.forEach((keyGroup) => {
+          keyGroup.white.active = false;
+          if (keyGroup.black) {
+            keyGroup.black.active = false;
+          }
+        });
+
+        // Activate the pressed key
+        this.keys.forEach((keyGroup) => {
+          if (keyGroup.white.note === keyData.note) {
+            keyGroup.white.active = true;
+          }
+          if (keyGroup.black && keyGroup.black.note === keyData.note) {
+            keyGroup.black.active = true;
+          }
+        });
+        this.highlightKey(keyData.note); // Highlight the note for all users in the room
+      }
+    });
+  }
+
+  // Join a session and listen for keypress events
+  playSound(note: string) {
+    if (!this.currentRoomId) {
+      this.toastService.showToast(
+        'Please create or join a room first.',
+        'warning'
+      );
+      return;
+    }
+
+    this.roomService.setActivityLog(`pressed: ${note} `, this.userData, this.currentRoomId as string).subscribe({
+      next: () => {},
+      error: (err) =>{ console.error('Failed to log activity:', err)}
+     }); 
+
+    // Reset all keys to inactive
+    this.keys.forEach((keyGroup) => {
+      keyGroup.white.active = false;
+      if (keyGroup.black) {
+        keyGroup.black.active = false;
+      }
     });
 
-    this.getAllSongs();
+    // Activate the pressed key
+    this.keys.forEach((keyGroup) => {
+      if (keyGroup.white.note === note) {
+        keyGroup.white.active = true;
+      }
+      if (keyGroup.black && keyGroup.black.note === note) {
+        keyGroup.black.active = true;
+      }
+    });
+
+    // Store or update keypress event in Firebase
+    const keyData = { note: note, timestamp: Date.now() };
+
+    set(ref(this.db, `rooms/${this.currentRoomId}/piano-key`), keyData)
+      .then(() => {
+        this.pressedKey = note;
+      })
+      .catch((error) => {
+        this.toastService.showToast('Error updating note in room', 'error');
+        console.error('Error updating note in room:', error);
+      });
   }
+
+  highlightKey(note: string) {
+    this.pressedKey = note; // Update the pressed key display
+  }
+
+
+  onNumberClick(lineNote: string) {
+    this.selectedValue = lineNote; // Set the clicked number as selected
+    this.roomService
+    .saveLineNote(this.currentRoomId as string, lineNote)
+    .then(() => console.log('Line note saved successfully'))
+    .catch((error) => console.error('Error saving line note:', error));
+  }
+
+  getLineNote(){
+    const lineNoteRef = ref(this.db, `rooms/${this.currentRoomId}/lineNote`);
+    onValue(lineNoteRef,(snapshot) => {
+      this.selectedValue =  snapshot.exists() ? snapshot.val() : null;
+   });
+  }
+
 
   getAllSongs(): void {
     if (!this.currentRoomId) return;
@@ -444,86 +539,6 @@ export class PianoComponent implements OnInit {
     this.listenForKeyPresses(this.currentRoomId);
     this.getAllSongs();
   }
-
-  // Function to listen to keypress events in Firebase for the current room
-  listenForKeyPresses(roomId: string) {
-    const roomRef = ref(this.db, `rooms/${roomId}/piano-key`);
-    onValue(roomRef, (snapshot) => {
-      const keyData = snapshot.val();
-
-      if (keyData && keyData.note) {
-        // Reset all keys to inactive
-        this.keys.forEach((keyGroup) => {
-          keyGroup.white.active = false;
-          if (keyGroup.black) {
-            keyGroup.black.active = false;
-          }
-        });
-
-        // Activate the pressed key
-        this.keys.forEach((keyGroup) => {
-          if (keyGroup.white.note === keyData.note) {
-            keyGroup.white.active = true;
-          }
-          if (keyGroup.black && keyGroup.black.note === keyData.note) {
-            keyGroup.black.active = true;
-          }
-        });
-        this.highlightKey(keyData.note); // Highlight the note for all users in the room
-      }
-    });
-  }
-
-  // Join a session and listen for keypress events
-  playSound(note: string) {
-    if (!this.currentRoomId) {
-      this.toastService.showToast(
-        'Please create or join a room first.',
-        'warning'
-      );
-      return;
-    }
-
-    this.roomService.setActivityLog(`pressed: ${note} `, this.userData, this.currentRoomId as string).subscribe({
-      next: () => {},
-      error: (err) =>{ console.error('Failed to log activity:', err)}
-     }); 
-
-    // Reset all keys to inactive
-    this.keys.forEach((keyGroup) => {
-      keyGroup.white.active = false;
-      if (keyGroup.black) {
-        keyGroup.black.active = false;
-      }
-    });
-
-    // Activate the pressed key
-    this.keys.forEach((keyGroup) => {
-      if (keyGroup.white.note === note) {
-        keyGroup.white.active = true;
-      }
-      if (keyGroup.black && keyGroup.black.note === note) {
-        keyGroup.black.active = true;
-      }
-    });
-
-    // Store or update keypress event in Firebase
-    const keyData = { note: note, timestamp: Date.now() };
-
-    set(ref(this.db, `rooms/${this.currentRoomId}/piano-key`), keyData)
-      .then(() => {
-        this.pressedKey = note;
-      })
-      .catch((error) => {
-        this.toastService.showToast('Error updating note in room', 'error');
-        console.error('Error updating note in room:', error);
-      });
-  }
-
-  highlightKey(note: string) {
-    this.pressedKey = note; // Update the pressed key display
-  }
-
 
   closeProgressionEditor() {
     this.showProgressionEditor = false;

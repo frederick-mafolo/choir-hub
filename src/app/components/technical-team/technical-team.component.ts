@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Database, get, push, ref, remove, set, update } from '@angular/fire/database';
+import { Database, onValue, push, ref, remove, set, update } from '@angular/fire/database';
 import { RoomService } from 'src/app/services/room.service';
 import { ActivatedRoute } from '@angular/router';
 import categoriesData from '../../../assets/data/categories.json';
@@ -41,14 +41,16 @@ export class TechnicalTeamComponent implements OnInit {
   async loadRoomData(currentRoomId:string) {
 
       const roomMessagesRef = ref(this.db, `rooms/${currentRoomId}/messages`);
-      const snapshot = await get(roomMessagesRef);
-      const messages = snapshot.val();
-      this.selectedMessages = messages
-        ? Object.keys(messages).map((key) =>({
-          id: key,
-           ...messages[key]})
-          )
-        : [];
+      onValue(roomMessagesRef, (snapshot) =>{
+        const messages = snapshot.val();
+        this.selectedMessages = messages
+          ? Object.keys(messages).map((key) =>({
+            id: key,
+             ...messages[key]})
+            )
+          : [];
+      });
+    
   }
 
   selectMessage(item: string) {

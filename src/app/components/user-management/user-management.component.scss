@@ -4,26 +4,46 @@
     margin-bottom: 20px;
     padding: 20px;
   }
-  
-  .user-list {
-    margin: 20px 0px 50px 0px;
 
-    // overflow-x: auto;
+  
+  .table-container {
+    margin: 20px 0px 50px 0px;
+    overflow-x: auto;
   }
   
+  .responsive-table {
+    width: 100%;
+    min-width: 600px;
+  } 
+
   table {
     width: 100%;
+    min-width: 600px; /* Ensure a minimum width for better readability */
+    border-collapse: collapse;
+  }
+
+  td, th {
+    word-wrap: break-word;
+    white-space: normal;
   }
   
   th.mat-header-cell {
     text-align: left;
     font-weight: bold;
+    font-size: 1em;
+  }
+   
+  th{
+    font-size: 0.9em;
   }
   
   td.mat-cell {
     text-align: left;
   }
-  
+
+  td{
+    font-size: 0.8em;
+   }
   .active {
     color: green;
     font-weight: bold;

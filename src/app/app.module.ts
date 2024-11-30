@@ -24,6 +24,7 @@ import {MatChipsModule} from '@angular/material/chips';
 import {MatSelectModule} from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import {MatTableModule} from '@angular/material/table';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 
 import { FirebaseModule } from './firebase/firebase.module';
 import { ToastComponent } from './shared/toast/toast.component';
@@ -91,6 +92,7 @@ import { ActivityLogComponent } from './components/activity-log/activity-log.com
     MatChipsModule,
     MatCheckboxModule,
     MatIconModule,
+    MatButtonToggleModule,
     MatToolbarModule,
     MatTableModule,
     MatSelectModule,

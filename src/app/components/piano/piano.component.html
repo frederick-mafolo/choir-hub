@@ -24,6 +24,19 @@
   <p>{{ pressedKey || 'NA' }}</p>
 </div>
 
+<div class="line-container">
+  <div *ngFor="let number of lineNotes" class="number-button">
+    <button
+      mat-raised-button
+      class="line-button"
+      [color]="selectedValue === number ? 'primary' : ''"
+      (click)="onNumberClick(number)"
+    >
+      {{ number }}
+    </button>
+  </div>
+</div>
+
 <div class="song-form">
   <input [(ngModel)]="newSong.name" maxlength="50" placeholder="Song Name" />
   <input [(ngModel)]="newSong.key"  maxlength="30" placeholder="Song Key" />

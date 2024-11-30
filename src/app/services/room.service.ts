@@ -159,6 +159,12 @@ export class RoomService {
     });
   }
 
+  saveLineNote(roomId: string, note: string): Promise<void> {
+    const lineNoteRef = ref(this.db, `rooms/${roomId}/lineNote`);
+    return set(lineNoteRef, note);
+  }
+
+
   exitRoom(userData:any, roomId: string): Observable<void>{
    return new Observable((observer) =>{
 

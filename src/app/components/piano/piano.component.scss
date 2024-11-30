@@ -76,6 +76,30 @@
  .launch-icon{
   padding: initial !important;
  }
+
+ .line-container {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 600px;
+  gap: 5px;
+  justify-content: space-between;
+  margin: 10px 0;
+}
+
+.number-button {
+  flex: 1 1 auto;
+  max-width: 60px;
+  text-align: center;
+}
+
+.line-button {
+  width: 100%;
+  padding: 8px 12px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+
 .pressed-key {
   text-align: center;
   margin-top: 20px;

@@ -15,7 +15,7 @@ export class UserManagementComponent implements OnInit {
   activityLog: any[] = [];
   selectedRole: string = '';
   selectedStatus: string = '';
-  displayedColumns: string[] = ['name', 'email', 'role', 'status', 'actions'];
+  displayedColumns: string[] = ['name', 'email', 'role', 'actions'];
 
 
   constructor(private db: Database, private roomService: RoomService) {}
